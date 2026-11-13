@@ -1,0 +1,12 @@
+{
+  "imports": {
+    "@supabase/supabase-js": "npm:@supabase/supabase-js@2",
+    "@std/assert": "jsr:@std/assert@1",
+    "@std/encoding/base64": "jsr:@std/encoding@1/base64"
+  },
+  "compilerOptions": { "strict": true },
+  "tasks": {
+    "test": "deno test --allow-env",
+    "check": "deno check index.ts"
+  }
+}
