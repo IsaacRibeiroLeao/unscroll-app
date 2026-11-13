@@ -73,3 +73,7 @@ psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=
 ```
 
 Saída esperada: `ALL DATABASE TESTS PASSED`. Códigos de erro das RPCs são a própria mensagem (`DAILY_LIMIT`, `ALREADY_COMPLETED`, `INSUFFICIENT_GEMS`...).
+
+## Bloqueio nativo (Fases 4A/4B)
+
+Detalhes do iOS em `docs/fase-4a-ios-bloqueio.md`. Testes unitários (Node, sem simulador): `npm test`.
