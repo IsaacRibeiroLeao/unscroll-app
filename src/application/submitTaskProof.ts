@@ -1,0 +1,27 @@
+import type { IBackendApi, ProofOutcome } from './ports/IBackendApi.ts';
+import type { IScreenBlockerService } from './ports/IScreenBlockerService.ts';
+
+export interface SubmitProofResult {
+  outcome: ProofOutcome;
+  /** Set when approved but the native balance could not be updated (the server already has it). */
+  blockerError: unknown | null;
+}
+
+/** Sends the photo for verification and, on approval, pushes the new server balance to the blocker. */
+export async function submitTaskProof(deps: {
+  backend: Pick<IBackendApi, 'verifyTaskProof'>;
+  blocker: Pick<IScreenBlockerService, 'syncBalance'>;
+  taskId: string;
+  photoUri: string;
+}): Promise<SubmitProofResult> {
+  const outcome = await deps.backend.verifyTaskProof(deps.taskId, deps.photoUri);
+  let blockerError: unknown | null = null;
+  if (outcome.approved && outcome.rewards) {
+    try {
+      await deps.blocker.syncBalance(outcome.rewards.newBalanceSeconds);
+    } catch (e) {
+      blockerError = e;
+    }
+  }
+  return { outcome, blockerError };
+}
