@@ -30,6 +30,24 @@ export interface UsageReport {
 
 export type Unsubscribe = () => void;
 
+/**
+ * Texts and look of the native block screen / foreground notification (Android only; iOS uses the
+ * Shield configured at startup). Strings come from the pt-BR file so native code has no copy.
+ * `streakLabel` may contain `{days}`, replaced natively.
+ */
+export interface BlockScreenInfo {
+  title: string;
+  subtitle: string;
+  primaryLabel: string;
+  secondaryLabel: string;
+  streakLabel: string;
+  streakDays: number;
+  mascotSkin: string;
+  deepLink: string;
+  notificationTitle: string;
+  notificationText: string;
+}
+
 export type ScreenBlockerErrorCode =
   'NOT_AUTHORIZED' | 'NO_SELECTION' | 'UNSUPPORTED' | 'NATIVE_FAILURE';
 
@@ -70,6 +88,9 @@ export interface IScreenBlockerService {
   /** Usage consumed since the last report. */
   getUnreportedUsage(): Promise<UsageReport[]>;
   markUsageReported(eventId: string): Promise<void>;
+
+  /** Updates the native block screen content. No-op where the OS draws the block UI (iOS). */
+  setBlockScreenInfo(info: BlockScreenInfo): Promise<void>;
 
   /** Fires when a blocked app is opened (best effort; not available on iOS). */
   onBlockedAppOpened(listener: () => void): Unsubscribe;

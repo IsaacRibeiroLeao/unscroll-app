@@ -15,6 +15,7 @@ export type {
   PermissionStatus,
   PickAppsResult,
   ScreenBlockerErrorCode,
+  BlockScreenInfo,
   Unsubscribe,
   UsageReport,
 } from '../../application/ports/IScreenBlockerService';
@@ -41,6 +42,7 @@ export function createPlatformScreenBlocker(): IScreenBlockerService {
     stopMonitoring: async () => {},
     getUnreportedUsage: async () => [],
     markUsageReported: async () => {},
+    setBlockScreenInfo: async () => {},
     onBlockedAppOpened: () => () => {},
     onBalanceChanged: () => () => {},
   };

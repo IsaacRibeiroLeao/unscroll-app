@@ -15,6 +15,23 @@ export const strings = {
     notificationTitle: 'Unscroll',
     notificationBody: 'Toque para abrir o app e completar uma tarefa.',
   },
+  blockScreen: {
+    title: 'Tempo esgotado',
+    subtitle: 'Complete uma tarefa e prove com uma foto para ganhar mais minutos.',
+    primaryButton: 'Ganhar tempo',
+    secondaryButton: 'Agora não',
+    streakLabel: 'Sequência de {days} dias',
+    notificationTitle: 'Unscroll ativo',
+    notificationText: 'Protegendo seu tempo de tela.',
+  },
+  appPicker: {
+    title: 'Apps para bloquear',
+    hint: 'Escolha os apps que só abrem com minutos ganhos.',
+    confirm: 'Salvar',
+    cancel: 'Cancelar',
+    selectedCount: '{count} selecionados',
+    loadingIcon: 'Ícone do app',
+  },
 } as const;
 
 export type Strings = typeof strings;

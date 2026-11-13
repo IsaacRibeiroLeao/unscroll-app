@@ -14,6 +14,7 @@ export {
   type PermissionState,
   type PermissionStatus,
   type PickAppsResult,
+  type BlockScreenInfo,
   type ScreenBlockerErrorCode,
   type Unsubscribe,
   type UsageReport,
