@@ -10,7 +10,7 @@ Validates a task-completion photo with Gemini and grants rewards through `comple
 { "taskId": "<uuid>", "imagePath": "<uid>/<file>.jpg" }
 ```
 
-`imagePath` is the object path inside the private `proofs` bucket (`proofs/<uid>/<file>` is also accepted). The client resizes (longest side ≤ 1024 px, JPEG ~0.6) and uploads before calling.
+`imagePath` is the object path inside the private `proofs` bucket (`proofs/<uid>/<file>` is also accepted). The client resizes (width 1280 px, JPEG 0.7 (bucket limit 2 MB)) and uploads before calling.
 
 200 → `{ approved, confidence, feedback, code, rewards }`, `code` ∈ `APPROVED | REJECTED | LOW_QUALITY | AI_UNAVAILABLE | DAILY_LIMIT | ALREADY_COMPLETED`.
 `rewards` (only on APPROVED) = `{ minutes, xp, gems, new_streak, streak_incremented }` **plus** `new_balance_seconds, new_xp, new_gems` (extra totals so the app can sync the native balance and the UI without computing anything).

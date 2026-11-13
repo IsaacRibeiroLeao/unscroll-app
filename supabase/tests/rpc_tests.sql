@@ -282,5 +282,25 @@ do $$ begin
          pg_temp.u(20), 'proofs/x/4.jpg', 'h1', 'APPROVED')) like 'duplicate key%', 'approved hash cannot be reused';
 end $$;
 
+-- ===================================================== pro status (webhook)
+do $$ begin
+  assert public.apply_pro_status(pg_temp.u(18), true, '2026-01-02') = true, 'pro: first event applies';
+  assert (select is_pro from public.profiles where id = pg_temp.u(18)), 'pro: flag set';
+  assert public.apply_pro_status(pg_temp.u(18), false, '2026-01-01') = false, 'pro: older event ignored';
+  assert (select is_pro from public.profiles where id = pg_temp.u(18)), 'pro: still pro after stale event';
+  assert public.apply_pro_status(pg_temp.u(18), false, '2026-01-03') = true, 'pro: newer event applies';
+  assert not (select is_pro from public.profiles where id = pg_temp.u(18)), 'pro: revoked';
+  assert public.apply_pro_status('99999999-9999-4999-8999-999999999999', true, now()) = false, 'pro: unknown user';
+end $$;
+set local role authenticated;
+select pg_temp.login(18);
+do $$ begin
+  assert pg_temp.err(format('select public.apply_pro_status(%L, true, now())', pg_temp.u(18))) like 'permission denied%',
+    'pro: clients cannot call apply_pro_status';
+  assert pg_temp.err(format('update public.profiles set is_pro = true where id = %L', pg_temp.u(18))) like 'permission denied%'
+    or (select not is_pro from public.profiles where id = pg_temp.u(18)), 'pro: clients cannot write is_pro';
+end $$;
+reset role;
+
 do $$ begin raise notice 'ALL DATABASE TESTS PASSED'; end $$;
 rollback;

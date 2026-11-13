@@ -53,7 +53,7 @@ Código específico de plataforma só atrás de `IScreenBlockerService`.
 
 ## Status
 
-Fase 1 (scaffold) concluída. Próximas: banco (2), Edge Function (3), bloqueio nativo (4A/4B), UI (5), build/deploy (6).
+Fases 0–6 entregues (planejamento, scaffold, banco, Edge Functions, bloqueio iOS/Android, UI, build/deploy). Falta validação em aparelho e contas reais. Guias: `docs/fase-*.md`; build e testes em `docs/fase-6-build-deploy-testes.md`.
 
 ## Banco de dados (Fase 2)
 

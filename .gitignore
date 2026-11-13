@@ -30,3 +30,4 @@ supabase/.branches/
 *.log
 npm-debug.*
 *.tsbuildinfo
+*.whl
