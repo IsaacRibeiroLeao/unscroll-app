@@ -54,3 +54,18 @@ Código específico de plataforma só atrás de `IScreenBlockerService`.
 ## Status
 
 Fase 1 (scaffold) concluída. Próximas: banco (2), Edge Function (3), bloqueio nativo (4A/4B), UI (5), build/deploy (6).
+
+## Banco de dados (Fase 2)
+Migrations em `supabase/migrations/` (também em `supabase/full_schema_sql_editor.sql`, para colar no SQL Editor — regenere com a concatenação dos arquivos se mudar uma migration).
+
+```powershell
+supabase link --project-ref <ref>
+supabase db push
+npm run db:types        # gera src/infra/supabase/database.types.ts
+```
+Testes (apenas em banco local/dev; tudo é revertido com ROLLBACK):
+```powershell
+supabase start
+psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/tests/rpc_tests.sql
+```
+Saída esperada: `ALL DATABASE TESTS PASSED`. Códigos de erro das RPCs são a própria mensagem (`DAILY_LIMIT`, `ALREADY_COMPLETED`, `INSUFFICIENT_GEMS`...).

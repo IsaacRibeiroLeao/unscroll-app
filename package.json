@@ -60,7 +60,8 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "doctor": "expo-doctor",
-    "prebuild": "expo prebuild --clean"
+    "prebuild": "expo prebuild --clean",
+    "db:types": "supabase gen types typescript --linked > src/infra/supabase/database.types.ts"
   },
   "private": true
 }
