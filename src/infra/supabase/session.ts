@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { BackendError } from '../../application/ports/IBackendApi';
+import { BackendError } from '../../application/ports/IBackendApi.ts';
 
 /** Returns the signed-in user id, creating an anonymous session on first launch. */
 export async function ensureSession(client: SupabaseClient): Promise<string> {

@@ -65,7 +65,8 @@
     "doctor": "expo-doctor",
     "prebuild": "expo prebuild --clean",
     "db:types": "supabase gen types typescript --linked > src/infra/supabase/database.types.ts",
-    "test": "node --test \"src/**/*.test.ts\""
+    "test": "node --test \"src/**/*.test.ts\"",
+    "test:coverage": "node --test --experimental-test-coverage \"src/**/*.test.ts\""
   },
   "private": true
 }

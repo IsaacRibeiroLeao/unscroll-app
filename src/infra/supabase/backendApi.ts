@@ -4,9 +4,9 @@ import {
   FunctionsRelayError,
 } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { BackendError } from '../../application/ports/IBackendApi';
-import type { IBackendApi, NewTask } from '../../application/ports/IBackendApi';
-import { ensureSession } from './session';
+import { BackendError } from '../../application/ports/IBackendApi.ts';
+import type { IBackendApi, NewTask } from '../../application/ports/IBackendApi.ts';
+import { ensureSession } from './session.ts';
 import {
   PROFILE_COLUMNS,
   SHOP_COLUMNS,
@@ -17,7 +17,7 @@ import {
   toPurchaseResult,
   toShopItem,
   toTask,
-} from './mappers';
+} from './mappers.ts';
 
 export interface BackendDeps {
   /** Reads + downscales the photo; injected so this file has no expo-file-system import. */

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ActivityIndicator, ScrollView, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TEXT_PROOF_LIMITS } from '../../application/ports/IBackendApi';
+import { isTextProofValid, toTextProof } from '../../application/textProof';
 import type { TaskCategory, TextProof } from '../../application/ports/IBackendApi';
 import { strings } from '../../strings/pt-BR';
 import { fill } from '../format';
@@ -28,10 +29,8 @@ export function TextProofForm({ category, busy, message, onSubmit, onClose }: Pr
   const study = category === 'study';
 
   const summaryLen = summary.trim().length;
-  const valid =
-    book.trim().length >= L.book.min &&
-    summaryLen >= L.summary.min &&
-    insight.trim().length >= L.insight.min;
+  const draft = { book, chapter, summary, insight };
+  const valid = isTextProofValid(draft);
 
   return (
     <SafeAreaView className="flex-1 bg-nevoa">
@@ -105,14 +104,7 @@ export function TextProofForm({ category, busy, message, onSubmit, onClose }: Pr
             label={message ? t.tryAgain : t.send}
             variant="sun"
             disabled={!valid}
-            onPress={() =>
-              onSubmit({
-                book: book.trim(),
-                chapter: chapter.trim() || undefined,
-                summary: summary.trim(),
-                insight: insight.trim(),
-              })
-            }
+            onPress={() => onSubmit(toTextProof(draft))}
           />
         )}
         <Button label={strings.common.close} variant="ghost" onPress={onClose} />
