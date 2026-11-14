@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { useAppStore } from '../appStore.ts';
-import { fill } from '../../format.ts';
+import { fill, formatBRL } from '../../format.ts';
 
 test('app store starts empty and updates each field', () => {
   const s = useAppStore.getState();
@@ -32,4 +32,12 @@ test('app store starts empty and updates each field', () => {
 test('fill replaces every placeholder', () => {
   assert.equal(fill('{a} e {b}', { a: 1, b: 'x' }), '1 e x');
   assert.equal(fill('sem', { a: 1 }), 'sem');
+});
+
+test('formatBRL formats cents in pt-BR', () => {
+  assert.equal(formatBRL(2490), 'R$ 24,90');
+  assert.equal(formatBRL(14990), 'R$ 149,90');
+  assert.equal(formatBRL(7900), 'R$ 79,00');
+  assert.equal(formatBRL(5), 'R$ 0,05');
+  assert.equal(formatBRL(123456789), 'R$ 1.234.567,89');
 });

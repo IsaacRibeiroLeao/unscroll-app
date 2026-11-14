@@ -8,6 +8,7 @@ import type {
   PurchaseResult,
   ShopItem,
   Task,
+  WebPlan,
 } from '../../application/ports/IBackendApi.ts';
 
 const profileRow = z.object({
@@ -22,6 +23,26 @@ const profileRow = z.object({
   is_pro: z.boolean(),
   active_mascot_skin: z.string(),
 });
+const webPlansRow = z.object({
+  plans: z.array(
+    z.object({
+      id: z.enum(['monthly', 'annual', 'lifetime']),
+      priceCents: z.number().int().positive(),
+      available: z.boolean(),
+      remaining: z.number().int().nullable(),
+    }),
+  ),
+});
+
+export function toWebPlans(data: unknown): WebPlan[] {
+  return webPlansRow.parse(data).plans;
+}
+
+export function toCheckoutUrl(data: unknown): string {
+  const url = z.object({ url: z.string().url() }).parse(data).url;
+  return url;
+}
+
 export const PROFILE_COLUMNS =
   'id, display_name, timezone, balance_seconds, xp, gems, streak_days, streak_freeze_count, is_pro, active_mascot_skin';
 
@@ -160,6 +181,8 @@ const KNOWN: readonly BackendErrorCode[] = [
   'IMAGE_TOO_LARGE',
   'WRONG_PROOF_KIND',
   'INVALID_REQUEST',
+  'ALREADY_LIFETIME',
+  'SOLD_OUT',
 ];
 
 /** Postgres `raise exception 'CODE'` surfaces as the error message; Edge Function errors carry `code`. */

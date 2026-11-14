@@ -281,3 +281,38 @@ test('screen time api maps the RPC row and propagates errors', async () => {
   const malformed = createScreenTimeApi(async () => ({ data: { x: 1 }, error: null }));
   await assert.rejects(malformed.consumeScreenTime('u', 5, 'e1'));
 });
+
+test('web checkout: lists plans and returns the checkout url', async () => {
+  const log: unknown[][] = [];
+  const plans = [
+    { id: 'monthly', priceCents: 2490, available: true, remaining: null },
+    { id: 'lifetime', priceCents: 7900, available: true, remaining: 12 },
+  ];
+  const listApi = createBackendApi(fakeClient({ invoke: { data: { plans }, error: null }, log }), {
+    preparePhoto: async () => new ArrayBuffer(0),
+  });
+  assert.deepEqual(await listApi.listWebPlans(), plans);
+  assert.deepEqual(
+    log.find((l) => l[0] === 'invoke'),
+    ['invoke', 'create-checkout', { body: { action: 'plans' } }],
+  );
+
+  const log2: unknown[][] = [];
+  const payApi = createBackendApi(
+    fakeClient({
+      invoke: { data: { url: 'https://mp.example/checkout/1' }, error: null },
+      log: log2,
+    }),
+    { preparePhoto: async () => new ArrayBuffer(0) },
+  );
+  assert.equal(await payApi.createCheckout('annual'), 'https://mp.example/checkout/1');
+  assert.deepEqual(
+    log2.find((l) => l[0] === 'invoke'),
+    ['invoke', 'create-checkout', { body: { plan: 'annual' } }],
+  );
+
+  const bad = createBackendApi(fakeClient({ invoke: { data: { url: 'nope' }, error: null } }), {
+    preparePhoto: async () => new ArrayBuffer(0),
+  });
+  await assert.rejects(bad.createCheckout('monthly'));
+});

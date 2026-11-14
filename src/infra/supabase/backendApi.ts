@@ -17,6 +17,8 @@ import {
   toPurchaseResult,
   toShopItem,
   toTask,
+  toCheckoutUrl,
+  toWebPlans,
 } from './mappers.ts';
 
 export interface BackendDeps {
@@ -34,8 +36,8 @@ export function createBackendApi(client: SupabaseClient, deps: BackendDeps): IBa
     throw toBackendError(error?.message ?? 'unknown');
   }
 
-  async function invokeVerify(body: Record<string, unknown>) {
-    const res = await client.functions.invoke('verify-task-proof', { body });
+  async function invokeFunction(name: string, body: Record<string, unknown>): Promise<unknown> {
+    const res = await client.functions.invoke(name, { body });
     if (res.error) {
       if (res.error instanceof FunctionsHttpError) {
         const errBody: unknown = await res.error.context.json().catch(() => null);
@@ -48,8 +50,11 @@ export function createBackendApi(client: SupabaseClient, deps: BackendDeps): IBa
       }
       throw new BackendError('UNKNOWN', String(res.error));
     }
-    return toProofOutcome(res.data);
+    return res.data;
   }
+
+  const invokeVerify = async (body: Record<string, unknown>) =>
+    toProofOutcome(await invokeFunction('verify-task-proof', body));
 
   return {
     async getProfile() {
@@ -164,6 +169,16 @@ export function createBackendApi(client: SupabaseClient, deps: BackendDeps): IBa
         p_timezone: timezone,
       });
       if (error) fail(error);
+    },
+
+    async listWebPlans() {
+      await uid();
+      return toWebPlans(await invokeFunction('create-checkout', { action: 'plans' }));
+    },
+
+    async createCheckout(plan) {
+      await uid();
+      return toCheckoutUrl(await invokeFunction('create-checkout', { plan }));
     },
   };
 }

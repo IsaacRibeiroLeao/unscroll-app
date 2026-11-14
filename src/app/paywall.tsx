@@ -10,6 +10,7 @@ import { Button } from '../presentation/components/Button';
 import { CrownIcon, LockIcon, Hills } from '../presentation/components/art';
 import { CheckIcon } from '../presentation/components/Icons';
 import { Mascot } from '../presentation/components/Mascot';
+import { WebCheckout } from '../presentation/components/WebCheckout';
 import { toMascotSkin } from '../domain/mascot';
 import { backend, purchases } from '../presentation/state/container';
 import { keys, useProfile } from '../presentation/state/queries';
@@ -100,7 +101,7 @@ export default function PaywallScreen() {
           <Text className="text-base text-tinta/80">{strings.paywall.subtitle}</Text>
         </Enter>
         <View className="gap-3">
-          {strings.paywall.benefits.map((b, i) => (
+          {(unavailable ? strings.paywall.webBenefits : strings.paywall.benefits).map((b, i) => (
             <Enter key={b} index={2 + i} className="flex-row items-center gap-3">
               <Pop delay={(2 + i) * 70 + 150}>
                 <View className="h-7 w-7 items-center justify-center rounded-full bg-floresta">
@@ -113,74 +114,82 @@ export default function PaywallScreen() {
         </View>
 
         {unavailable ? (
-          <Text accessibilityRole="alert" className="text-tinta/80">
-            {strings.paywall.unavailable}
-          </Text>
-        ) : null}
-        {!plans && !unavailable ? <ActivityIndicator color={colors.musgo} /> : null}
+          <WebCheckout
+            onActivated={() => {
+              void qc.invalidateQueries({ queryKey: keys.profile });
+              router.back();
+            }}
+          />
+        ) : (
+          <>
+            {!plans && !unavailable ? <ActivityIndicator color={colors.musgo} /> : null}
 
-        {plans?.map((plan, pi) => {
-          const on = plan.id === selected;
-          const annual = plan.period === 'annual';
-          return (
-            <Enter key={plan.id} index={6 + pi}>
-              <PressableScale
-                accessibilityRole="radio"
-                accessibilityState={{ selected: on }}
-                onPress={() => setSelected(plan.id)}
-                className={`min-h-16 flex-row items-center justify-between rounded-2xl border-2 px-4 ${on ? 'border-floresta bg-folha' : 'border-transparent bg-[#EDEAD9]'}`}
-              >
-                <View className="flex-row items-center gap-2">
-                  <Text className="font-display-bold text-lg text-tinta">
-                    {annual ? strings.paywall.annual : strings.paywall.monthly}
-                  </Text>
-                  {annual ? (
-                    <View className="rounded-full bg-floresta px-2.5 py-1">
-                      <Text className="font-display-bold text-xs text-white">
-                        {strings.paywall.bestOffer}
+            {plans?.map((plan, pi) => {
+              const on = plan.id === selected;
+              const annual = plan.period === 'annual';
+              return (
+                <Enter key={plan.id} index={6 + pi}>
+                  <PressableScale
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: on }}
+                    onPress={() => setSelected(plan.id)}
+                    className={`min-h-16 flex-row items-center justify-between rounded-2xl border-2 px-4 ${on ? 'border-floresta bg-folha' : 'border-transparent bg-[#EDEAD9]'}`}
+                  >
+                    <View className="flex-row items-center gap-2">
+                      <Text className="font-display-bold text-lg text-tinta">
+                        {annual ? strings.paywall.annual : strings.paywall.monthly}
                       </Text>
+                      {annual ? (
+                        <View className="rounded-full bg-floresta px-2.5 py-1">
+                          <Text className="font-display-bold text-xs text-white">
+                            {strings.paywall.bestOffer}
+                          </Text>
+                        </View>
+                      ) : null}
                     </View>
-                  ) : null}
-                </View>
-                <View className="flex-row items-center gap-2">
-                  <Text className="font-display-bold text-lg text-tinta">{plan.priceLabel}</Text>
-                  {on ? (
-                    <Pop>
-                      <View className="h-6 w-6 items-center justify-center rounded-full bg-floresta">
-                        <CheckIcon size={14} color="#FFFFFF" />
-                      </View>
-                    </Pop>
-                  ) : null}
-                </View>
-              </PressableScale>
-            </Enter>
-          );
-        })}
+                    <View className="flex-row items-center gap-2">
+                      <Text className="font-display-bold text-lg text-tinta">
+                        {plan.priceLabel}
+                      </Text>
+                      {on ? (
+                        <Pop>
+                          <View className="h-6 w-6 items-center justify-center rounded-full bg-floresta">
+                            <CheckIcon size={14} color="#FFFFFF" />
+                          </View>
+                        </Pop>
+                      ) : null}
+                    </View>
+                  </PressableScale>
+                </Enter>
+              );
+            })}
 
-        {message ? (
-          <Text accessibilityRole="alert" className="text-center text-sm text-tinta/80">
-            {message}
-          </Text>
-        ) : null}
+            {message ? (
+              <Text accessibilityRole="alert" className="text-center text-sm text-tinta/80">
+                {message}
+              </Text>
+            ) : null}
 
-        <Button
-          label={strings.paywall.cta}
-          variant="sun"
-          icon={<CrownIcon size={22} />}
-          onPress={() => void buy()}
-          disabled={!selected}
-          loading={busy}
-        />
-        <Button
-          label={strings.paywall.restore}
-          variant="ghost"
-          onPress={() => void restore()}
-          disabled={busy}
-        />
-        <View className="flex-row items-center gap-3 rounded-2xl bg-[#E6EDE0] p-3">
-          <LockIcon />
-          <Text className="flex-1 text-xs text-tinta/70">{strings.paywall.terms}</Text>
-        </View>
+            <Button
+              label={strings.paywall.cta}
+              variant="sun"
+              icon={<CrownIcon size={22} />}
+              onPress={() => void buy()}
+              disabled={!selected}
+              loading={busy}
+            />
+            <Button
+              label={strings.paywall.restore}
+              variant="ghost"
+              onPress={() => void restore()}
+              disabled={busy}
+            />
+            <View className="flex-row items-center gap-3 rounded-2xl bg-[#E6EDE0] p-3">
+              <LockIcon />
+              <Text className="flex-1 text-xs text-tinta/70">{strings.paywall.terms}</Text>
+            </View>
+          </>
+        )}
         <Button label={strings.common.close} variant="ghost" onPress={() => router.back()} />
         <View className="items-center">
           <Float amplitude={7}>

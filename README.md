@@ -87,3 +87,11 @@ Detalhes do iOS em `docs/fase-4a-ios-bloqueio.md`. Testes unitários (Node, sem 
 | Leitura, Estudo | Texto: livro/assunto, capítulo (opcional), resumo (mín. 200 caracteres) e aprendizado | 20 min, 75 XP, 40 gemas |
 
 Pro dobra as gemas. Mesmo livro + capítulo só rende recompensa uma vez por usuário. Todas as regras ficam no servidor (migration `20261114000005_task_categories.sql` e Edge Function `verify-task-proof`); o app só mostra os valores devolvidos.
+
+## Pro sem as lojas (Pix / cartão)
+
+Enquanto o app não está nas lojas, o Pro é vendido pelo Checkout Pro do Mercado Pago:
+`create-checkout` gera o link, `mercadopago-webhook` confirma o pagamento e chama `apply_web_payment`
+(migration `20261114000006_web_payments.sql`). Planos: mensal (30 dias), anual (365 dias) e Fundador
+(vitalício, 100 vagas). O Pro por tempo expira sozinho (`expire_lapsed_pro`, pg_cron a cada 15 min).
+Configuração: ver os README das duas funções.

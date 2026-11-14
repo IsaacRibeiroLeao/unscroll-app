@@ -217,6 +217,8 @@ export const strings = {
     IMAGE_TOO_LARGE: 'A foto ficou grande demais. Tente de novo.',
     WRONG_PROOF_KIND: 'Esse tipo de tarefa usa outra forma de prova.',
     INVALID_REQUEST: 'Confira os campos e tente de novo.',
+    ALREADY_LIFETIME: 'Você já tem o Pro Fundador.',
+    SOLD_OUT: 'As vagas de Fundador acabaram.',
     UNKNOWN: 'Algo deu errado. Tente novamente.',
   },
   proofResult: {
@@ -271,6 +273,34 @@ export const strings = {
     unavailable: 'Assinaturas indisponíveis no momento.',
     failed: 'Não foi possível concluir a compra.',
     alreadyPro: 'Você já é Pro.',
+    webBenefits: [
+      'Até 5 tarefas concluídas por dia (no grátis, 1)',
+      'Gemas em dobro a cada tarefa',
+      'Pague com Pix ou cartão, sem assinatura automática',
+    ],
+  },
+  webCheckout: {
+    plans: {
+      monthly: 'Mensal',
+      annual: 'Anual',
+      lifetime: 'Fundador',
+    },
+    planHint: {
+      monthly: '30 dias de Pro',
+      annual: '1 ano de Pro',
+      lifetime: 'Pro para sempre',
+    },
+    founderLeft: 'Restam {count} vagas',
+    soldOut: 'Esgotado',
+    cta: 'Pagar com Pix ou cartão',
+    opening: 'Abrindo o pagamento…',
+    waiting:
+      'Quando o pagamento for confirmado, o Pro ativa sozinho. Volte para o app depois de pagar.',
+    iPaid: 'Já paguei',
+    terms:
+      'Pagamento único, sem renovação automática. O Mensal e o Anual contam a partir da confirmação; o Fundador não expira.',
+    loadFailed: 'Não foi possível carregar os planos. Tente de novo.',
+    checkoutFailed: 'Não foi possível abrir o pagamento. Tente de novo.',
   },
   blocked: {
     title: 'Hora de ganhar tempo',

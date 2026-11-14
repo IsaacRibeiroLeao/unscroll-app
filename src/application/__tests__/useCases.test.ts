@@ -163,6 +163,8 @@ const texts: ErrorTexts = {
     IMAGE_TOO_LARGE: 'big',
     WRONG_PROOF_KIND: 'kind',
     INVALID_REQUEST: 'invalid',
+    ALREADY_LIFETIME: 'life',
+    SOLD_OUT: 'sold',
     UNKNOWN: 'unknown',
   },
   proof: {

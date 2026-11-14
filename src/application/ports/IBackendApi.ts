@@ -94,6 +94,17 @@ export interface PurchaseResult {
   newStreakFreezeCount: number;
 }
 
+export type WebPlanId = 'monthly' | 'annual' | 'lifetime';
+
+/** A Pro plan sold through web checkout; price and availability come from the server. */
+export interface WebPlan {
+  id: WebPlanId;
+  priceCents: number;
+  available: boolean;
+  /** Founder plan only: spots left. */
+  remaining: number | null;
+}
+
 export type BackendErrorCode =
   | 'NETWORK'
   | 'UNAUTHORIZED'
@@ -109,6 +120,8 @@ export type BackendErrorCode =
   | 'IMAGE_TOO_LARGE'
   | 'WRONG_PROOF_KIND'
   | 'INVALID_REQUEST'
+  | 'ALREADY_LIFETIME'
+  | 'SOLD_OUT'
   | 'UNKNOWN';
 
 export class BackendError extends Error {
@@ -134,4 +147,7 @@ export interface IBackendApi {
   purchaseItem(sku: string): Promise<PurchaseResult>;
   setActiveSkin(skin: string): Promise<void>;
   setTimezone(timezone: string): Promise<void>;
+  listWebPlans(): Promise<WebPlan[]>;
+  /** Creates a Pix/card checkout and returns the URL to open in the browser. */
+  createCheckout(plan: WebPlanId): Promise<string>;
 }
