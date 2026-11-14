@@ -56,6 +56,14 @@ export const strings = {
     openSettings: 'Abrir informações do app',
     back: 'Voltar',
   },
+  update: {
+    title: 'Nova versão disponível',
+    body: 'Baixe a versão {version} e instale por cima. Seus dados continuam na conta.',
+    action: 'Baixar atualização',
+    later: 'Depois',
+    requiredTitle: 'Atualização necessária',
+    requiredBody: 'Esta versão não funciona mais. Baixe a nova para continuar usando o Unscroll.',
+  },
   legal: {
     privacy: 'Política de privacidade',
     terms: 'Termos de uso',

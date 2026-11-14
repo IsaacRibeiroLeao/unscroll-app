@@ -10,7 +10,9 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Linking, View } from 'react-native';
+import { APK_URL } from '../config/site';
+import { useUpdate } from '../presentation/state/useUpdate';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import ScreenBlockerHost from '../infra/native/ScreenBlockerHost';
 import { Button } from '../presentation/components/Button';
@@ -43,6 +45,7 @@ function Shell() {
       .catch(() => setRecovery('invalid'));
   }, []);
   useRecoveryLink(onRecoveryLink);
+  const update = useUpdate(state === 'ready');
   const ready = state === 'ready' && recovery === null;
   useForegroundSync(ready);
   useBlockScreenInfoSync(ready);
@@ -74,6 +77,15 @@ function Shell() {
           retry();
         }}
       />
+    );
+  }
+  if (update?.decision === 'required') {
+    return (
+      <View className="flex-1 items-center justify-center gap-3 bg-nevoa px-8">
+        <Text className="text-xl font-display-bold text-tinta">{strings.update.requiredTitle}</Text>
+        <Text className="mb-2 text-center text-tinta/70">{strings.update.requiredBody}</Text>
+        <Button label={strings.update.action} onPress={() => void Linking.openURL(APK_URL)} />
+      </View>
     );
   }
   if (state === 'error') {

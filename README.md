@@ -95,3 +95,12 @@ Enquanto o app não está nas lojas, o Pro é vendido pelo Checkout Pro do Merca
 (migration `20261114000006_web_payments.sql`). Planos: mensal (30 dias), anual (365 dias) e Fundador
 (vitalício, 100 vagas). O Pro por tempo expira sozinho (`expire_lapsed_pro`, pg_cron a cada 15 min).
 Configuração: ver os README das duas funções.
+
+## Publicar uma versão (APK fora das lojas)
+
+1. Suba `version` e `android.versionCode` em `app.config.ts` e rode `npx expo prebuild --platform android`.
+2. `cd android; ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a` (com `EXPO_PUBLIC_SUPABASE_*` no ambiente).
+3. No GitHub: Releases → Draft a new release → tag `vX.Y.Z` → anexe o APK com o nome exato **`Unscroll.apk`** (o link `releases/latest/download/Unscroll.apk` usado no app e na página depende desse nome).
+4. Atualize `docs/version.json` (`version`, `notes`; suba `minSupported` só para forçar a atualização) e faça push. O app mostra "Nova versão disponível" na Home.
+
+A pasta `docs/` é servida pelo GitHub Pages (Settings → Pages → Deploy from a branch → `main` / `/docs`) e contém a página de download, a política de privacidade e os termos. Troque `[e-mail de contato]` nas três páginas pelo seu e-mail.

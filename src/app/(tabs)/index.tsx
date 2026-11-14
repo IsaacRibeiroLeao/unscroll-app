@@ -2,6 +2,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Redirect, useRouter } from 'expo-router';
 import { Alert, RefreshControl, ScrollView, View } from 'react-native';
 import { errorMessage } from '../../application/errorMessages';
+import { UpdateBanner } from '../../presentation/components/UpdateBanner';
+import { useUpdate } from '../../presentation/state/useUpdate';
 import { BalanceHero } from '../../presentation/components/BalanceHero';
 import { Button } from '../../presentation/components/Button';
 import { TaskRow } from '../../presentation/components/TaskRow';
@@ -20,6 +22,7 @@ export default function HomeScreen() {
   const onboarded = useAppStore((s) => s.onboarded);
   const profile = useProfile();
   const tasks = useTasks();
+  const update = useUpdate(true);
 
   if (onboarded === false) return <Redirect href="/onboarding" />;
 
@@ -69,6 +72,7 @@ export default function HomeScreen() {
         ) : null}
 
         <View className="px-5 pt-5">
+          {update ? <UpdateBanner status={update} /> : null}
           {profile.data ? (
             <Enter index={1}>
               <PressableScale
