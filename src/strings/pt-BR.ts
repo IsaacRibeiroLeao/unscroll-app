@@ -13,7 +13,7 @@ export const strings = {
   },
   blockScreen: {
     title: 'Tempo esgotado',
-    subtitle: 'Complete uma tarefa e prove com uma foto para ganhar mais minutos.',
+    subtitle: 'Complete uma tarefa e comprove para ganhar mais minutos.',
     primaryButton: 'Ganhar tempo',
     secondaryButton: 'Agora não',
     streakLabel: 'Sequência de {days} dias',
@@ -69,7 +69,7 @@ export const strings = {
     balanceLabel: 'Tempo disponível',
     tasksTitle: 'Suas tarefas',
     emptyTitle: 'Nenhuma tarefa ainda',
-    emptyBody: 'Crie uma tarefa, faça de verdade e prove com uma foto para ganhar minutos.',
+    emptyBody: 'Crie uma tarefa, faça de verdade e comprove para ganhar minutos.',
     addTask: 'Nova tarefa',
     level: 'Nível {level}',
     xpProgress: '{current}/{total} XP',
@@ -219,7 +219,7 @@ export const strings = {
   },
   blocked: {
     title: 'Hora de ganhar tempo',
-    body: 'Escolha uma tarefa, faça de verdade e prove com uma foto.',
+    body: 'Escolha uma tarefa, faça de verdade e comprove para liberar seu tempo.',
     noTasks: 'Você ainda não tem tarefas pendentes.',
     createTask: 'Criar uma tarefa',
   },
