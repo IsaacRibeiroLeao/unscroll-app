@@ -33,7 +33,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     package: APP_ID,
     adaptiveIcon: {
-      backgroundColor: '#E6F4FE',
+      backgroundColor: '#0F3F29',
       foregroundImage: './assets/images/android-icon-foreground.png',
       backgroundImage: './assets/images/android-icon-background.png',
       monochromeImage: './assets/images/android-icon-monochrome.png',
@@ -53,7 +53,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-secure-store',
     [
       'expo-splash-screen',
-      { backgroundColor: '#208AEF', image: './assets/images/splash-icon.png', imageWidth: 76 },
+      { backgroundColor: '#F7F4E9', image: './assets/images/splash-icon.png', imageWidth: 170 },
     ],
     [
       'expo-camera',
