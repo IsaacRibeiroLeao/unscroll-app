@@ -102,14 +102,14 @@ export default function HomeScreen() {
           </Enter>
 
           {tasks.isError ? (
-            <View className="mt-4 gap-3">
+            <Enter className="mt-4 gap-3">
               <Text className="text-tinta/80">{errorMessage(tasks.error, errorTexts)}</Text>
               <Button
                 label={strings.common.retry}
                 variant="secondary"
                 onPress={() => void tasks.refetch()}
               />
-            </View>
+            </Enter>
           ) : null}
 
           {tasks.isSuccess && list.length === 0 ? (

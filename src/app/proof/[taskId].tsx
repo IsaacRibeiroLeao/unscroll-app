@@ -12,7 +12,7 @@ import { submitTaskProof } from '../../application/submitTaskProof';
 import { Button } from '../../presentation/components/Button';
 import { PhoneArt } from '../../presentation/components/art';
 import { TextProofForm } from '../../presentation/components/TextProofForm';
-import { Float } from '../../presentation/motion';
+import { Enter, Float, Pop } from '../../presentation/motion';
 import { useAppStore } from '../../presentation/state/appStore';
 import { backend, blocker, discardPhoto, errorTexts } from '../../presentation/state/container';
 import { keys, useTasks } from '../../presentation/state/queries';
@@ -122,16 +122,22 @@ export default function ProofScreen() {
           <Float amplitude={6}>
             <PhoneArt size={210} />
           </Float>
-          <Text accessibilityRole="header" className="font-display text-3xl text-tinta">
-            {strings.proof.permissionTitle}
-          </Text>
-          <Text className="mb-3 text-center text-base text-tinta/70">
-            {strings.proof.permissionBody}
-          </Text>
-          <View className="w-full">
+          <Enter index={1}>
+            <Text accessibilityRole="header" className="font-display text-3xl text-tinta">
+              {strings.proof.permissionTitle}
+            </Text>
+          </Enter>
+          <Enter index={2}>
+            <Text className="mb-3 text-center text-base text-tinta/70">
+              {strings.proof.permissionBody}
+            </Text>
+          </Enter>
+          <Enter index={3} className="w-full">
             <Button label={strings.proof.grant} onPress={() => void requestPermission()} />
-          </View>
-          <Button label={strings.common.close} variant="ghost" onPress={() => router.back()} />
+          </Enter>
+          <Enter index={4}>
+            <Button label={strings.common.close} variant="ghost" onPress={() => router.back()} />
+          </Enter>
         </View>
       </SafeAreaView>
     );
@@ -141,23 +147,27 @@ export default function ProofScreen() {
     <View className="flex-1 bg-black">
       <CameraView ref={camera} facing="back" style={{ flex: 1 }} />
       <SafeAreaView className="absolute inset-0 justify-between p-4" pointerEvents="box-none">
-        <Text className="self-center rounded-full bg-black/60 px-4 py-2 text-center text-sm text-white">
-          {strings.proof.instruction}
-        </Text>
+        <Enter index={0} className="self-center">
+          <Text className="rounded-full bg-black/60 px-4 py-2 text-center text-sm text-white">
+            {strings.proof.instruction}
+          </Text>
+        </Enter>
         <View className="gap-3">
           {message ? (
-            <Text
-              accessibilityRole="alert"
-              className="rounded-2xl bg-folha p-3 text-center text-sm text-tinta"
-            >
-              {message}
-            </Text>
+            <Enter key={message}>
+              <Text
+                accessibilityRole="alert"
+                className="rounded-2xl bg-folha p-3 text-center text-sm text-tinta"
+              >
+                {message}
+              </Text>
+            </Enter>
           ) : null}
           {busy ? (
-            <View className="items-center gap-2">
+            <Pop style={{ alignItems: 'center', gap: 8 }}>
               <ActivityIndicator color="#fff" />
               <Text className="text-sm text-white">{strings.proof.sending}</Text>
-            </View>
+            </Pop>
           ) : (
             <Button
               label={message ? strings.proof.tryAgain : strings.proof.capture}

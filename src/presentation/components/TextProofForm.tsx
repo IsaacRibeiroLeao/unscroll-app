@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { ActivityIndicator, ScrollView, TextInput, View } from 'react-native';
+import { ActivityIndicator, ScrollTextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TEXT_PROOF_LIMITS } from '../../application/ports/IBackendApi';
 import { isTextProofValid, toTextProof } from '../../application/textProof';
 import type { TaskCategory, TextProof } from '../../application/ports/IBackendApi';
 import { strings } from '../../strings/pt-BR';
 import { fill } from '../format';
-import { Enter } from '../motion';
+import { Enter, Pop } from '../motion';
 import { Text } from '../ui';
 import { Button } from './Button';
 
@@ -100,16 +100,21 @@ export function TextProofForm({ category, busy, message, onSubmit, onClose }: Pr
         </Enter>
 
         {message ? (
-          <Text accessibilityRole="alert" className="rounded-2xl bg-folha p-3 text-sm text-pimenta">
-            {message}
-          </Text>
+          <Enter key={message}>
+            <Text
+              accessibilityRole="alert"
+              className="rounded-2xl bg-folha p-3 text-sm text-pimenta"
+            >
+              {message}
+            </Text>
+          </Enter>
         ) : null}
 
         {busy ? (
-          <View className="items-center gap-2 py-2">
+          <Pop style={{ alignItems: 'center', gap: 8, paddingVertical: 8 }}>
             <ActivityIndicator />
             <Text className="text-sm text-tinta/70">{t.sending}</Text>
-          </View>
+          </Pop>
         ) : (
           <Button
             label={message ? t.tryAgain : t.send}

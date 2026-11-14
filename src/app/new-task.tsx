@@ -147,9 +147,11 @@ export default function NewTaskScreen() {
         </Enter>
 
         {error ? (
-          <Text accessibilityRole="alert" className="text-sm text-pimenta">
-            {error}
-          </Text>
+          <Enter key={error}>
+            <Text accessibilityRole="alert" className="text-sm text-pimenta">
+              {error}
+            </Text>
+          </Enter>
         ) : null}
 
         <Enter index={5} className="gap-3">

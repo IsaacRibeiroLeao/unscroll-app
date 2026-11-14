@@ -105,10 +105,10 @@ export default function ShopScreen() {
       </Enter>
 
       {shop.isError ? (
-        <View className="gap-2 rounded-3xl bg-folha p-4">
+        <Enter className="gap-2 rounded-3xl bg-folha p-4">
           <Text className="text-tinta/80">{errorMessage(shop.error, errorTexts)}</Text>
           <Button label={strings.common.retry} onPress={() => void shop.refetch()} />
-        </View>
+        </Enter>
       ) : null}
 
       {freeze ? (
