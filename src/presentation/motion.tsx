@@ -24,7 +24,7 @@ import Animated, {
 cssInterop(Animated.View, { className: 'style' });
 
 /** Delay between siblings in a staggered entrance. */
-export const STAGGER_MS = 70;
+export const STAGGER_MS = 45;
 
 /** Fades and springs its children up into place; `index` staggers siblings. */
 export function Enter({
@@ -44,13 +44,16 @@ export function Enter({
   return (
     <Animated.View
       entering={FadeInDown.delay(index * STAGGER_MS)
-        .springify()
-        .damping(16)
+        .duration(420)
+        .easing(Easing.out(Easing.cubic))
+        .withInitialValues({ opacity: 0, transform: [{ translateY: 14 }] })
         .reduceMotion(ReduceMotion.System)}
       exiting={list ? FadeOutLeft.duration(200).reduceMotion(ReduceMotion.System) : undefined}
       layout={
         list
-          ? LinearTransition.springify().damping(18).reduceMotion(ReduceMotion.System)
+          ? LinearTransition.duration(300)
+              .easing(Easing.out(Easing.cubic))
+              .reduceMotion(ReduceMotion.System)
           : undefined
       }
       className={className}
@@ -98,11 +101,12 @@ export function PressableScale({
       <Pressable
         {...rest}
         onPressIn={(e) => {
-          if (!reduced) scale.set(withSpring(scaleTo, { damping: 14, stiffness: 400 }));
+          if (!reduced)
+            scale.set(withTiming(scaleTo, { duration: 110, easing: Easing.out(Easing.quad) }));
           onPressIn?.(e);
         }}
         onPressOut={(e) => {
-          scale.set(withSpring(1, { damping: 10, stiffness: 300 }));
+          scale.set(withTiming(1, { duration: 220, easing: Easing.out(Easing.cubic) }));
           onPressOut?.(e);
         }}
       >
@@ -159,7 +163,7 @@ export function Pop({
   const scale = useSharedValue(0.6);
   const reduced = useReducedMotion();
   useEffect(() => {
-    scale.value = reduced ? 1 : withDelay(delay, withSpring(1, { damping: 8, stiffness: 180 }));
+    scale.value = reduced ? 1 : withDelay(delay, withSpring(1, { damping: 15, stiffness: 170 }));
   }, [scale, delay, reduced]);
   const animated = useAnimatedStyle(() => ({
     opacity: scale.value > 0.65 ? 1 : scale.value / 0.65,
