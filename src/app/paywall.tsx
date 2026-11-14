@@ -8,6 +8,7 @@ import { awaitPro } from '../application/awaitPro';
 import type { PaywallPlan } from '../application/ports/IPurchasesService';
 import { Button } from '../presentation/components/Button';
 import { CrownIcon, LockIcon, Hills } from '../presentation/components/art';
+import { Card, softShadow } from '../presentation/components/Card';
 import { CheckIcon } from '../presentation/components/Icons';
 import { Mascot } from '../presentation/components/Mascot';
 import { WebCheckout } from '../presentation/components/WebCheckout';
@@ -100,7 +101,7 @@ export default function PaywallScreen() {
         <Enter index={1}>
           <Text className="text-base text-tinta/80">{strings.paywall.subtitle}</Text>
         </Enter>
-        <View className="gap-3">
+        <Card className="gap-3 p-4">
           {(unavailable ? strings.paywall.webBenefits : strings.paywall.benefits).map((b, i) => (
             <Enter key={b} index={2 + i} className="flex-row items-center gap-3">
               <Pop delay={(2 + i) * 70 + 150}>
@@ -111,7 +112,7 @@ export default function PaywallScreen() {
               <Text className="flex-1 text-base text-tinta">{b}</Text>
             </Enter>
           ))}
-        </View>
+        </Card>
 
         {unavailable ? (
           <WebCheckout
@@ -133,7 +134,8 @@ export default function PaywallScreen() {
                     accessibilityRole="radio"
                     accessibilityState={{ selected: on }}
                     onPress={() => setSelected(plan.id)}
-                    className={`min-h-16 flex-row items-center justify-between rounded-2xl border-2 px-4 ${on ? 'border-floresta bg-folha' : 'border-transparent bg-[#EDEAD9]'}`}
+                    style={on ? softShadow : undefined}
+                    className={`min-h-16 flex-row items-center justify-between rounded-3xl border-2 px-4 ${on ? 'border-floresta bg-folha' : 'border-fio bg-folha/60'}`}
                   >
                     <View className="flex-row items-center gap-2">
                       <Text className="font-display-bold text-lg text-tinta">
@@ -196,7 +198,7 @@ export default function PaywallScreen() {
             <Mascot
               skin={toMascotSkin(profile.data?.activeMascotSkin ?? 'default')}
               mood="royal"
-              size={230}
+              size={170}
             />
           </Float>
         </View>

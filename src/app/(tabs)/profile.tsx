@@ -5,9 +5,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { toMascotSkin } from '../../domain/mascot';
 import { Button } from '../../presentation/components/Button';
 import { CrownIcon, LockIcon } from '../../presentation/components/art';
+import { Card } from '../../presentation/components/Card';
+import { ChevronRightIcon } from '../../presentation/components/Icons';
 import { Mascot } from '../../presentation/components/Mascot';
 import { fill } from '../../presentation/format';
-import { Enter, Float } from '../../presentation/motion';
+import { Enter, Float, PressableScale } from '../../presentation/motion';
 import { auth } from '../../presentation/state/container';
 import { useProfile } from '../../presentation/state/queries';
 import { Text } from '../../presentation/ui';
@@ -49,7 +51,8 @@ export default function ProfileScreen() {
       </Enter>
       {p ? (
         <>
-          <Enter index={1} className="items-center rounded-3xl bg-folha p-5">
+          <Enter index={1}>
+          <Card className="items-center p-5">
             <Float amplitude={5}>
               <Mascot
                 skin={toMascotSkin(p.activeMascotSkin)}
@@ -67,12 +70,13 @@ export default function ProfileScreen() {
             <Text className="mt-1 text-sm text-tinta/65">
               {fill(strings.shop.freezeCount, { count: p.streakFreezeCount })}
             </Text>
+          </Card>
           </Enter>
           {!p.isPro ? (
             <Enter index={2}>
               <Button
                 label={strings.profile.upgrade}
-                variant="sun"
+                variant="forest"
                 icon={<CrownIcon size={22} />}
                 onPress={() => router.push('/paywall')}
               />
@@ -87,7 +91,8 @@ export default function ProfileScreen() {
               <Text className="text-sm text-tinta/70">{strings.profile.privacyBody}</Text>
             </View>
           </Enter>
-          <Enter index={4} className="gap-2 rounded-3xl bg-folha p-4">
+          <Enter index={4}>
+          <Card className="gap-1 p-4">
             <Text className="font-display-bold text-base text-tinta">
               {strings.auth.accountTitle}
             </Text>
@@ -97,31 +102,33 @@ export default function ProfileScreen() {
               </Text>
             ) : null}
             {Platform.OS === 'android' ? (
-              <Button
-                variant="ghost"
+              <Row
                 label={strings.permissionsHelp.title}
                 onPress={() => router.push('/permissions-help')}
               />
             ) : null}
             <Button variant="secondary" label={strings.auth.signOut} onPress={confirmSignOut} />
-            <Button
-              variant="ghost"
-              label={strings.legal.privacy}
-              onPress={() => void Linking.openURL(PRIVACY_URL)}
-            />
-            <Button
-              variant="ghost"
-              label={strings.legal.terms}
-              onPress={() => void Linking.openURL(TERMS_URL)}
-            />
-            <Button
-              variant="ghost"
-              label={strings.deleteAccount.link}
-              onPress={() => router.push('/delete-account')}
-            />
+            <Row label={strings.legal.privacy} onPress={() => void Linking.openURL(PRIVACY_URL)} />
+            <Row label={strings.legal.terms} onPress={() => void Linking.openURL(TERMS_URL)} />
+            <Row label={strings.deleteAccount.link} onPress={() => router.push('/delete-account')} />
+          </Card>
           </Enter>
         </>
       ) : null}
     </ScrollView>
+  );
+}
+
+function Row({ label, onPress }: { label: string; onPress: () => void }) {
+  return (
+    <PressableScale
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      onPress={onPress}
+      className="min-h-12 flex-row items-center justify-between border-t border-fio"
+    >
+      <Text className="flex-1 font-body-semibold text-base text-tinta">{label}</Text>
+      <ChevronRightIcon size={20} color="#16372A" />
+    </PressableScale>
   );
 }

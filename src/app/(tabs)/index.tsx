@@ -1,10 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { Redirect, useRouter } from 'expo-router';
-import { Alert, RefreshControl, ScrollView, View } from 'react-native';
+import { useState } from 'react';
+import { Alert, Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import { errorMessage } from '../../application/errorMessages';
 import { UpdateBanner } from '../../presentation/components/UpdateBanner';
 import { useUpdate } from '../../presentation/state/useUpdate';
-import { BalanceHero } from '../../presentation/components/BalanceHero';
+import { BrandBar, Greeting, LevelRow, TimeCard } from '../../presentation/components/HomeHeader';
 import { Button } from '../../presentation/components/Button';
 import { TaskRow } from '../../presentation/components/TaskRow';
 import { useAppStore } from '../../presentation/state/appStore';
@@ -13,10 +14,13 @@ import { keys, useProfile, useTasks } from '../../presentation/state/queries';
 import { fill } from '../../presentation/format';
 import { Enter, PressableScale } from '../../presentation/motion';
 import { Text, colors } from '../../presentation/ui';
-import { FlameIcon, PlusIcon } from '../../presentation/components/Icons';
+import { ChevronRightIcon, FlameIcon, PlusIcon } from '../../presentation/components/Icons';
 import { strings } from '../../strings/pt-BR';
 
+const VISIBLE = 3;
+
 export default function HomeScreen() {
+  const [showAll, setShowAll] = useState(false);
   const router = useRouter();
   const qc = useQueryClient();
   const onboarded = useAppStore((s) => s.onboarded);
@@ -49,7 +53,7 @@ export default function HomeScreen() {
     ]);
 
   const list = tasks.data ?? [];
-  const firstPendingId = list.find((t) => t.status === 'pending')?.id;
+  const shown = showAll ? list : list.slice(0, VISIBLE);
 
   return (
     <View className="flex-1 bg-nevoa">
@@ -63,15 +67,16 @@ export default function HomeScreen() {
           />
         }
       >
+        <BrandBar />
+        <Greeting name={profile.data?.displayName ?? null} hour={new Date().getHours()} />
         {profile.data ? (
-          <BalanceHero
-            profile={profile.data}
-            onShop={() => router.push('/shop')}
-            onPro={() => router.push('/paywall')}
-          />
+          <>
+            <TimeCard profile={profile.data} onApps={() => router.push('/blocked-apps')} />
+            <LevelRow profile={profile.data} />
+          </>
         ) : null}
 
-        <View className="px-5 pt-5">
+        <View className="px-5 pt-4">
           {update ? <UpdateBanner status={update} /> : null}
           {profile.data ? (
             <Enter index={1}>
@@ -80,8 +85,8 @@ export default function HomeScreen() {
                 accessibilityLabel={fill(strings.home.streakA11y, {
                   days: profile.data.streakDays,
                 })}
-                onPress={() => router.push('/stats')}
-                className="flex-row items-center gap-3 rounded-3xl bg-[#F3EBC6] px-4 py-3"
+                onPress={() => router.push('/streak')}
+                className="flex-row items-center gap-3 rounded-3xl bg-[#FBEFCF] px-4 py-3"
               >
                 <FlameIcon size={40} color="#FF8A1F" />
                 <View className="flex-1">
@@ -94,15 +99,30 @@ export default function HomeScreen() {
                       : strings.home.streakNone}
                   </Text>
                 </View>
-                <Text className="font-display text-2xl text-tinta/60">›</Text>
+                <ChevronRightIcon size={20} color={colors.tinta} />
               </PressableScale>
             </Enter>
           ) : null}
 
           <Enter index={2}>
-            <Text accessibilityRole="header" className="mt-6 font-display text-2xl text-tinta">
-              {strings.home.tasksTitle}
-            </Text>
+            <View className="mt-6 flex-row items-center justify-between">
+              <Text accessibilityRole="header" className="font-display text-[22px] text-tinta">
+                {strings.home.tasksToday}
+              </Text>
+              {list.length > VISIBLE ? (
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => setShowAll((v) => !v)}
+                  hitSlop={10}
+                  className="min-h-11 flex-row items-center justify-center gap-1 active:opacity-60"
+                >
+                  <Text className="font-display-bold text-sm text-floresta">
+                    {showAll ? strings.home.seeLess : strings.home.seeAll}
+                  </Text>
+                  <ChevronRightIcon size={14} color={colors.floresta} />
+                </Pressable>
+              ) : null}
+            </View>
           </Enter>
 
           {tasks.isError ? (
@@ -126,11 +146,10 @@ export default function HomeScreen() {
           ) : null}
 
           <View className="mt-3 gap-3">
-            {list.map((task, i) => (
+            {shown.map((task, i) => (
               <Enter key={task.id} index={3 + i} list>
                 <TaskRow
                   task={task}
-                  primary={task.id === firstPendingId}
                   onProve={() =>
                     router.push({ pathname: '/proof/[taskId]', params: { taskId: task.id } })
                   }
@@ -140,10 +159,11 @@ export default function HomeScreen() {
             ))}
           </View>
 
-          <Enter index={4 + list.length} className="mt-6">
+          <Enter index={4 + shown.length} className="mt-6">
             <Button
               label={strings.home.addTask}
-              icon={<PlusIcon size={20} />}
+              variant="forest"
+              icon={<PlusIcon size={20} color="#FFFFFF" />}
               onPress={() => router.push('/new-task')}
             />
           </Enter>

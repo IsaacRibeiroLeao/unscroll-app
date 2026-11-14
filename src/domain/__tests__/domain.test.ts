@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { moodFor, toMascotSkin } from '../mascot.ts';
 import { levelFromXp, xpToReachLevel } from '../progression.ts';
-import { formatBalance, wholeMinutes } from '../time.ts';
+import { dayPart, formatBalance, formatBalanceLong, wholeMinutes } from '../time.ts';
 
 test('level thresholds follow 100*n per level', () => {
   assert.equal(xpToReachLevel(1), 0);
@@ -45,4 +45,21 @@ test('mascot helpers', () => {
   assert.equal(moodFor(0, 30), 'sleepy');
   assert.equal(moodFor(60, 3), 'happy');
   assert.equal(moodFor(60, 7), 'proud');
+});
+
+test('formatBalanceLong drops seconds', () => {
+  assert.equal(formatBalanceLong(0), '0min');
+  assert.equal(formatBalanceLong(59), '0min');
+  assert.equal(formatBalanceLong(45 * 60 + 30), '45min');
+  assert.equal(formatBalanceLong(80 * 60), '1h 20min');
+  assert.equal(formatBalanceLong(Number.NaN), '0min');
+});
+
+test('dayPart buckets the local hour', () => {
+  assert.equal(dayPart(5), 'morning');
+  assert.equal(dayPart(11), 'morning');
+  assert.equal(dayPart(12), 'afternoon');
+  assert.equal(dayPart(17), 'afternoon');
+  assert.equal(dayPart(18), 'evening');
+  assert.equal(dayPart(23), 'evening');
 });

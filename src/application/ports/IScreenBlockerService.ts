@@ -21,6 +21,14 @@ export interface PickAppsResult {
   unchanged: boolean;
 }
 
+/** One blocked app, with its name and icon where the OS lets us read them (Android only). */
+export interface BlockedApp {
+  id: string;
+  label: string;
+  /** PNG, base64 (no data: prefix). Null when no icon is available. */
+  iconBase64: string | null;
+}
+
 /** Usage consumed natively (app killed or alive) that the server has not been told about yet. */
 export interface UsageReport {
   /** Stable id, used as `client_event_id` so retries are idempotent on the server. */
@@ -67,6 +75,10 @@ export interface IScreenBlockerService {
   /** Opens the native app picker and persists the selection. */
   pickApps(): Promise<PickAppsResult>;
   getSelectedAppsCount(): Promise<number>;
+  /** Blocked apps by name, sorted. iOS cannot read the opaque selection, so it returns []. */
+  listBlockedApps(): Promise<BlockedApp[]>;
+  /** Blocks or unblocks one app (Android). Resolves with the new number of blocked apps. */
+  setAppBlocked(id: string, blocked: boolean): Promise<number>;
 
   /**
    * Makes `seconds` the authoritative balance: > 0 unblocks and arms native consumption,

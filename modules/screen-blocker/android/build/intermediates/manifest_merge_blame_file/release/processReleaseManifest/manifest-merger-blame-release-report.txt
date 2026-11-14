@@ -1,0 +1,59 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="expo.modules.screenblocker" >
+4
+5    <uses-sdk android:minSdkVersion="26" />
+5-->INJECTED
+5-->INJECTED
+6    <!-- Launcher-app visibility without QUERY_ALL_PACKAGES (Play policy). -->
+7    <queries>
+7-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:3:3-8:13
+8        <intent>
+8-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:4:5-7:14
+9            <action android:name="android.intent.action.MAIN" />
+9-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:5:7-59
+9-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:5:15-56
+10
+11            <category android:name="android.intent.category.LAUNCHER" />
+11-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:6:7-67
+11-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:6:17-64
+12        </intent>
+13    </queries>
+14
+15    <application>
+15-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:10:3-28:17
+16        <service
+16-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:11:5-18:15
+17            android:name="expo.modules.screenblocker.BlockerService"
+17-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:12:7-63
+18            android:exported="false"
+18-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:13:7-31
+19            android:foregroundServiceType="specialUse" >
+19-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:14:7-49
+20            <property
+20-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:15:7-17:111
+21                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+21-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:16:9-68
+22                android:value="Detects which app is in the foreground to enforce the user&apos;s self-chosen app limits" />
+22-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:17:9-108
+23        </service>
+24
+25        <receiver
+25-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:20:5-27:16
+26            android:name="expo.modules.screenblocker.BootReceiver"
+26-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:21:7-61
+27            android:exported="true" >
+27-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:22:7-30
+28            <intent-filter>
+28-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:23:7-26:23
+29                <action android:name="android.intent.action.BOOT_COMPLETED" />
+29-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:24:9-71
+29-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:24:17-68
+30                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+30-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:25:9-76
+30-->/home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:25:17-73
+31            </intent-filter>
+32        </receiver>
+33    </application>
+34
+35</manifest>

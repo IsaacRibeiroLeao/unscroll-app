@@ -8,6 +8,7 @@ import { purchaseShopItem } from '../../application/purchaseShopItem';
 import { toMascotSkin } from '../../domain/mascot';
 import { Button } from '../../presentation/components/Button';
 import { ClockArt, CrownIcon, GradientView, ShieldArt } from '../../presentation/components/art';
+import { Card } from '../../presentation/components/Card';
 import { GemIcon } from '../../presentation/components/Icons';
 import { Mascot } from '../../presentation/components/Mascot';
 import { fill } from '../../presentation/format';
@@ -82,7 +83,7 @@ export default function ShopScreen() {
   const active = profile.data?.activeMascotSkin ?? 'default';
   const gems = profile.data?.gems ?? 0;
   const freeze = shop.data?.items.find((i) => i.sku === 'streak_freeze');
-  const others = (shop.data?.items ?? []).filter((i) => i.sku !== 'streak_freeze');
+  const listed = shop.data?.items ?? [];
 
   return (
     <ScrollView
@@ -129,7 +130,7 @@ export default function ShopScreen() {
                 </Text>
               </View>
               <Float amplitude={5} duration={1500}>
-                <ShieldArt size={112} />
+                <Mascot skin={toMascotSkin(active)} mood="happy" size={128} />
               </Float>
             </View>
             <View className="px-5 pb-5">
@@ -153,27 +154,14 @@ export default function ShopScreen() {
       </Enter>
 
       <View className="gap-3">
-        <ItemCard
-          index={3}
-          art={<Mascot skin="default" mood="happy" size={56} crop="head" />}
-          name={strings.shop.defaultSkin}
-          description=""
-          right={
-            <Button
-              label={active === 'default' ? strings.shop.equipped : strings.shop.equip}
-              variant="secondary"
-              disabled={active === 'default'}
-              loading={busySku === 'default'}
-              onPress={() => void equip('default')}
-            />
-          }
-        />
-        {others.map((item, i) => {
+        {listed.map((item, i) => {
           const copy = copyFor(item.sku);
           const isSkin = item.kind === 'mascot_skin';
           const has = isSkin && owned.has(item.sku);
           const art = isSkin ? (
             <Mascot skin={toMascotSkin(item.sku)} mood="happy" size={56} crop="head" />
+          ) : item.sku === 'streak_freeze' ? (
+            <ShieldArt size={52} />
           ) : (
             <ClockArt size={52} />
           );
@@ -205,6 +193,21 @@ export default function ShopScreen() {
             />
           );
         })}
+        <ItemCard
+          index={4 + listed.length}
+          art={<Mascot skin="default" mood="happy" size={56} crop="head" />}
+          name={strings.shop.defaultSkin}
+          description=""
+          right={
+            <Button
+              label={active === 'default' ? strings.shop.equipped : strings.shop.equip}
+              variant="secondary"
+              disabled={active === 'default'}
+              loading={busySku === 'default'}
+              onPress={() => void equip('default')}
+            />
+          }
+        />
       </View>
     </ScrollView>
   );
@@ -249,13 +252,15 @@ function ItemCard({
   right: React.ReactNode;
 }) {
   return (
-    <Enter index={index} className="flex-row items-center gap-3 rounded-3xl bg-folha p-3">
-      <View className="h-16 w-16 items-center justify-center">{art}</View>
-      <View className="flex-1">
-        <Text className="font-display-bold text-base text-tinta">{name}</Text>
-        {description ? <Text className="text-sm text-tinta/65">{description}</Text> : null}
-      </View>
-      <View>{right}</View>
+    <Enter index={index}>
+      <Card className="flex-row items-center gap-3 p-3">
+        <View className="h-16 w-16 items-center justify-center">{art}</View>
+        <View className="flex-1">
+          <Text className="font-display-bold text-base text-tinta">{name}</Text>
+          {description ? <Text className="text-sm text-tinta/65">{description}</Text> : null}
+        </View>
+        <View>{right}</View>
+      </Card>
     </Enter>
   );
 }

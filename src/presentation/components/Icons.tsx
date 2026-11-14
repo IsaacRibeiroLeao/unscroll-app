@@ -1,4 +1,4 @@
-import Svg, { Circle, Path } from 'react-native-svg';
+import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
 interface IconProps {
   size?: number;
@@ -83,6 +83,79 @@ export function PlusIcon({ size = 20, color = '#F7F4E9' }: IconProps) {
   return (
     <Svg width={size} height={size} {...base} accessibilityElementsHidden>
       <Path d="M12 5v14M5 12h14" stroke={color} strokeWidth={3} strokeLinecap="round" />
+    </Svg>
+  );
+}
+
+export function ArrowLeftIcon({ size = 24, color = '#16241C' }: IconProps) {
+  return (
+    <Svg width={size} height={size} {...base} accessibilityElementsHidden>
+      <Path
+        d="M19 12H5M11 6l-6 6 6 6"
+        stroke={color}
+        strokeWidth={2.6}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </Svg>
+  );
+}
+
+export function ChevronRightIcon({ size = 20, color = '#16241C' }: IconProps) {
+  return (
+    <Svg width={size} height={size} {...base} accessibilityElementsHidden>
+      <Path
+        d="M9 5l7 7-7 7"
+        stroke={color}
+        strokeWidth={2.6}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </Svg>
+  );
+}
+
+export function SearchIcon({ size = 20, color = '#7C8B80' }: IconProps) {
+  return (
+    <Svg width={size} height={size} {...base} accessibilityElementsHidden>
+      <Circle cx={11} cy={11} r={6.5} stroke={color} strokeWidth={2.4} fill="none" />
+      <Path d="M16 16l4.5 4.5" stroke={color} strokeWidth={2.4} strokeLinecap="round" />
+    </Svg>
+  );
+}
+
+export function WarningIcon({ size = 26, color = '#F08A1F' }: IconProps) {
+  return (
+    <Svg width={size} height={size} {...base} accessibilityElementsHidden>
+      <Path
+        d="M12 3.2 22 20.5H2L12 3.2Z"
+        stroke={color}
+        strokeWidth={2.2}
+        strokeLinejoin="round"
+        fill={color}
+        fillOpacity={0.18}
+      />
+      <Path d="M12 9.6v5M12 17.4v.2" stroke={color} strokeWidth={2.4} strokeLinecap="round" />
+    </Svg>
+  );
+}
+
+export function PhoneIcon({ size = 24, color = '#FFFFFF' }: IconProps) {
+  return (
+    <Svg width={size} height={size} {...base} accessibilityElementsHidden>
+      <Rect x={7} y={2.5} width={10} height={19} rx={2.4} stroke={color} strokeWidth={2} fill="none" />
+      <Path d="M10.5 18.5h3" stroke={color} strokeWidth={2} strokeLinecap="round" />
+    </Svg>
+  );
+}
+
+export function CircleXIcon({ size = 22, color = '#FFFFFF' }: IconProps) {
+  return (
+    <Svg width={size} height={size} {...base} accessibilityElementsHidden>
+      <Circle cx={12} cy={12} r={9.5} stroke={color} strokeWidth={2.2} fill="none" />
+      <Path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke={color} strokeWidth={2.2} strokeLinecap="round" />
     </Svg>
   );
 }

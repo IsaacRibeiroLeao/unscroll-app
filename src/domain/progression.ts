@@ -28,3 +28,6 @@ export function levelFromXp(xp: number): LevelInfo {
   const xpForNext = 100 * level;
   return { level, xpIntoLevel, xpForNext, progress: xpIntoLevel / xpForNext };
 }
+
+/** Most streak protections a player can hold. Keep in sync with the SQL rule. */
+export const MAX_STREAK_FREEZES = 2;

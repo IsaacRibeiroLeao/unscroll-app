@@ -1,31 +1,21 @@
 import { Pressable, View } from 'react-native';
 import { Pop, PressableScale } from '../motion';
 import type { Task } from '../../application/ports/IBackendApi';
+import { proofKindFor } from '../../application/ports/IBackendApi';
 import { strings } from '../../strings/pt-BR';
 import { fill } from '../format';
 import { Text } from '../ui';
-import { TaskArt } from './art';
-import { Button } from './Button';
+import { CategoryArt } from './art';
+import { Card } from './Card';
 import { CameraIcon, CheckIcon, PlusIcon } from './Icons';
-import { proofKindFor } from '../../application/ports/IBackendApi';
 
 interface Props {
   task: Task;
-  /** The first pending task gets the full-width gold button; the others a compact one. */
-  primary: boolean;
   onProve: () => void;
   onDelete: () => void;
 }
 
-const cardShadow = {
-  shadowColor: '#16372A',
-  shadowOpacity: 0.08,
-  shadowRadius: 10,
-  shadowOffset: { width: 0, height: 3 },
-  elevation: 2,
-} as const;
-
-export function TaskRow({ task, primary, onProve, onDelete }: Props) {
+export function TaskRow({ task, onProve, onDelete }: Props) {
   const done = task.status === 'completed';
   const verifying = task.status === 'verifying';
   const label = verifying ? strings.home.verifying : strings.home.startTask;
@@ -34,39 +24,30 @@ export function TaskRow({ task, primary, onProve, onDelete }: Props) {
     xp: task.rewardXp,
     gems: task.rewardGems,
   });
-  const fullWidth = primary && !done;
   const isText = proofKindFor(task.category) === 'text';
 
   return (
-    <View
-      className={`rounded-3xl p-4 ${done ? 'bg-folha/60' : 'bg-folha'}`}
-      style={done ? undefined : cardShadow}
-    >
+    <Card className={`p-3.5 ${done ? 'opacity-70' : ''}`}>
       <View className="flex-row items-center gap-3">
-        <View className="h-16 w-16 items-center justify-center rounded-2xl bg-nevoa">
-          {done ? (
-            <Pop>
-              <TaskArt size={50} done />
-            </Pop>
-          ) : (
-            <TaskArt size={50} done={false} />
-          )}
-        </View>
+        {done ? (
+          <Pop>
+            <CategoryArt size={58} category={task.category} done />
+          </Pop>
+        ) : (
+          <CategoryArt size={58} category={task.category} />
+        )}
         <View className="flex-1 gap-0.5">
           <Text
             className={`font-display-bold text-lg leading-6 ${done ? 'text-tinta/50' : 'text-tinta'}`}
+            numberOfLines={2}
           >
             {task.title}
           </Text>
-          {task.description ? (
-            <Text className="text-sm text-tinta/60" numberOfLines={1}>
-              {task.description}
-            </Text>
-          ) : null}
           <Text
             className={`font-body-semibold text-xs ${done ? 'text-tinta/45' : 'text-floresta'}`}
+            numberOfLines={1}
           >
-            {strings.categories[task.category]} · {reward}
+            {reward}
           </Text>
         </View>
 
@@ -74,35 +55,24 @@ export function TaskRow({ task, primary, onProve, onDelete }: Props) {
           <View
             accessible
             accessibilityLabel={strings.home.completed}
-            className="h-10 w-10 items-center justify-center rounded-full bg-floresta/15"
+            className="h-9 w-9 items-center justify-center rounded-full bg-floresta/15"
           >
-            <CheckIcon size={22} />
+            <CheckIcon size={20} />
           </View>
-        ) : !fullWidth ? (
+        ) : (
           <PressableScale
             accessibilityRole="button"
             accessibilityLabel={`${label}: ${task.title}`}
             accessibilityState={{ disabled: verifying }}
             disabled={verifying}
             onPress={onProve}
-            className={`min-h-12 items-center justify-center rounded-full border-2 border-fio px-5 ${verifying ? 'opacity-40' : ''}`}
+            className={`min-h-11 flex-row items-center gap-1.5 rounded-full bg-floresta px-4 ${verifying ? 'opacity-40' : ''}`}
           >
-            <Text className="font-display-bold text-base text-tinta">{label}</Text>
+            {isText ? <PlusIcon size={16} color="#FFFFFF" /> : <CameraIcon size={16} color="#FFFFFF" />}
+            <Text className="font-display-bold text-[15px] text-white">{label}</Text>
           </PressableScale>
-        ) : null}
+        )}
       </View>
-
-      {fullWidth ? (
-        <View className="mt-3">
-          <Button
-            label={label}
-            variant="sun"
-            icon={isText ? <PlusIcon size={20} /> : <CameraIcon size={20} />}
-            disabled={verifying}
-            onPress={onProve}
-          />
-        </View>
-      ) : null}
 
       {!done ? (
         <Pressable
@@ -110,11 +80,11 @@ export function TaskRow({ task, primary, onProve, onDelete }: Props) {
           accessibilityLabel={strings.home.deleteTask}
           onPress={onDelete}
           hitSlop={{ top: 8, bottom: 12, left: 10, right: 30 }}
-          className="mt-2 self-start"
+          className="mt-2 self-start pl-1"
         >
           <Text className="text-xs text-tinta/45 underline">{strings.home.deleteTask}</Text>
         </Pressable>
       ) : null}
-    </View>
+    </Card>
   );
 }

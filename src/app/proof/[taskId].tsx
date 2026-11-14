@@ -10,6 +10,7 @@ import { proofKindFor } from '../../application/ports/IBackendApi';
 import type { TextProof } from '../../application/ports/IBackendApi';
 import { submitTaskProof } from '../../application/submitTaskProof';
 import { Button } from '../../presentation/components/Button';
+import { Mascot } from '../../presentation/components/Mascot';
 import { PhoneArt } from '../../presentation/components/art';
 import { TextProofForm } from '../../presentation/components/TextProofForm';
 import { Enter, Float, Pop } from '../../presentation/motion';
@@ -164,9 +165,17 @@ export default function ProofScreen() {
             </Enter>
           ) : null}
           {busy ? (
-            <Pop style={{ alignItems: 'center', gap: 8 }}>
-              <ActivityIndicator color="#fff" />
-              <Text className="text-sm text-white">{strings.proof.sending}</Text>
+            <Pop style={{ alignItems: 'center' }}>
+              <View className="w-full items-center gap-2 rounded-3xl bg-folha p-5">
+                <Mascot skin="default" mood="happy" size={110} />
+                <Text accessibilityRole="header" className="font-display text-2xl text-tinta">
+                  {strings.proof.sentTitle}
+                </Text>
+                <View className="flex-row items-center gap-2">
+                  <ActivityIndicator color="#1F6B43" />
+                  <Text className="text-base text-tinta/75">{strings.proof.sending}</Text>
+                </View>
+              </View>
             </Pop>
           ) : (
             <Button

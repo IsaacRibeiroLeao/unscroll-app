@@ -1,8 +1,11 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, TextInput } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView, TextInput, View } from 'react-native';
 import { Button } from '../presentation/components/Button';
+import { Card } from '../presentation/components/Card';
+import { Mascot } from '../presentation/components/Mascot';
+import { ScreenHeader } from '../presentation/components/ScreenHeader';
+import { WarningIcon } from '../presentation/components/Icons';
 import { Enter } from '../presentation/motion';
 import { auth } from '../presentation/state/container';
 import { Text } from '../presentation/ui';
@@ -31,16 +34,20 @@ export default function DeleteAccountScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-nevoa">
+    <View className="flex-1 bg-nevoa">
+      <ScreenHeader title={t.title} />
       <ScrollView contentContainerClassName="gap-4 p-5" keyboardShouldPersistTaps="handled">
-        <Enter index={0}>
-          <Text accessibilityRole="header" className="font-display-bold text-2xl text-tinta">
-            {t.title}
-          </Text>
+        <Enter index={0} className="items-center">
+          <Mascot skin="default" mood="sad" size={150} />
         </Enter>
-        <Enter index={1} className="gap-2 rounded-2xl bg-folha p-4">
-          <Text className="text-base text-tinta">{t.warning}</Text>
-          <Text className="text-sm text-tinta/70">{t.keep}</Text>
+        <Enter index={1}>
+          <Card className="flex-row items-start gap-3 p-4">
+            <WarningIcon size={26} color="#D6392B" />
+            <View className="flex-1 gap-2">
+              <Text className="text-base text-tinta">{t.warning}</Text>
+              <Text className="text-sm text-tinta/70">{t.keep}</Text>
+            </View>
+          </Card>
         </Enter>
         <Enter index={2} className="gap-2">
           <Text className="font-display-bold text-base text-tinta">{t.confirmLabel}</Text>
@@ -63,7 +70,7 @@ export default function DeleteAccountScreen() {
         <Enter index={3} className="gap-2">
           <Button
             label={t.submit}
-            variant="primary"
+            variant="danger"
             onPress={() => void submit()}
             disabled={!confirmed}
             loading={busy}
@@ -76,6 +83,6 @@ export default function DeleteAccountScreen() {
           />
         </Enter>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

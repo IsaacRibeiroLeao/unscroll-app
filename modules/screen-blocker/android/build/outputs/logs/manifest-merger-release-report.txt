@@ -1,0 +1,60 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:1:1-29:12
+INJECTED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:1:1-29:12
+	package
+		INJECTED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:1:11-69
+queries
+ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:3:3-8:13
+intent#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:4:5-7:14
+action#android.intent.action.MAIN
+ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:5:7-59
+	android:name
+		ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:5:15-56
+category#android.intent.category.LAUNCHER
+ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:6:7-67
+	android:name
+		ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:6:17-64
+application
+ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:10:3-28:17
+service#expo.modules.screenblocker.BlockerService
+ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:11:5-18:15
+	android:exported
+		ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:13:7-31
+	android:foregroundServiceType
+		ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:14:7-49
+	android:name
+		ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:12:7-63
+property#android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE
+ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:15:7-17:111
+	android:value
+		ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:17:9-108
+	android:name
+		ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:16:9-68
+receiver#expo.modules.screenblocker.BootReceiver
+ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:20:5-27:16
+	android:exported
+		ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:22:7-30
+	android:name
+		ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:21:7-61
+intent-filter#action:name:android.intent.action.BOOT_COMPLETED+action:name:android.intent.action.MY_PACKAGE_REPLACED
+ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:23:7-26:23
+action#android.intent.action.BOOT_COMPLETED
+ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:24:9-71
+	android:name
+		ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:24:17-68
+action#android.intent.action.MY_PACKAGE_REPLACED
+ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:25:9-76
+	android:name
+		ADDED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml:25:17-73
+uses-sdk
+INJECTED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml
+INJECTED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /home/claude/unscroll-app/modules/screen-blocker/android/src/main/AndroidManifest.xml

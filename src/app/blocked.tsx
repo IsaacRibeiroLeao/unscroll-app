@@ -2,10 +2,9 @@ import { useRouter } from 'expo-router';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { toMascotSkin } from '../domain/mascot';
+import { GradientView, Hills, HourglassArt, SleepyClockArt, Sparkles } from '../presentation/components/art';
 import { Button } from '../presentation/components/Button';
-import { CameraIcon } from '../presentation/components/Icons';
-import { FloatingApps, GradientView, HourglassArt, Hills } from '../presentation/components/art';
-import { Mascot } from '../presentation/components/Mascot';
+import { ChevronRightIcon, CircleXIcon } from '../presentation/components/Icons';
 import { Enter, Float } from '../presentation/motion';
 import { useProfile, useTasks } from '../presentation/state/queries';
 import { Text } from '../presentation/ui';
@@ -16,64 +15,60 @@ export default function BlockedScreen() {
   const router = useRouter();
   const profile = useProfile();
   const tasks = useTasks();
-  const pending = (tasks.data ?? []).filter((t) => t.status === 'pending');
+  const firstPending = (tasks.data ?? []).find((t) => t.status === 'pending');
+
+  // "Tempo esgotado": the last word picks up the accent color.
+  const words = strings.blocked.title.split(' ');
+  const accent = words.pop() ?? '';
+  const lead = words.join(' ');
+
+  const earn = () =>
+    firstPending
+      ? router.replace({ pathname: '/proof/[taskId]', params: { taskId: firstPending.id } })
+      : router.replace('/new-task');
 
   return (
-    <GradientView id="blocked" stops={['#1F6B43', '#0C3322']} className="flex-1">
-      <FloatingApps />
-      <Hills tone="dark" height={160} />
+    <GradientView id="blocked" stops={['#1B6B43', '#0A2E1D']} className="flex-1">
+      <Sparkles />
+      <Hills tone="dark" height={150} />
       <SafeAreaView className="flex-1">
-        <ScrollView contentContainerClassName="items-center gap-3 px-6 pb-6 pt-4">
-          <Float amplitude={4} duration={1400}>
-            <HourglassArt size={34} />
-          </Float>
-          <Float amplitude={7}>
-            <Mascot
+        <ScrollView contentContainerClassName="grow items-center justify-center gap-3 px-6 pb-8 pt-4">
+          <Float amplitude={6}>
+            <SleepyClockArt
+              size={290}
               skin={toMascotSkin(profile.data?.activeMascotSkin ?? 'default')}
-              mood="proud"
-              size={230}
             />
           </Float>
           <Enter index={1}>
             <Text
               accessibilityRole="header"
-              className="text-center font-display text-4xl text-white"
+              className="text-center font-display text-[40px] leading-[48px] text-white"
             >
-              {strings.blocked.title}
+              {lead ? `${lead} ` : ''}
+              <Text className="font-display text-[40px] leading-[48px] text-sol">{accent}</Text>
             </Text>
           </Enter>
           <Enter index={2}>
-            <Text className="mb-3 text-center text-base text-white/85">{strings.blocked.body}</Text>
+            <Text className="mb-4 text-center text-lg text-white/90">{strings.blocked.body}</Text>
           </Enter>
           <View className="w-full gap-3">
-            {pending.length === 0 ? (
-              <>
-                <Text className="text-center text-white/80">{strings.blocked.noTasks}</Text>
-                <Button
-                  label={strings.blocked.createTask}
-                  variant="sun"
-                  onPress={() => router.replace('/new-task')}
-                />
-              </>
-            ) : (
-              pending.map((t, i) => (
-                <Enter key={t.id} index={3 + i}>
-                  <Button
-                    label={t.title}
-                    variant={i === 0 ? 'sun' : 'outlineSun'}
-                    icon={i === 0 ? <CameraIcon size={20} /> : undefined}
-                    onPress={() =>
-                      router.replace({ pathname: '/proof/[taskId]', params: { taskId: t.id } })
-                    }
-                  />
-                </Enter>
-              ))
-            )}
-            <Button
-              label={strings.common.close}
-              variant="ghostLight"
-              onPress={() => router.replace('/')}
-            />
+            <Enter index={3}>
+              <Button
+                label={strings.blocked.earn}
+                variant="sun"
+                icon={<HourglassArt size={22} />}
+                trailing={<ChevronRightIcon size={18} color="#16372A" />}
+                onPress={earn}
+              />
+            </Enter>
+            <Enter index={4}>
+              <Button
+                label={strings.blocked.notNow}
+                variant="outlineSun"
+                icon={<CircleXIcon size={22} />}
+                onPress={() => router.replace('/')}
+              />
+            </Enter>
           </View>
         </ScrollView>
       </SafeAreaView>

@@ -17,6 +17,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import ScreenBlockerHost from '../infra/native/ScreenBlockerHost';
 import { Button } from '../presentation/components/Button';
 import { AuthScreen } from '../presentation/screens/AuthScreen';
+import { WelcomeScreen } from '../presentation/screens/WelcomeScreen';
 import { NewPasswordScreen } from '../presentation/screens/NewPasswordScreen';
 import { auth, queryClient } from '../presentation/state/container';
 import {
@@ -38,6 +39,8 @@ function Shell() {
     Nunito_900Black,
   });
   const [recovery, setRecovery] = useState<'form' | 'invalid' | null>(null);
+  // 'welcome' is the first screen for a signed-out visitor; either button leads to the form.
+  const [entry, setEntry] = useState<'welcome' | 'signUp' | 'signIn'>('welcome');
   const onRecoveryLink = useCallback((url: string) => {
     auth
       .completeRecovery(url)
@@ -68,9 +71,14 @@ function Shell() {
       />
     );
   }
+  if (state === 'signedOut' && recovery === null && entry === 'welcome') {
+    return <WelcomeScreen onStart={() => setEntry('signUp')} onSignIn={() => setEntry('signIn')} />;
+  }
   if (state === 'signedOut' || recovery === 'invalid') {
     return (
       <AuthScreen
+        initialMode={entry === 'signIn' ? 'signIn' : 'signUp'}
+        onBack={entry !== 'welcome' && recovery === null ? () => setEntry('welcome') : undefined}
         notice={recovery === 'invalid' ? strings.auth.linkInvalid : null}
         onDone={() => {
           setRecovery(null);
@@ -132,6 +140,8 @@ function Shell() {
         options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
       />
       <Stack.Screen name="blocked" options={{ animation: 'fade' }} />
+      <Stack.Screen name="blocked-apps" />
+      <Stack.Screen name="streak" />
       <Stack.Screen name="onboarding" options={{ animation: 'fade' }} />
     </Stack>
   );

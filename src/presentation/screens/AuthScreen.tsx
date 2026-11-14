@@ -17,6 +17,8 @@ import { strings } from '../../strings/pt-BR';
 import { PRIVACY_URL, TERMS_URL } from '../../config/site';
 import { fill } from '../format';
 import { Button } from '../components/Button';
+import { ScreenHeader } from '../components/ScreenHeader';
+import { ArrowLeftIcon } from '../components/Icons';
 import { Mascot } from '../components/Mascot';
 import { Enter, Float } from '../motion';
 import { auth } from '../state/container';
@@ -25,6 +27,7 @@ import { Text } from '../ui';
 type Mode = 'signUp' | 'signIn' | 'confirm' | 'forgot' | 'forgotSent';
 
 const inputClass = 'min-h-14 rounded-2xl border border-fio bg-folha px-4 py-3 text-base text-tinta';
+const FIELD_SHADOW = { shadowColor: '#16372A', shadowOpacity: 0.06, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 1 } as const;
 
 function messageFor(error: unknown): string {
   const code = error instanceof AuthError ? error.code : 'UNKNOWN';
@@ -32,9 +35,20 @@ function messageFor(error: unknown): string {
 }
 
 /** Email + password account screen shown while nobody is signed in. */
-export function AuthScreen({ onDone, notice }: { onDone: () => void; notice?: string | null }) {
+export function AuthScreen({
+  onDone,
+  notice,
+  initialMode = 'signUp',
+  onBack,
+}: {
+  onDone: () => void;
+  notice?: string | null;
+  initialMode?: 'signUp' | 'signIn';
+  /** Back to the welcome screen; omitted when there is nowhere to go back to. */
+  onBack?: () => void;
+}) {
   const t = strings.auth;
-  const [mode, setMode] = useState<Mode>('signUp');
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [reveal, setReveal] = useState(false);
@@ -120,8 +134,85 @@ export function AuthScreen({ onDone, notice }: { onDone: () => void; notice?: st
     );
   }
 
+  if (forgot) {
+    return (
+      <View className="flex-1 bg-nevoa">
+        <ScreenHeader
+          title={t.forgotTitle}
+          onBack={() => {
+            setMode('signIn');
+            setMessage(null);
+          }}
+        />
+        <KeyboardAvoidingView
+          className="flex-1"
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          <ScrollView contentContainerClassName="gap-4 px-6 pt-4" keyboardShouldPersistTaps="handled">
+            <Enter index={0}>
+              <Text className="text-base text-tinta/70">{t.forgotSubtitle}</Text>
+            </Enter>
+            <Enter index={1} className="gap-2">
+              <Text className="font-display-bold text-base text-tinta">{t.emailLabel}</Text>
+              <TextInput
+                value={email}
+                onChangeText={setEmail}
+                editable={!busy}
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoComplete="email"
+                keyboardType="email-address"
+                textContentType="emailAddress"
+                returnKeyType="go"
+                onSubmitEditing={() => void submit()}
+                placeholder={t.emailPlaceholder}
+                placeholderTextColor="#8A978E"
+                className={inputClass}
+                style={FIELD_SHADOW}
+              />
+            </Enter>
+            {message ? (
+              <Text accessibilityLiveRegion="polite" className="text-sm text-red-700">
+                {message}
+              </Text>
+            ) : null}
+            <Enter index={2} className="mt-2 gap-2">
+              {busy ? (
+                <View className="h-14 items-center justify-center">
+                  <ActivityIndicator accessibilityLabel={strings.common.loading} />
+                </View>
+              ) : (
+                <Button label={t.forgotSubmit} variant="forest" onPress={() => void submit()} />
+              )}
+              <Button
+                variant="ghost"
+                label={t.backToSignIn}
+                disabled={busy}
+                onPress={() => {
+                  setMode('signIn');
+                  setMessage(null);
+                }}
+              />
+            </Enter>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-nevoa">
+      {onBack ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={strings.common.back}
+          onPress={onBack}
+          hitSlop={10}
+          className="ml-4 mt-2 h-11 w-11 items-center justify-center rounded-full active:opacity-60"
+        >
+          <ArrowLeftIcon size={26} color="#16372A" />
+        </Pressable>
+      ) : null}
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -132,7 +223,7 @@ export function AuthScreen({ onDone, notice }: { onDone: () => void; notice?: st
         >
           <Enter index={0} className="items-center">
             <Float amplitude={5}>
-              <Mascot skin="default" mood="happy" size={120} />
+              <Mascot skin="default" mood="wink" size={130} />
             </Float>
           </Enter>
           <Enter index={1} className="gap-1">
@@ -163,6 +254,7 @@ export function AuthScreen({ onDone, notice }: { onDone: () => void; notice?: st
               placeholder={t.emailPlaceholder}
               placeholderTextColor="#8A978E"
               className={inputClass}
+              style={FIELD_SHADOW}
             />
           </Enter>
 
@@ -185,6 +277,7 @@ export function AuthScreen({ onDone, notice }: { onDone: () => void; notice?: st
                   placeholder={t.passwordPlaceholder}
                   placeholderTextColor="#8A978E"
                   className={`${inputClass} pr-24`}
+                  style={FIELD_SHADOW}
                 />
                 <Pressable
                   accessibilityRole="button"
@@ -215,6 +308,7 @@ export function AuthScreen({ onDone, notice }: { onDone: () => void; notice?: st
             ) : (
               <Button
                 label={forgot ? t.forgotSubmit : signUp ? t.submitSignUp : t.submitSignIn}
+                variant="forest"
                 onPress={() => void submit()}
               />
             )}

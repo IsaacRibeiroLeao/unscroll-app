@@ -1,6 +1,7 @@
 import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { levelFromXp, xpToReachLevel } from '../../domain/progression';
+import { Card } from '../../presentation/components/Card';
 import { FlameIcon, GemIcon, StarIcon } from '../../presentation/components/Icons';
 import { fill } from '../../presentation/format';
 import { AnimatedFill, Enter } from '../../presentation/motion';
@@ -21,16 +22,38 @@ function Stat({
 }) {
   return (
     <Enter index={index} className="min-w-[46%] flex-1">
-      <View
-        accessible
-        accessibilityLabel={`${label}: ${value}`}
-        className="gap-1 rounded-3xl bg-folha p-4"
-      >
+      <Card accessible accessibilityLabel={`${label}: ${value}`} className="gap-1 p-4">
         {icon}
         <Text className="mt-1 font-display text-3xl text-tinta">{value}</Text>
         <Text className="text-sm text-tinta/65">{label}</Text>
-      </View>
+      </Card>
     </Enter>
+  );
+}
+
+const WEEK = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+
+/** Last 7 days ending today; a day is lit when it falls inside the current streak. */
+function WeekStreak({ streakDays }: { streakDays: number }) {
+  const today = new Date().getDay();
+  return (
+    <Card className="gap-3 p-4">
+      <Text className="font-display-bold text-base text-tinta">{strings.stats.week}</Text>
+      <View className="flex-row items-end justify-between">
+        {WEEK.map((_, i) => {
+          const ago = 6 - i;
+          const on = ago < streakDays;
+          return (
+            <View key={ago} className="items-center gap-2">
+              <View className={`w-7 rounded-full ${on ? 'h-14 bg-floresta' : 'h-6 bg-fio'}`} />
+              <Text className="font-body-semibold text-xs text-tinta/65">
+                {WEEK[(today - ago + 7) % 7]}
+              </Text>
+            </View>
+          );
+        })}
+      </View>
+    </Card>
   );
 }
 
@@ -56,7 +79,7 @@ export default function StatsScreen() {
       </Enter>
       {p && lvl ? (
         <>
-          <Enter index={1} className="gap-2 rounded-3xl bg-musgo p-5">
+          <Enter index={1} className="gap-2 rounded-3xl bg-floresta p-5">
             <Text className="text-sm text-white/75">{strings.stats.level}</Text>
             <Text className="font-display text-white" style={{ fontSize: 56, lineHeight: 60 }}>
               {lvl.level}
@@ -70,6 +93,9 @@ export default function StatsScreen() {
                 level: lvl.level + 1,
               })}
             </Text>
+          </Enter>
+          <Enter index={2}>
+            <WeekStreak streakDays={p.streakDays} />
           </Enter>
           <View className="flex-row flex-wrap gap-3">
             <Stat

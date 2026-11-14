@@ -10,14 +10,14 @@ import Svg, {
 } from 'react-native-svg';
 import type { MascotMood, MascotSkin } from '../../domain/mascot';
 
-interface Palette {
+export interface Palette {
   fur: [string, string];
   hood: [string, string];
   muzzle: string;
   earInner: string;
 }
 
-const PALETTES: Record<MascotSkin, Palette> = {
+export const PALETTES: Record<MascotSkin, Palette> = {
   default: {
     fur: ['#E6AC66', '#BC7A3B'],
     hood: ['#2E7D4F', '#195234'],
@@ -60,6 +60,9 @@ export function Mascot({ skin, mood, size = 120, crop = 'full' }: Props) {
   const peek = mood === 'peek';
   const dy = peek ? 22 : 0; // head sits lower when peeking
   const closedEyes = mood === 'sleepy' || mood === 'proud' || mood === 'royal';
+  const crowned = mood === 'royal' || mood === 'phone';
+  const thumbs = mood === 'happy' || mood === 'wink';
+  const sad = mood === 'sad';
 
   return (
     <Svg
@@ -88,6 +91,13 @@ export function Mascot({ skin, mood, size = 120, crop = 'full' }: Props) {
         <Path d="M30 200 C34 150 62 128 100 128 C138 128 166 150 170 200 Z" fill="#164A2E" />
       ) : null}
 
+      {mood === 'phone' || mood === 'wink' ? (
+        <G>
+          <Path d="M138 150 C170 144 182 168 178 200 H140 Z" fill="#1B5E3A" />
+          <Path d="M146 160 C162 158 170 172 168 190" stroke="#0F3F29" strokeWidth={3} fill="none" />
+        </G>
+      ) : null}
+
       {!peek ? (
         <G>
           <Path d="M46 200 C46 160 68 138 100 138 C132 138 154 160 154 200 Z" fill={hood} />
@@ -108,7 +118,7 @@ export function Mascot({ skin, mood, size = 120, crop = 'full' }: Props) {
         </G>
       ) : null}
 
-      {mood === 'happy' ? (
+      {thumbs ? (
         <G>
           <Ellipse cx={46} cy={172} rx={13} ry={26} fill={hood} rotation={12} origin="46,172" />
           <Ellipse cx={158} cy={152} rx={13} ry={25} fill={hood} rotation={-28} origin="158,152" />
@@ -121,6 +131,23 @@ export function Mascot({ skin, mood, size = 120, crop = 'full' }: Props) {
             strokeWidth={2}
             strokeLinecap="round"
           />
+        </G>
+      ) : null}
+
+      {mood === 'phone' ? (
+        <G>
+          <Ellipse cx={154} cy={176} rx={13} ry={24} fill={hood} rotation={-10} origin="154,176" />
+          <Ellipse cx={52} cy={158} rx={13} ry={24} fill={hood} rotation={-38} origin="52,158" />
+          <Path d="M20 132 L46 124 L58 176 L32 184 Z" fill="#26323A" />
+          <Path d="M24 134 L43 128 L53 172 L34 178 Z" fill="#6FB5E6" opacity={0.55} />
+          <Circle cx={50} cy={168} r={12} fill={fur} />
+        </G>
+      ) : null}
+
+      {mood === 'sad' ? (
+        <G>
+          <Ellipse cx={44} cy={176} rx={13} ry={24} fill={hood} rotation={8} origin="44,176" />
+          <Ellipse cx={156} cy={176} rx={13} ry={24} fill={hood} rotation={-8} origin="156,176" />
         </G>
       ) : null}
 
@@ -183,12 +210,30 @@ export function Mascot({ skin, mood, size = 120, crop = 'full' }: Props) {
           </G>
         ) : (
           <G>
-            <Ellipse cx={78} cy={86} rx={7.5} ry={9.5} fill={INK} />
+            {mood === 'wink' ? (
+              <Path
+                d="M69 88 Q78 80 87 88"
+                stroke={INK}
+                strokeWidth={3.6}
+                strokeLinecap="round"
+                fill="none"
+              />
+            ) : (
+              <G>
+                <Ellipse cx={78} cy={86} rx={7.5} ry={9.5} fill={INK} />
+                <Circle cx={80.5} cy={82} r={2.8} fill="#FFFFFF" />
+                <Circle cx={75.5} cy={90} r={1.4} fill="#FFFFFF" />
+              </G>
+            )}
             <Ellipse cx={122} cy={86} rx={7.5} ry={9.5} fill={INK} />
-            <Circle cx={80.5} cy={82} r={2.8} fill="#FFFFFF" />
             <Circle cx={124.5} cy={82} r={2.8} fill="#FFFFFF" />
-            <Circle cx={75.5} cy={90} r={1.4} fill="#FFFFFF" />
             <Circle cx={119.5} cy={90} r={1.4} fill="#FFFFFF" />
+            {sad ? (
+              <G stroke={INK} strokeWidth={3.2} strokeLinecap="round" fill="none">
+                <Path d="M66 70 L88 76" />
+                <Path d="M134 70 L112 76" />
+              </G>
+            ) : null}
           </G>
         )}
 
@@ -200,6 +245,18 @@ export function Mascot({ skin, mood, size = 120, crop = 'full' }: Props) {
             strokeLinecap="round"
             fill="none"
           />
+        ) : sad ? (
+          <G>
+            <Path
+              d="M89 120 Q100 108 111 120"
+              stroke={INK}
+              strokeWidth={3.2}
+              strokeLinecap="round"
+              fill="none"
+            />
+            <Path d="M100 104 V110" stroke={INK} strokeWidth={2.8} strokeLinecap="round" />
+            <Path d="M70 100 Q66 112 70 118 Q76 112 70 100 Z" fill="#7EC8F0" />
+          </G>
         ) : mood === 'royal' ? (
           <Path
             d="M90 112 Q100 122 110 112"
@@ -216,7 +273,7 @@ export function Mascot({ skin, mood, size = 120, crop = 'full' }: Props) {
           </G>
         )}
 
-        {mood === 'royal' ? (
+        {crowned ? (
           <G>
             <Path d="M70 50 L78 20 L91 38 L100 12 L109 38 L122 20 L130 50 Z" fill="url(#gold-m)" />
             <Circle cx={100} cy={40} r={4.5} fill="#E8503A" />

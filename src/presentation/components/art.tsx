@@ -3,6 +3,8 @@ import { StyleSheet, View } from 'react-native';
 import type { ColorValue, StyleProp, ViewStyle } from 'react-native';
 import Svg, {
   Circle,
+  Ellipse,
+  Text as SvgText,
   Defs,
   G,
   LinearGradient,
@@ -239,6 +241,49 @@ export function ClockArt({ size = 54 }: { size?: number }) {
   );
 }
 
+/** Round category badge (house / dumbbell / book / graduation cap) used on task cards. */
+export function CategoryArt({
+  size = 56,
+  category,
+  done = false,
+}: {
+  size?: number;
+  category: 'home' | 'exercise' | 'reading' | 'study';
+  done?: boolean;
+}) {
+  const bg = done ? '#E4E6DE' : { home: '#DDEFD3', exercise: '#FFE2C2', reading: '#DCE9F7', study: '#F2E1F5' }[category];
+  const fg = done ? '#9AA39C' : { home: '#2E9A5B', exercise: '#E8772B', reading: '#3F7FC8', study: '#9B54B8' }[category];
+  return (
+    <Svg width={size} height={size} viewBox="0 0 100 100" {...hidden}>
+      <Circle cx={50} cy={50} r={48} fill={bg} />
+      {category === 'home' ? (
+        <G>
+          <Path d="M26 54 L50 32 L74 54" stroke={fg} strokeWidth={8} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          <Path d="M34 50 V72 H66 V50" stroke={fg} strokeWidth={8} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        </G>
+      ) : null}
+      {category === 'exercise' ? (
+        <G stroke={fg} strokeWidth={8} strokeLinecap="round">
+          <Path d="M32 50 H68" />
+          <Path d="M30 38 V62 M22 43 V57 M70 38 V62 M78 43 V57" />
+        </G>
+      ) : null}
+      {category === 'reading' ? (
+        <G stroke={fg} strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" fill="none">
+          <Path d="M50 38 C42 32 32 32 24 36 V68 C32 64 42 64 50 70 C58 64 68 64 76 68 V36 C68 32 58 32 50 38 Z" />
+          <Path d="M50 38 V70" />
+        </G>
+      ) : null}
+      {category === 'study' ? (
+        <G stroke={fg} strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" fill="none">
+          <Path d="M50 30 L82 44 L50 58 L18 44 Z" />
+          <Path d="M32 54 V66 C42 74 58 74 68 66 V54" />
+        </G>
+      ) : null}
+    </Svg>
+  );
+}
+
 /** Generic "task done in real life" illustration (clipboard with check). */
 export function TaskArt({ size = 54, done = false }: { size?: number; done?: boolean }) {
   return (
@@ -430,5 +475,126 @@ export function FloatingApps() {
         />,
       )}
     </View>
+  );
+}
+
+/** Phone locked behind a padlock, with generic app tiles and leaves (onboarding slide 2). */
+export function PhoneLockArt({ size = 230 }: { size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 240 240" {...hidden}>
+      <Defs>
+        <LinearGradient id="pl-tile1" x1="0" y1="1" x2="1" y2="0">
+          <Stop offset="0" stopColor="#F9A03F" />
+          <Stop offset="0.5" stopColor="#E8503A" />
+          <Stop offset="1" stopColor="#B83EA8" />
+        </LinearGradient>
+        <LinearGradient id="pl-gold" x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0" stopColor="#FFE07A" />
+          <Stop offset="1" stopColor="#F0A500" />
+        </LinearGradient>
+      </Defs>
+      <Path d="M20 160 C10 100 50 60 96 74 C150 60 214 100 196 160 C184 214 50 222 20 160 Z" fill="#D5E9C5" />
+      <Path d="M30 170 C34 140 56 130 74 150 C58 150 46 160 44 184 Z" fill="#4FA766" />
+      <Path d="M204 160 C200 130 178 122 162 142 C178 142 190 152 192 176 Z" fill="#3F9A5E" />
+      <Rect x={70} y={16} width={104} height={186} rx={20} fill="#17492F" />
+      <Rect x={77} y={25} width={90} height={168} rx={13} fill="#EEF6E8" />
+      <Rect x={108} y={29} width={28} height={6} rx={3} fill="#17492F" />
+      <Rect x={86} y={50} width={34} height={34} rx={10} fill="url(#pl-tile1)" />
+      <Circle cx={103} cy={67} r={8} stroke="#FFFFFF" strokeWidth={3} fill="none" />
+      <Rect x={126} y={50} width={34} height={34} rx={10} fill="#1B1B1F" />
+      <Path d="M144 58 V74 a5 5 0 1 1 -3 -4.6 M144 58 q3 6 9 6" stroke="#FFFFFF" strokeWidth={3} fill="none" strokeLinecap="round" />
+      <Rect x={96} y={96} width={54} height={36} rx={10} fill="#E53935" />
+      <Path d="M115 106 L131 114 L115 122 Z" fill="#FFFFFF" />
+      <Rect x={50} y={140} width={62} height={52} rx={12} fill="url(#pl-gold)" />
+      <Path d="M64 142 V128 a17 17 0 0 1 34 0 V142" stroke="#C98A00" strokeWidth={8} fill="none" strokeLinecap="round" />
+      <Circle cx={81} cy={162} r={6} fill="#7A4B00" />
+      <Rect x={78.5} y={164} width={5} height={13} rx={2.5} fill="#7A4B00" />
+    </Svg>
+  );
+}
+
+/** Golden trophy with gems and leaves (onboarding slide 3). */
+export function TrophyArt({ size = 230 }: { size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 240 240" {...hidden}>
+      <Defs>
+        <LinearGradient id="tr-gold" x1="0" y1="0" x2="1" y2="1">
+          <Stop offset="0" stopColor="#FFE680" />
+          <Stop offset="0.55" stopColor="#F7B500" />
+          <Stop offset="1" stopColor="#D98E00" />
+        </LinearGradient>
+        <LinearGradient id="tr-blue" x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0" stopColor="#8EDCFF" />
+          <Stop offset="1" stopColor="#2F8FE0" />
+        </LinearGradient>
+      </Defs>
+      <Path d="M30 190 C20 130 56 100 120 108 C186 98 222 134 208 190 C180 226 56 228 30 190 Z" fill="#CFE6B8" />
+      <Path d="M24 180 C20 150 44 128 72 150 C52 150 40 164 40 192 Z" fill="#3F9A5E" />
+      <Path d="M216 180 C220 150 196 128 168 150 C188 150 200 164 200 192 Z" fill="#2F8A52" />
+      <Path d="M84 60 C54 60 44 78 52 98 C58 112 76 118 90 114" stroke="url(#tr-gold)" strokeWidth={9} fill="none" strokeLinecap="round" />
+      <Path d="M156 60 C186 60 196 78 188 98 C182 112 164 118 150 114" stroke="url(#tr-gold)" strokeWidth={9} fill="none" strokeLinecap="round" />
+      <Path d="M80 46 H160 V92 C160 122 142 140 120 142 C98 140 80 122 80 92 Z" fill="url(#tr-gold)" />
+      <Path d="M92 52 H108 V104 C108 118 100 128 92 120 Z" fill="#FFFFFF" opacity={0.28} />
+      <Path d="M120 66 L126 82 L143 83 L130 94 L134 111 L120 102 L106 111 L110 94 L97 83 L114 82 Z" fill="#FFF3B0" />
+      <Rect x={112} y={140} width={16} height={26} fill="#E5A100" />
+      <Rect x={90} y={164} width={60} height={14} rx={5} fill="url(#tr-gold)" />
+      <Rect x={76} y={176} width={88} height={30} rx={8} fill="#1C5A3A" />
+      <Rect x={104} y={186} width={32} height={10} rx={3} fill="#F7B500" />
+      <Path d="M52 150 L66 140 L80 150 L66 168 Z" fill="url(#tr-blue)" />
+      <Path d="M176 148 L192 136 L206 148 L190 170 Z" fill="url(#tr-blue)" />
+      <Path d="M168 38 L176 30 L184 38 L176 50 Z" fill="url(#tr-blue)" />
+      <Path d={star(54, 54, 9)} fill="#FFC72C" />
+      <Path d={star(196, 70, 6)} fill="#FFC72C" />
+    </Svg>
+  );
+}
+
+const SLEEPY_FUR: Record<string, [string, string]> = {
+  default: ['#E9A94F', '#F2C98F'],
+  mascot_skin_fire: ['#EE8F5E', '#F6BE9C'],
+  mascot_skin_zen: ['#D9CBA3', '#EFE6C8'],
+};
+
+/**
+ * Sleeping bear hugging a clock among leaves ("out of time" art). Same geometry as the native
+ * Android block screen (SleepyBearView.kt), on a 240 x 240 grid.
+ */
+export function SleepyClockArt({ size = 260, skin = 'default' }: { size?: number; skin?: string }) {
+  const [fur, inner] = SLEEPY_FUR[skin] ?? SLEEPY_FUR.default!;
+  const ink = '#2A1A12';
+  return (
+    <Svg width={size} height={size} viewBox="0 0 240 240" {...hidden}>
+      {/* leaves + mound */}
+      <Path d="M18 150 C30 110 62 100 88 120 C62 120 40 132 30 160 Z" fill="#4FA766" />
+      <Path d="M222 150 C212 112 184 102 158 122 C182 122 200 134 210 160 Z" fill="#3F9A5E" />
+      <Path d="M44 120 C40 84 60 66 82 78 C66 86 56 100 56 124 Z" fill="#6CC27F" />
+      <Path d="M196 118 C200 84 182 66 160 80 C176 88 184 100 184 124 Z" fill="#58B06C" />
+      <Ellipse cx={120} cy={204} rx={104} ry={40} fill="#14492D" />
+      <Ellipse cx={120} cy={186} rx={84} ry={44} fill="#1B6B43" />
+      {/* ears + head */}
+      <Circle cx={80} cy={58} r={19} fill={fur} />
+      <Circle cx={160} cy={58} r={19} fill={fur} />
+      <Circle cx={80} cy={58} r={10} fill={inner} />
+      <Circle cx={160} cy={58} r={10} fill={inner} />
+      <Circle cx={120} cy={100} r={54} fill={fur} />
+      <Ellipse cx={120} cy={120} rx={23} ry={17} fill={inner} />
+      <Ellipse cx={120} cy={110} rx={7.5} ry={5.2} fill={ink} />
+      <Path d="M86 96 Q96 106 106 96 M134 96 Q144 106 154 96" stroke={ink} strokeWidth={4} strokeLinecap="round" fill="none" />
+      <Path d="M112 130 Q120 124 128 130" stroke={ink} strokeWidth={3.4} strokeLinecap="round" fill="none" />
+      {/* clock */}
+      <Circle cx={120} cy={168} r={46} fill="#14522F" />
+      <Circle cx={120} cy={168} r={37} fill="#F8E9C4" />
+      <Path d="M120 136 V143 M120 193 V200 M88 168 H95 M145 168 H152" stroke="#14522F" strokeWidth={3.6} strokeLinecap="round" />
+      <Path d="M104 166 L117 178 L140 154" stroke="#14522F" strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      {/* paws */}
+      <Circle cx={80} cy={150} r={15} fill={fur} />
+      <Circle cx={160} cy={150} r={15} fill={fur} />
+      {/* Zzz + sparkles */}
+      <SvgText x={178} y={72} fontSize={20} fontWeight="bold" fill="#5BBF73">z</SvgText>
+      <SvgText x={196} y={52} fontSize={26} fontWeight="bold" fill="#5BBF73">z</SvgText>
+      <SvgText x={212} y={28} fontSize={32} fontWeight="bold" fill="#5BBF73">z</SvgText>
+      <Path d={star(38, 62, 9)} fill="#FFC72C" />
+      <Path d={star(208, 106, 7)} fill="#FFC72C" />
+    </Svg>
   );
 }

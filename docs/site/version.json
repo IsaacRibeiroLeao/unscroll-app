@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0",
+  "version": "0.3.0",
   "minSupported": "0.1.0",
-  "notes": "Login por e-mail, recuperação de senha, exclusão de conta e Pro por Pix ou cartão."
+  "notes": "Novo visual do app, tela de apps bloqueados, sequência protegida e tela Tempo esgotado."
 }

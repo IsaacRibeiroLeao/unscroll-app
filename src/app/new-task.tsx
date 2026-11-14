@@ -1,17 +1,20 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigation, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Keyboard, TextInput, View } from 'react-native';
+import { Keyboard, Pressable, ScrollView, TextInput, View } from 'react-native';
 import { Text } from '../presentation/ui';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { errorMessage } from '../application/errorMessages';
 import { withNewTask } from '../application/taskList';
 import type { Task, TaskCategory, TaskRecurrence } from '../application/ports/IBackendApi';
 import { Button } from '../presentation/components/Button';
-import { Hills, SparkleIcon } from '../presentation/components/art';
+import { Hills } from '../presentation/components/art';
+import { AppIcon } from '../presentation/components/AppIcon';
+import { PlusIcon, SearchIcon } from '../presentation/components/Icons';
+import { ScreenHeader } from '../presentation/components/ScreenHeader';
 import { Enter, PressableScale } from '../presentation/motion';
 import { backend, errorTexts } from '../presentation/state/container';
-import { keys } from '../presentation/state/queries';
+import { keys, useBlockedApps } from '../presentation/state/queries';
+import { fill } from '../presentation/format';
 import { strings } from '../strings/pt-BR';
 
 const CATEGORIES = ['home', 'exercise', 'reading', 'study'] as const;
@@ -25,6 +28,7 @@ export default function NewTaskScreen() {
   const [description, setDescription] = useState('');
   const [recurrence, setRecurrence] = useState<TaskRecurrence>('once');
   const [category, setCategory] = useState<TaskCategory>('home');
+  const blocked = useBlockedApps();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,50 +59,20 @@ export default function NewTaskScreen() {
     }
   };
 
+  const field =
+    'min-h-14 rounded-2xl border border-fio bg-folha px-4 text-base text-tinta';
+  const shownApps = blocked.data?.apps.slice(0, 4) ?? [];
+
   return (
-    <SafeAreaView className="flex-1 bg-nevoa">
-      <Hills height={170} />
-      <View className="gap-3 p-5">
-        <Enter index={0}>
-          <Text accessibilityRole="header" className="text-2xl font-display-bold text-tinta">
-            {strings.newTask.title}
-          </Text>
-        </Enter>
-
-        <Enter index={1} className="gap-3">
-          <Text className="text-base font-display-bold text-tinta">
-            {strings.newTask.categoryLabel}
-          </Text>
-          <View className="flex-row flex-wrap gap-2">
-            {CATEGORIES.map((value) => {
-              const selected = category === value;
-              return (
-                <PressableScale
-                  key={value}
-                  wrapperClassName="min-w-[47%] flex-1"
-                  accessibilityRole="radio"
-                  accessibilityState={{ selected }}
-                  accessibilityLabel={`${strings.categories[value]}. ${strings.categories[`${value}Hint`]}`}
-                  disabled={busy}
-                  onPress={() => setCategory(value)}
-                  className={`min-h-12 justify-center rounded-2xl px-4 py-2 ${selected ? 'bg-tinta' : 'border-2 border-fio bg-folha'}`}
-                >
-                  <Text
-                    className={`font-display-bold text-base ${selected ? 'text-nevoa' : 'text-tinta'}`}
-                  >
-                    {strings.categories[value]}
-                  </Text>
-                  <Text className={`text-xs ${selected ? 'text-nevoa/80' : 'text-tinta/60'}`}>
-                    {strings.categories[`${value}Hint`]}
-                  </Text>
-                </PressableScale>
-              );
-            })}
-          </View>
-        </Enter>
-
-        <Enter index={2} className="gap-3">
-          <Text className="text-lg font-display-bold text-tinta">{strings.newTask.titleLabel}</Text>
+    <View className="flex-1 bg-nevoa">
+      <Hills height={150} />
+      <ScreenHeader title={strings.newTask.title} onBack={() => router.back()} />
+      <ScrollView
+        contentContainerClassName="gap-5 px-5 pb-10 pt-2"
+        keyboardShouldPersistTaps="handled"
+      >
+        <Enter index={1} className="gap-2">
+          <Text className="font-display-bold text-lg text-tinta">{strings.newTask.titleLabel}</Text>
           <View className="justify-center">
             <TextInput
               editable={!busy}
@@ -107,17 +81,46 @@ export default function NewTaskScreen() {
               maxLength={80}
               placeholder={strings.newTask.titlePlaceholder}
               accessibilityLabel={strings.newTask.titleLabel}
-              className="min-h-14 rounded-2xl border border-fio bg-folha pl-12 pr-4 text-base text-tinta"
+              className={`${field} pl-12`}
               placeholderTextColor="#8A978E"
             />
             <View className="absolute left-4" pointerEvents="none">
-              <SparkleIcon size={20} />
+              <SearchIcon size={20} />
             </View>
           </View>
         </Enter>
 
-        <Enter index={3} className="gap-3">
-          <Text className="text-base font-display-bold text-tinta">
+        <Enter index={2} className="gap-2">
+          <Text className="font-display-bold text-base text-tinta">
+            {strings.newTask.categoryLabel}
+          </Text>
+          <View className="flex-row flex-wrap gap-2">
+            {CATEGORIES.map((value) => {
+              const selected = category === value;
+              return (
+                <PressableScale
+                  key={value}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected }}
+                  accessibilityLabel={`${strings.categories[value]}. ${strings.categories[`${value}Hint`]}`}
+                  disabled={busy}
+                  onPress={() => setCategory(value)}
+                  className={`min-h-11 justify-center rounded-full px-4 ${selected ? 'bg-tinta' : 'border border-fio bg-folha'}`}
+                >
+                  <Text
+                    className={`font-display-bold text-[15px] ${selected ? 'text-nevoa' : 'text-tinta'}`}
+                  >
+                    {strings.categories[value]}
+                  </Text>
+                </PressableScale>
+              );
+            })}
+          </View>
+          <Text className="text-xs text-tinta/60">{strings.categories[`${category}Hint`]}</Text>
+        </Enter>
+
+        <Enter index={3} className="gap-2">
+          <Text className="font-display-bold text-base text-tinta">
             {strings.newTask.descriptionLabel}
           </Text>
           <TextInput
@@ -128,14 +131,53 @@ export default function NewTaskScreen() {
             multiline
             placeholder={strings.newTask.descriptionPlaceholder}
             accessibilityLabel={strings.newTask.descriptionLabel}
-            className="min-h-28 rounded-2xl border border-fio bg-folha px-4 py-3 text-base text-tinta"
+            className={`${field} min-h-24 py-3`}
             placeholderTextColor="#8A978E"
             textAlignVertical="top"
           />
         </Enter>
 
-        <Enter index={4} className="gap-3">
-          <Text className="text-base font-display-bold text-tinta">
+        <Enter index={4} className="gap-2">
+          <Text className="font-display-bold text-base text-tinta">
+            {strings.newTask.blockedAppsLabel}
+          </Text>
+          <View className="flex-row items-start gap-4">
+            {shownApps.map((app) => (
+              <View key={app.id} className="w-14 items-center gap-1">
+                <AppIcon app={app} size={52} />
+                <Text className="text-[11px] text-tinta/70" numberOfLines={1}>
+                  {app.label}
+                </Text>
+              </View>
+            ))}
+            {blocked.data && blocked.data.apps.length === 0 && blocked.data.count > 0 ? (
+              <Text className="flex-1 pt-3 text-sm text-tinta/70">
+                {fill(strings.blockedApps.iosCount, { count: blocked.data.count })}
+              </Text>
+            ) : null}
+            {blocked.data && blocked.data.count === 0 ? (
+              <Text className="flex-1 pt-3 text-sm text-tinta/70">
+                {strings.newTask.noBlockedApps}
+              </Text>
+            ) : null}
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={strings.newTask.moreApps}
+              onPress={() => router.push('/blocked-apps')}
+              className="w-14 items-center gap-1 active:opacity-60"
+            >
+              <View className="h-[52px] w-[52px] items-center justify-center rounded-2xl border border-fio bg-folha">
+                <PlusIcon size={22} color="#16372A" />
+              </View>
+              <Text className="text-[11px] text-tinta/70" numberOfLines={1}>
+                {strings.newTask.moreApps}
+              </Text>
+            </Pressable>
+          </View>
+        </Enter>
+
+        <Enter index={5} className="gap-2">
+          <Text className="font-display-bold text-base text-tinta">
             {strings.newTask.recurrenceLabel}
           </Text>
           <View className="flex-row gap-3">
@@ -149,7 +191,7 @@ export default function NewTaskScreen() {
                   accessibilityState={{ selected }}
                   disabled={busy}
                   onPress={() => setRecurrence(value)}
-                  className={`min-h-12 items-center justify-center rounded-full ${selected ? 'bg-tinta' : 'border-2 border-tinta'}`}
+                  className={`min-h-12 items-center justify-center rounded-2xl ${selected ? 'bg-tinta' : 'border border-fio bg-folha'}`}
                 >
                   <Text
                     className={
@@ -172,10 +214,10 @@ export default function NewTaskScreen() {
           </Enter>
         ) : null}
 
-        <Enter index={5} className="gap-3">
+        <Enter index={6} className="gap-1">
           <Button
             label={strings.newTask.create}
-            icon={<SparkleIcon size={20} />}
+            variant="forest"
             onPress={() => void create()}
             disabled={!valid}
             loading={busy}
@@ -187,7 +229,7 @@ export default function NewTaskScreen() {
             onPress={() => router.back()}
           />
         </Enter>
-      </View>
-    </SafeAreaView>
+      </ScrollView>
+    </View>
   );
 }

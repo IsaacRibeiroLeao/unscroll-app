@@ -6,23 +6,21 @@ import { Text } from '../presentation/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { PermissionKey, PermissionStatus } from '../application/ports/IScreenBlockerService';
 import { Button } from '../presentation/components/Button';
-import {
-  FloatingApps,
-  GradientView,
-  Hills,
-  HourglassArt,
-  Sparkles,
-} from '../presentation/components/art';
+import { Hills, PhoneLockArt, Sparkles, TrophyArt } from '../presentation/components/art';
+import { Card } from '../presentation/components/Card';
+import { CheckIcon } from '../presentation/components/Icons';
 import { Mascot } from '../presentation/components/Mascot';
 import { fill } from '../presentation/format';
-import { Enter, Float, StepView } from '../presentation/motion';
+import { Float, StepView } from '../presentation/motion';
 import { useAppStore } from '../presentation/state/appStore';
 import { blocker } from '../presentation/state/container';
 import { setOnboarded } from '../infra/storage/onboardingFlag';
 import { strings } from '../strings/pt-BR';
 
-type Step = 'welcome' | 'how' | 'permissions' | 'pick' | 'notifications';
-const STEPS: Step[] = ['welcome', 'how', 'permissions', 'pick', 'notifications'];
+type Step = 'slide0' | 'slide1' | 'slide2' | 'permissions' | 'pick' | 'notifications';
+const STEPS: Step[] = ['slide0', 'slide1', 'slide2', 'permissions', 'pick', 'notifications'];
+const SLIDE_COUNT = 3;
+const SETUP_START = SLIDE_COUNT;
 
 const PERMISSION_KEYS: PermissionKey[] =
   Platform.OS === 'ios'
@@ -38,7 +36,7 @@ export default function OnboardingScreen() {
   const [pickedCount, setPickedCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const step = STEPS[index] ?? 'welcome';
+  const step = STEPS[index] ?? 'slide0';
 
   // Android grants happen in system Settings: re-check whenever the app comes back.
   useEffect(() => {
@@ -104,148 +102,197 @@ export default function OnboardingScreen() {
   };
 
   const permsOk = perms?.granted ?? false;
+  const slide = index < SLIDE_COUNT ? strings.onboarding.slides[index] : undefined;
+  const setupNumber = index - SETUP_START + 1;
+  const setupTotal = STEPS.length - SETUP_START;
 
-  return (
-    <GradientView id="onb" stops={['#1F6B43', '#0F3F29']} className="flex-1">
-      <Sparkles />
-      <FloatingApps />
-      <View className="items-center justify-end" style={{ height: 250, paddingTop: insets.top }}>
-        <View className="absolute left-8 top-16 opacity-90" style={{ top: insets.top + 24 }}>
-          <Float amplitude={4} duration={1300}>
-            <HourglassArt size={34} />
-          </Float>
+  if (slide) {
+    const last = index === SLIDE_COUNT - 1;
+    return (
+      <View className="flex-1 bg-nevoa" style={{ paddingTop: insets.top }}>
+        <Hills height={120} />
+        <View className="flex-1 items-center justify-center">
+          <Sparkles />
+          <StepView key={index}>
+            <Float amplitude={5} duration={1600}>
+              {index === 0 ? <Mascot skin="default" mood="wink" size={250} /> : null}
+              {index === 1 ? <PhoneLockArt size={250} /> : null}
+              {index === 2 ? <TrophyArt size={250} /> : null}
+            </Float>
+          </StepView>
         </View>
-        <Float amplitude={5} duration={1500}>
-          <Mascot skin="default" mood="peek" size={190} />
-        </Float>
-      </View>
-      <ScrollView
-        className="flex-1 bg-nevoa"
-        style={{ borderTopLeftRadius: 36, borderTopRightRadius: 36 }}
-        contentContainerClassName="gap-4 p-6"
-        contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
-      >
-        {step === 'welcome' ? (
-          <StepView>
+        <View className="items-center gap-3 px-8" style={{ paddingBottom: insets.bottom + 28 }}>
+          <StepView key={`t${index}`}>
             <Text
               accessibilityRole="header"
-              className="text-center font-display text-3xl text-tinta"
+              className="text-center font-display text-[32px] leading-10 text-tinta"
             >
-              {strings.onboarding.welcomeTitle}
+              {slide.title}
             </Text>
-            <Text className="text-center text-base text-tinta/70">
-              {strings.onboarding.welcomeBody}
-            </Text>
-            <Button label={`${strings.onboarding.next} →`} onPress={next} />
+            <Text className="mt-2 text-center text-lg text-tinta/70">{slide.body}</Text>
           </StepView>
-        ) : null}
-
-        {step === 'how' ? (
-          <StepView>
-            <Text accessibilityRole="header" className="text-2xl font-display-bold text-tinta">
-              {strings.onboarding.howTitle}
-            </Text>
-            {strings.onboarding.howSteps.map((s, i) => (
-              <Enter key={s} index={i + 1}>
-                <Text className="text-base text-tinta">
-                  {i + 1}. {s}
-                </Text>
-              </Enter>
+          <View
+            accessible
+            accessibilityLabel={fill(strings.onboarding.stepOf, { n: index + 1, total: SLIDE_COUNT })}
+            className="my-3 flex-row items-center gap-2"
+          >
+            {Array.from({ length: SLIDE_COUNT }, (_, i) => (
+              <View
+                key={i}
+                className={`h-2.5 rounded-full ${i === index ? 'w-6 bg-tinta' : 'w-2.5 bg-floresta/35'}`}
+              />
             ))}
-            <Button label={strings.onboarding.next} onPress={next} />
-          </StepView>
-        ) : null}
+          </View>
+          <View className="w-full gap-1">
+            <Button
+              label={last ? strings.onboarding.letsGo : strings.onboarding.next}
+              variant={last ? 'sun' : 'primary'}
+              onPress={next}
+            />
+            {last ? null : (
+              <Button
+                label={strings.onboarding.skip}
+                variant="ghost"
+                onPress={() => {
+                  setError(null);
+                  setIndex(SETUP_START);
+                }}
+              />
+            )}
+          </View>
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View className="flex-1 bg-nevoa">
+      <Hills height={110} />
+      <ScrollView
+        contentContainerClassName="gap-4 px-6"
+        contentContainerStyle={{ paddingTop: insets.top + 24, paddingBottom: insets.bottom + 40 }}
+      >
+        <View className="flex-row items-center gap-3">
+          <Mascot skin="default" mood="happy" size={64} crop="head" />
+          <Text className="font-body-semibold text-sm text-tinta/60">
+            {fill(strings.onboarding.stepOf, { n: setupNumber, total: setupTotal })}
+          </Text>
+        </View>
 
         {step === 'permissions' ? (
           <StepView>
-            <Text accessibilityRole="header" className="text-2xl font-display-bold text-tinta">
+            <Text accessibilityRole="header" className="text-3xl font-display text-tinta">
               {strings.onboarding.permissionsTitle}
             </Text>
-            <Text className="text-base text-tinta/80">
+            <Text className="mt-2 text-base text-tinta/75">
               {Platform.OS === 'ios'
                 ? strings.onboarding.permissionsBodyIos
                 : strings.onboarding.permissionsBodyAndroid}
             </Text>
-            {PERMISSION_KEYS.map((key) => {
-              const missing = perms?.missing.includes(key) ?? true;
-              return (
-                <View
-                  key={key}
-                  accessible
-                  accessibilityLabel={`${strings.onboarding.perm[key]}: ${missing ? strings.onboarding.permMissing : strings.onboarding.permGranted}`}
-                  className="flex-row items-center justify-between border-b border-fio py-3"
-                >
-                  <Text className="flex-1 pr-2 text-base text-tinta">
-                    {strings.onboarding.perm[key]}
-                  </Text>
-                  <Text className={missing ? 'text-pimenta' : 'text-musgo'}>
-                    {missing
-                      ? strings.onboarding.permMissing
-                      : `✓ ${strings.onboarding.permGranted}`}
-                  </Text>
-                </View>
-              );
-            })}
-            {error ? <Text className="text-sm text-pimenta">{error}</Text> : null}
-            {!permsOk || (perms?.missing.length ?? 0) > 0 ? (
+            <Card className="mt-4 px-4">
+              {PERMISSION_KEYS.map((key, i) => {
+                const missing = perms?.missing.includes(key) ?? true;
+                return (
+                  <View
+                    key={key}
+                    accessible
+                    accessibilityLabel={`${strings.onboarding.perm[key]}: ${missing ? strings.onboarding.permMissing : strings.onboarding.permGranted}`}
+                    className={`flex-row items-center gap-3 py-3.5 ${i > 0 ? 'border-t border-fio' : ''}`}
+                  >
+                    <View
+                      className={`h-7 w-7 items-center justify-center rounded-full ${missing ? 'bg-fio' : 'bg-floresta/15'}`}
+                    >
+                      {missing ? null : <CheckIcon size={16} />}
+                    </View>
+                    <Text className="flex-1 text-base text-tinta">{strings.onboarding.perm[key]}</Text>
+                    <Text
+                      className={`font-body-semibold text-sm ${missing ? 'text-pimenta' : 'text-floresta'}`}
+                    >
+                      {missing ? strings.onboarding.permMissing : strings.onboarding.permGranted}
+                    </Text>
+                  </View>
+                );
+              })}
+            </Card>
+            {error ? <Text className="mt-3 text-sm text-pimenta">{error}</Text> : null}
+            <View className="mt-4 gap-2">
+              {!permsOk || (perms?.missing.length ?? 0) > 0 ? (
+                <Button
+                  label={strings.onboarding.grant}
+                  variant="sun"
+                  onPress={() => void grant()}
+                  loading={busy}
+                />
+              ) : null}
+              {Platform.OS === 'android' && (perms?.missing.length ?? 0) > 0 ? (
+                <Button
+                  variant="ghost"
+                  label={strings.onboarding.permHelpLink}
+                  onPress={() => router.push('/permissions-help')}
+                />
+              ) : null}
               <Button
-                label={strings.onboarding.grant}
-                onPress={() => void grant()}
-                loading={busy}
+                label={strings.onboarding.next}
+                variant="forest"
+                onPress={next}
+                disabled={!permsOk}
               />
-            ) : null}
-            {Platform.OS === 'android' && (perms?.missing.length ?? 0) > 0 ? (
-              <Button
-                variant="ghost"
-                label={strings.onboarding.permHelpLink}
-                onPress={() => router.push('/permissions-help')}
-              />
-            ) : null}
-            <Button label={strings.onboarding.next} onPress={next} disabled={!permsOk} />
+            </View>
           </StepView>
         ) : null}
 
         {step === 'pick' ? (
           <StepView>
-            <Text accessibilityRole="header" className="text-2xl font-display-bold text-tinta">
+            <Text accessibilityRole="header" className="text-3xl font-display text-tinta">
               {strings.onboarding.pickTitle}
             </Text>
-            <Text className="text-base text-tinta/80">{strings.onboarding.pickBody}</Text>
-            <Text className="text-sm text-tinta/70">
-              {fill(strings.onboarding.pickedCount, { count: pickedCount })}
-            </Text>
-            {error ? <Text className="text-sm text-pimenta">{error}</Text> : null}
-            <Button
-              label={strings.onboarding.pickAction}
-              variant="secondary"
-              onPress={() => void pick()}
-              loading={busy}
-            />
-            <Button label={strings.onboarding.next} onPress={next} disabled={pickedCount === 0} />
+            <Text className="mt-2 text-base text-tinta/75">{strings.onboarding.pickBody}</Text>
+            <Card className="mt-4 flex-row items-center justify-between p-4">
+              <Text className="font-display-bold text-lg text-tinta">
+                {fill(strings.onboarding.pickedCount, { count: pickedCount })}
+              </Text>
+            </Card>
+            {error ? <Text className="mt-3 text-sm text-pimenta">{error}</Text> : null}
+            <View className="mt-4 gap-2">
+              <Button
+                label={strings.onboarding.pickAction}
+                variant="sun"
+                onPress={() => void pick()}
+                loading={busy}
+              />
+              <Button
+                label={strings.onboarding.next}
+                variant="forest"
+                onPress={next}
+                disabled={pickedCount === 0}
+              />
+            </View>
           </StepView>
         ) : null}
 
         {step === 'notifications' ? (
           <StepView>
-            <Text accessibilityRole="header" className="text-2xl font-display-bold text-tinta">
+            <Text accessibilityRole="header" className="text-3xl font-display text-tinta">
               {strings.onboarding.notificationsTitle}
             </Text>
-            <Text className="text-base text-tinta/80">{strings.onboarding.notificationsBody}</Text>
-            <Button
-              label={strings.onboarding.notificationsAction}
-              onPress={() => void finish(true)}
-              loading={busy}
-            />
-            <Button
-              label={strings.onboarding.skip}
-              variant="ghost"
-              onPress={() => void finish(false)}
-              disabled={busy}
-            />
+            <Text className="mt-2 text-base text-tinta/75">{strings.onboarding.notificationsBody}</Text>
+            <View className="mt-4 gap-2">
+              <Button
+                label={strings.onboarding.notificationsAction}
+                variant="forest"
+                onPress={() => void finish(true)}
+                loading={busy}
+              />
+              <Button
+                label={strings.onboarding.skip}
+                variant="ghost"
+                onPress={() => void finish(false)}
+                disabled={busy}
+              />
+            </View>
           </StepView>
         ) : null}
       </ScrollView>
-      <Hills tone="dark" height={90} />
-    </GradientView>
+    </View>
   );
 }
