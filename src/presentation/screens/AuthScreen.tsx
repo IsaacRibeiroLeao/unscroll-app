@@ -1,10 +1,10 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ComponentRef } from 'react';
 import {
   ActivityIndicator,
   Linking,
+  Keyboard,
   KeyboardAvoidingView,
-  Platform,
   Pressable,
   ScrollView,
   TextInput,
@@ -27,7 +27,13 @@ import { Text } from '../ui';
 type Mode = 'signUp' | 'signIn' | 'confirm' | 'forgot' | 'forgotSent';
 
 const inputClass = 'min-h-14 rounded-2xl border border-fio bg-folha px-4 py-3 text-base text-tinta';
-const FIELD_SHADOW = { shadowColor: '#16372A', shadowOpacity: 0.06, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 1 } as const;
+const FIELD_SHADOW = {
+  shadowColor: '#16372A',
+  shadowOpacity: 0.06,
+  shadowRadius: 8,
+  shadowOffset: { width: 0, height: 2 },
+  elevation: 1,
+} as const;
 
 function messageFor(error: unknown): string {
   const code = error instanceof AuthError ? error.code : 'UNKNOWN';
@@ -49,6 +55,15 @@ export function AuthScreen({
 }) {
   const t = strings.auth;
   const [mode, setMode] = useState<Mode>(initialMode);
+  const [keyboardUp, setKeyboardUp] = useState(false);
+  useEffect(() => {
+    const show = Keyboard.addListener('keyboardDidShow', () => setKeyboardUp(true));
+    const hide = Keyboard.addListener('keyboardDidHide', () => setKeyboardUp(false));
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [reveal, setReveal] = useState(false);
@@ -144,11 +159,11 @@ export function AuthScreen({
             setMessage(null);
           }}
         />
-        <KeyboardAvoidingView
-          className="flex-1"
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        >
-          <ScrollView contentContainerClassName="gap-4 px-6 pt-4" keyboardShouldPersistTaps="handled">
+        <KeyboardAvoidingView className="flex-1" behavior="padding">
+          <ScrollView
+            contentContainerClassName="gap-4 px-6 pt-4"
+            keyboardShouldPersistTaps="handled"
+          >
             <Enter index={0}>
               <Text className="text-base text-tinta/70">{t.forgotSubtitle}</Text>
             </Enter>
@@ -213,19 +228,18 @@ export function AuthScreen({
           <ArrowLeftIcon size={26} color="#16372A" />
         </Pressable>
       ) : null}
-      <KeyboardAvoidingView
-        className="flex-1"
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
+      <KeyboardAvoidingView className="flex-1" behavior="padding">
         <ScrollView
           contentContainerClassName="grow justify-center gap-4 px-6 py-8"
           keyboardShouldPersistTaps="handled"
         >
-          <Enter index={0} className="items-center">
-            <Float amplitude={5}>
-              <Mascot skin="default" mood="wink" size={130} />
-            </Float>
-          </Enter>
+          {keyboardUp ? null : (
+            <Enter index={0} className="items-center">
+              <Float amplitude={5}>
+                <Mascot skin="default" mood="wink" size={130} />
+              </Float>
+            </Enter>
+          )}
           <Enter index={1} className="gap-1">
             <Text
               accessibilityRole="header"

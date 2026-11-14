@@ -46,7 +46,7 @@ export function NewPasswordScreen({ onDone }: { onDone: () => void }) {
     <SafeAreaView className="flex-1 bg-nevoa">
       <KeyboardAvoidingView
         className="flex-1"
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior="padding"
       >
         <ScrollView
           contentContainerClassName="grow justify-center gap-4 px-6 py-8"
