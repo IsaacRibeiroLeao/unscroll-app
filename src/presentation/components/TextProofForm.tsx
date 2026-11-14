@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ActivityIndicator, ScrollTextInput } from 'react-native';
+import { ActivityIndicator, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TEXT_PROOF_LIMITS } from '../../application/ports/IBackendApi';
 import { isTextProofValid, toTextProof } from '../../application/textProof';
