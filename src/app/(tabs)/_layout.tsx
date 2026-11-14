@@ -7,6 +7,7 @@ import {
   ShopTabIcon,
   StatsTabIcon,
 } from '../../presentation/components/art';
+import { TabBounce } from '../../presentation/motion';
 import { colors } from '../../presentation/ui';
 import { strings } from '../../strings/pt-BR';
 
@@ -18,6 +19,7 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
+        animation: 'fade',
         tabBarActiveTintColor: colors.tinta,
         tabBarInactiveTintColor: INACTIVE,
         tabBarLabelStyle: { fontFamily: 'Nunito_700Bold', fontSize: 12 },
@@ -34,28 +36,44 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: strings.tabs.home,
-          tabBarIcon: ({ color }) => <HomeTabIcon color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabBounce focused={focused}>
+              <HomeTabIcon color={color} />
+            </TabBounce>
+          ),
         }}
       />
       <Tabs.Screen
         name="shop"
         options={{
           title: strings.tabs.shop,
-          tabBarIcon: ({ color }) => <ShopTabIcon color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabBounce focused={focused}>
+              <ShopTabIcon color={color} />
+            </TabBounce>
+          ),
         }}
       />
       <Tabs.Screen
         name="stats"
         options={{
           title: strings.tabs.stats,
-          tabBarIcon: ({ color }) => <StatsTabIcon color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabBounce focused={focused}>
+              <StatsTabIcon color={color} />
+            </TabBounce>
+          ),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: strings.tabs.profile,
-          tabBarIcon: ({ color }) => <ProfileTabIcon color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabBounce focused={focused}>
+              <ProfileTabIcon color={color} />
+            </TabBounce>
+          ),
         }}
       />
     </Tabs>

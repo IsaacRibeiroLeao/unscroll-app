@@ -10,6 +10,7 @@ import { Text } from '../ui';
 import { CrownIcon, GradientView } from './art';
 import { GemIcon } from './Icons';
 import { Mascot } from './Mascot';
+import { AnimatedFill, Float, PressableScale } from '../motion';
 
 interface Props {
   profile: Profile;
@@ -43,15 +44,15 @@ export function BalanceHero({ profile, onShop, onPro }: Props) {
                 <Text className="font-display-bold text-sm text-tinta">{strings.home.pro}</Text>
               </View>
             ) : (
-              <Pressable
+              <PressableScale
                 accessibilityRole="button"
                 accessibilityLabel={strings.home.pro}
                 onPress={onPro}
-                className="min-h-11 flex-row items-center gap-1 rounded-full bg-sol px-3 active:opacity-80"
+                className="min-h-11 flex-row items-center gap-1 rounded-full bg-sol px-3"
               >
                 <CrownIcon size={18} />
                 <Text className="font-display-bold text-sm text-tinta">{strings.home.pro}</Text>
-              </Pressable>
+              </PressableScale>
             )}
             <View
               accessible
@@ -86,11 +87,13 @@ export function BalanceHero({ profile, onShop, onPro }: Props) {
               {strings.home.balanceLabel}
             </Text>
           </View>
-          <Mascot
-            skin={skin}
-            mood={moodFor(profile.balanceSeconds, profile.streakDays)}
-            size={132}
-          />
+          <Float amplitude={5} duration={1600}>
+            <Mascot
+              skin={skin}
+              mood={moodFor(profile.balanceSeconds, profile.streakDays)}
+              size={132}
+            />
+          </Float>
         </View>
 
         <View className="mt-1">
@@ -103,7 +106,7 @@ export function BalanceHero({ profile, onShop, onPro }: Props) {
             accessibilityValue={{ min: 0, max: lvl.xpForNext, now: lvl.xpIntoLevel }}
             className="h-4 overflow-hidden rounded-full bg-black/25"
           >
-            <View className="h-4 rounded-full bg-sol" style={{ width: `${lvl.progress * 100}%` }} />
+            <AnimatedFill className="h-4 rounded-full bg-sol" progress={lvl.progress} />
           </View>
           <View className="mt-2 flex-row items-center justify-between">
             <Text className="font-display text-lg text-sol">

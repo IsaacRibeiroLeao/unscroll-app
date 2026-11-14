@@ -1,4 +1,5 @@
 import { Pressable, View } from 'react-native';
+import { Pop, PressableScale } from '../motion';
 import type { Task } from '../../application/ports/IBackendApi';
 import { strings } from '../../strings/pt-BR';
 import { fill } from '../format';
@@ -43,7 +44,13 @@ export function TaskRow({ task, primary, onProve, onDelete }: Props) {
     >
       <View className="flex-row items-center gap-3">
         <View className="h-16 w-16 items-center justify-center rounded-2xl bg-nevoa">
-          <TaskArt size={50} done={done} />
+          {done ? (
+            <Pop>
+              <TaskArt size={50} done />
+            </Pop>
+          ) : (
+            <TaskArt size={50} done={false} />
+          )}
         </View>
         <View className="flex-1 gap-0.5">
           <Text
@@ -72,16 +79,16 @@ export function TaskRow({ task, primary, onProve, onDelete }: Props) {
             <CheckIcon size={22} />
           </View>
         ) : !fullWidth ? (
-          <Pressable
+          <PressableScale
             accessibilityRole="button"
             accessibilityLabel={`${label}: ${task.title}`}
             accessibilityState={{ disabled: verifying }}
             disabled={verifying}
             onPress={onProve}
-            className={`min-h-12 items-center justify-center rounded-full border-2 border-fio px-5 active:opacity-80 ${verifying ? 'opacity-40' : ''}`}
+            className={`min-h-12 items-center justify-center rounded-full border-2 border-fio px-5 ${verifying ? 'opacity-40' : ''}`}
           >
             <Text className="font-display-bold text-base text-tinta">{label}</Text>
-          </Pressable>
+          </PressableScale>
         ) : null}
       </View>
 

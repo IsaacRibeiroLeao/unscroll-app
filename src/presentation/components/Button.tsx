@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { ActivityIndicator, Pressable, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
+import { PressableScale } from '../motion';
 import { Text, colors } from '../ui';
 
 interface Props {
@@ -37,7 +38,8 @@ export function Button({ label, onPress, variant = 'primary', disabled, loading,
   const off = disabled || loading;
   const link = variant === 'ghost' || variant === 'ghostLight';
   return (
-    <Pressable
+    <PressableScale
+      scaleTo={link ? 0.98 : 0.95}
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ disabled: !!off, busy: !!loading }}
@@ -55,6 +57,6 @@ export function Button({ label, onPress, variant = 'primary', disabled, loading,
           <Text className={`font-display-bold text-[17px] ${TEXT[variant]}`}>{label}</Text>
         </View>
       )}
-    </Pressable>
+    </PressableScale>
   );
 }

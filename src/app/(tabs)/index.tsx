@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { Redirect, useRouter } from 'expo-router';
-import { Alert, Pressable, RefreshControl, ScrollView, View } from 'react-native';
+import { Alert, RefreshControl, ScrollView, View } from 'react-native';
 import { errorMessage } from '../../application/errorMessages';
 import { BalanceHero } from '../../presentation/components/BalanceHero';
 import { Button } from '../../presentation/components/Button';
@@ -9,6 +9,7 @@ import { useAppStore } from '../../presentation/state/appStore';
 import { backend, errorTexts } from '../../presentation/state/container';
 import { keys, useProfile, useTasks } from '../../presentation/state/queries';
 import { fill } from '../../presentation/format';
+import { Enter, PressableScale } from '../../presentation/motion';
 import { Text, colors } from '../../presentation/ui';
 import { FlameIcon, PlusIcon } from '../../presentation/components/Icons';
 import { strings } from '../../strings/pt-BR';
@@ -69,30 +70,36 @@ export default function HomeScreen() {
 
         <View className="px-5 pt-5">
           {profile.data ? (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={fill(strings.home.streakA11y, { days: profile.data.streakDays })}
-              onPress={() => router.push('/stats')}
-              className="flex-row items-center gap-3 rounded-3xl bg-[#F3EBC6] px-4 py-3 active:opacity-80"
-            >
-              <FlameIcon size={40} color="#FF8A1F" />
-              <View className="flex-1">
-                <Text className="font-display text-xl text-tinta">
-                  {fill(strings.home.streak, { days: profile.data.streakDays })}
-                </Text>
-                <Text className="text-sm text-tinta/70">
-                  {profile.data.streakDays > 0
-                    ? strings.home.streakActive
-                    : strings.home.streakNone}
-                </Text>
-              </View>
-              <Text className="font-display text-2xl text-tinta/60">›</Text>
-            </Pressable>
+            <Enter index={1}>
+              <PressableScale
+                accessibilityRole="button"
+                accessibilityLabel={fill(strings.home.streakA11y, {
+                  days: profile.data.streakDays,
+                })}
+                onPress={() => router.push('/stats')}
+                className="flex-row items-center gap-3 rounded-3xl bg-[#F3EBC6] px-4 py-3"
+              >
+                <FlameIcon size={40} color="#FF8A1F" />
+                <View className="flex-1">
+                  <Text className="font-display text-xl text-tinta">
+                    {fill(strings.home.streak, { days: profile.data.streakDays })}
+                  </Text>
+                  <Text className="text-sm text-tinta/70">
+                    {profile.data.streakDays > 0
+                      ? strings.home.streakActive
+                      : strings.home.streakNone}
+                  </Text>
+                </View>
+                <Text className="font-display text-2xl text-tinta/60">›</Text>
+              </PressableScale>
+            </Enter>
           ) : null}
 
-          <Text accessibilityRole="header" className="mt-6 font-display text-2xl text-tinta">
-            {strings.home.tasksTitle}
-          </Text>
+          <Enter index={2}>
+            <Text accessibilityRole="header" className="mt-6 font-display text-2xl text-tinta">
+              {strings.home.tasksTitle}
+            </Text>
+          </Enter>
 
           {tasks.isError ? (
             <View className="mt-4 gap-3">
@@ -106,35 +113,36 @@ export default function HomeScreen() {
           ) : null}
 
           {tasks.isSuccess && list.length === 0 ? (
-            <View className="mt-4 gap-1 rounded-3xl bg-folha p-5">
+            <Enter index={3} className="mt-4 gap-1 rounded-3xl bg-folha p-5">
               <Text className="font-display-bold text-lg text-tinta">
                 {strings.home.emptyTitle}
               </Text>
               <Text className="text-base text-tinta/70">{strings.home.emptyBody}</Text>
-            </View>
+            </Enter>
           ) : null}
 
           <View className="mt-3 gap-3">
-            {list.map((task) => (
-              <TaskRow
-                key={task.id}
-                task={task}
-                primary={task.id === firstPendingId}
-                onProve={() =>
-                  router.push({ pathname: '/proof/[taskId]', params: { taskId: task.id } })
-                }
-                onDelete={() => confirmDelete(task.id)}
-              />
+            {list.map((task, i) => (
+              <Enter key={task.id} index={3 + i} list>
+                <TaskRow
+                  task={task}
+                  primary={task.id === firstPendingId}
+                  onProve={() =>
+                    router.push({ pathname: '/proof/[taskId]', params: { taskId: task.id } })
+                  }
+                  onDelete={() => confirmDelete(task.id)}
+                />
+              </Enter>
             ))}
           </View>
 
-          <View className="mt-6">
+          <Enter index={4 + list.length} className="mt-6">
             <Button
               label={strings.home.addTask}
               icon={<PlusIcon size={20} />}
               onPress={() => router.push('/new-task')}
             />
-          </View>
+          </Enter>
         </View>
       </ScrollView>
     </View>

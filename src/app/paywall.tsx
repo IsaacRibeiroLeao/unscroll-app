@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+import { ActivityIndicator, ScrollView, View } from 'react-native';
 import { Text, colors } from '../presentation/ui';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { awaitPro } from '../application/awaitPro';
@@ -13,6 +13,7 @@ import { Mascot } from '../presentation/components/Mascot';
 import { toMascotSkin } from '../domain/mascot';
 import { backend, purchases } from '../presentation/state/container';
 import { keys, useProfile } from '../presentation/state/queries';
+import { Enter, Float, Pop, PressableScale } from '../presentation/motion';
 import { strings } from '../strings/pt-BR';
 
 export default function PaywallScreen() {
@@ -87,21 +88,27 @@ export default function PaywallScreen() {
     <SafeAreaView className="flex-1 bg-nevoa">
       <Hills height={190} />
       <ScrollView contentContainerClassName="gap-4 px-5 pb-6 pt-3">
-        <View className="flex-row items-center gap-2">
-          <CrownIcon size={44} />
+        <Enter index={0} className="flex-row items-center gap-2">
+          <Float amplitude={3} duration={1300}>
+            <CrownIcon size={44} />
+          </Float>
           <Text accessibilityRole="header" className="font-display text-4xl text-tinta">
             {strings.paywall.title}
           </Text>
-        </View>
-        <Text className="text-base text-tinta/80">{strings.paywall.subtitle}</Text>
+        </Enter>
+        <Enter index={1}>
+          <Text className="text-base text-tinta/80">{strings.paywall.subtitle}</Text>
+        </Enter>
         <View className="gap-3">
-          {strings.paywall.benefits.map((b) => (
-            <View key={b} className="flex-row items-center gap-3">
-              <View className="h-7 w-7 items-center justify-center rounded-full bg-floresta">
-                <CheckIcon size={16} color="#FFFFFF" />
-              </View>
+          {strings.paywall.benefits.map((b, i) => (
+            <Enter key={b} index={2 + i} className="flex-row items-center gap-3">
+              <Pop delay={(2 + i) * 70 + 150}>
+                <View className="h-7 w-7 items-center justify-center rounded-full bg-floresta">
+                  <CheckIcon size={16} color="#FFFFFF" />
+                </View>
+              </Pop>
               <Text className="flex-1 text-base text-tinta">{b}</Text>
-            </View>
+            </Enter>
           ))}
         </View>
 
@@ -112,38 +119,41 @@ export default function PaywallScreen() {
         ) : null}
         {!plans && !unavailable ? <ActivityIndicator color={colors.musgo} /> : null}
 
-        {plans?.map((plan) => {
+        {plans?.map((plan, pi) => {
           const on = plan.id === selected;
           const annual = plan.period === 'annual';
           return (
-            <Pressable
-              key={plan.id}
-              accessibilityRole="radio"
-              accessibilityState={{ selected: on }}
-              onPress={() => setSelected(plan.id)}
-              className={`min-h-16 flex-row items-center justify-between rounded-2xl border-2 px-4 ${on ? 'border-floresta bg-folha' : 'border-transparent bg-[#EDEAD9]'}`}
-            >
-              <View className="flex-row items-center gap-2">
-                <Text className="font-display-bold text-lg text-tinta">
-                  {annual ? strings.paywall.annual : strings.paywall.monthly}
-                </Text>
-                {annual ? (
-                  <View className="rounded-full bg-floresta px-2.5 py-1">
-                    <Text className="font-display-bold text-xs text-white">
-                      {strings.paywall.bestOffer}
-                    </Text>
-                  </View>
-                ) : null}
-              </View>
-              <View className="flex-row items-center gap-2">
-                <Text className="font-display-bold text-lg text-tinta">{plan.priceLabel}</Text>
-                {on ? (
-                  <View className="h-6 w-6 items-center justify-center rounded-full bg-floresta">
-                    <CheckIcon size={14} color="#FFFFFF" />
-                  </View>
-                ) : null}
-              </View>
-            </Pressable>
+            <Enter key={plan.id} index={6 + pi}>
+              <PressableScale
+                accessibilityRole="radio"
+                accessibilityState={{ selected: on }}
+                onPress={() => setSelected(plan.id)}
+                className={`min-h-16 flex-row items-center justify-between rounded-2xl border-2 px-4 ${on ? 'border-floresta bg-folha' : 'border-transparent bg-[#EDEAD9]'}`}
+              >
+                <View className="flex-row items-center gap-2">
+                  <Text className="font-display-bold text-lg text-tinta">
+                    {annual ? strings.paywall.annual : strings.paywall.monthly}
+                  </Text>
+                  {annual ? (
+                    <View className="rounded-full bg-floresta px-2.5 py-1">
+                      <Text className="font-display-bold text-xs text-white">
+                        {strings.paywall.bestOffer}
+                      </Text>
+                    </View>
+                  ) : null}
+                </View>
+                <View className="flex-row items-center gap-2">
+                  <Text className="font-display-bold text-lg text-tinta">{plan.priceLabel}</Text>
+                  {on ? (
+                    <Pop>
+                      <View className="h-6 w-6 items-center justify-center rounded-full bg-floresta">
+                        <CheckIcon size={14} color="#FFFFFF" />
+                      </View>
+                    </Pop>
+                  ) : null}
+                </View>
+              </PressableScale>
+            </Enter>
           );
         })}
 
@@ -173,11 +183,13 @@ export default function PaywallScreen() {
         </View>
         <Button label={strings.common.close} variant="ghost" onPress={() => router.back()} />
         <View className="items-center">
-          <Mascot
-            skin={toMascotSkin(profile.data?.activeMascotSkin ?? 'default')}
-            mood="royal"
-            size={230}
-          />
+          <Float amplitude={7}>
+            <Mascot
+              skin={toMascotSkin(profile.data?.activeMascotSkin ?? 'default')}
+              mood="royal"
+              size={230}
+            />
+          </Float>
         </View>
       </ScrollView>
     </SafeAreaView>

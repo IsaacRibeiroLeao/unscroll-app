@@ -12,6 +12,7 @@ import { submitTaskProof } from '../../application/submitTaskProof';
 import { Button } from '../../presentation/components/Button';
 import { PhoneArt } from '../../presentation/components/art';
 import { TextProofForm } from '../../presentation/components/TextProofForm';
+import { Float } from '../../presentation/motion';
 import { useAppStore } from '../../presentation/state/appStore';
 import { backend, blocker, discardPhoto, errorTexts } from '../../presentation/state/container';
 import { keys, useTasks } from '../../presentation/state/queries';
@@ -118,7 +119,9 @@ export default function ProofScreen() {
     return (
       <SafeAreaView className="flex-1 bg-nevoa">
         <View className="flex-1 items-center justify-center gap-3 px-8">
-          <PhoneArt size={210} />
+          <Float amplitude={6}>
+            <PhoneArt size={210} />
+          </Float>
           <Text accessibilityRole="header" className="font-display text-3xl text-tinta">
             {strings.proof.permissionTitle}
           </Text>

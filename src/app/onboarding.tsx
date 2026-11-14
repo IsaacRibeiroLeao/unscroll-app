@@ -15,6 +15,7 @@ import {
 } from '../presentation/components/art';
 import { Mascot } from '../presentation/components/Mascot';
 import { fill } from '../presentation/format';
+import { Enter, Float, StepView } from '../presentation/motion';
 import { useAppStore } from '../presentation/state/appStore';
 import { blocker } from '../presentation/state/container';
 import { setOnboarded } from '../infra/storage/onboardingFlag';
@@ -110,9 +111,13 @@ export default function OnboardingScreen() {
       <FloatingApps />
       <View className="items-center justify-end" style={{ height: 250, paddingTop: insets.top }}>
         <View className="absolute left-8 top-16 opacity-90" style={{ top: insets.top + 24 }}>
-          <HourglassArt size={34} />
+          <Float amplitude={4} duration={1300}>
+            <HourglassArt size={34} />
+          </Float>
         </View>
-        <Mascot skin="default" mood="peek" size={190} />
+        <Float amplitude={5} duration={1500}>
+          <Mascot skin="default" mood="peek" size={190} />
+        </Float>
       </View>
       <ScrollView
         className="flex-1 bg-nevoa"
@@ -121,7 +126,7 @@ export default function OnboardingScreen() {
         contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
       >
         {step === 'welcome' ? (
-          <>
+          <StepView>
             <Text
               accessibilityRole="header"
               className="text-center font-display text-3xl text-tinta"
@@ -132,25 +137,27 @@ export default function OnboardingScreen() {
               {strings.onboarding.welcomeBody}
             </Text>
             <Button label={`${strings.onboarding.next} →`} onPress={next} />
-          </>
+          </StepView>
         ) : null}
 
         {step === 'how' ? (
-          <>
+          <StepView>
             <Text accessibilityRole="header" className="text-2xl font-display-bold text-tinta">
               {strings.onboarding.howTitle}
             </Text>
             {strings.onboarding.howSteps.map((s, i) => (
-              <Text key={s} className="text-base text-tinta">
-                {i + 1}. {s}
-              </Text>
+              <Enter key={s} index={i + 1}>
+                <Text className="text-base text-tinta">
+                  {i + 1}. {s}
+                </Text>
+              </Enter>
             ))}
             <Button label={strings.onboarding.next} onPress={next} />
-          </>
+          </StepView>
         ) : null}
 
         {step === 'permissions' ? (
-          <>
+          <StepView>
             <Text accessibilityRole="header" className="text-2xl font-display-bold text-tinta">
               {strings.onboarding.permissionsTitle}
             </Text>
@@ -188,11 +195,11 @@ export default function OnboardingScreen() {
               />
             ) : null}
             <Button label={strings.onboarding.next} onPress={next} disabled={!permsOk} />
-          </>
+          </StepView>
         ) : null}
 
         {step === 'pick' ? (
-          <>
+          <StepView>
             <Text accessibilityRole="header" className="text-2xl font-display-bold text-tinta">
               {strings.onboarding.pickTitle}
             </Text>
@@ -208,11 +215,11 @@ export default function OnboardingScreen() {
               loading={busy}
             />
             <Button label={strings.onboarding.next} onPress={next} disabled={pickedCount === 0} />
-          </>
+          </StepView>
         ) : null}
 
         {step === 'notifications' ? (
-          <>
+          <StepView>
             <Text accessibilityRole="header" className="text-2xl font-display-bold text-tinta">
               {strings.onboarding.notificationsTitle}
             </Text>
@@ -228,7 +235,7 @@ export default function OnboardingScreen() {
               onPress={() => void finish(false)}
               disabled={busy}
             />
-          </>
+          </StepView>
         ) : null}
       </ScrollView>
       <Hills tone="dark" height={90} />

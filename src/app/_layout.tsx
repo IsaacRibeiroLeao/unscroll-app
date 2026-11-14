@@ -53,12 +53,33 @@ function Shell() {
     );
   }
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="new-task" options={{ presentation: 'modal' }} />
-      <Stack.Screen name="proof/[taskId]" options={{ presentation: 'fullScreenModal' }} />
-      <Stack.Screen name="celebration" options={{ gestureEnabled: false }} />
-      <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        animation: 'slide_from_right',
+        animationDuration: 300,
+        contentStyle: { backgroundColor: colors.nevoa },
+      }}
+    >
+      <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
+      <Stack.Screen
+        name="new-task"
+        options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+      />
+      <Stack.Screen
+        name="proof/[taskId]"
+        options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }}
+      />
+      <Stack.Screen
+        name="celebration"
+        options={{ gestureEnabled: false, animation: 'fade_from_bottom', animationDuration: 380 }}
+      />
+      <Stack.Screen
+        name="paywall"
+        options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+      />
+      <Stack.Screen name="blocked" options={{ animation: 'fade' }} />
+      <Stack.Screen name="onboarding" options={{ animation: 'fade' }} />
     </Stack>
   );
 }

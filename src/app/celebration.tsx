@@ -13,6 +13,7 @@ import { Button } from '../presentation/components/Button';
 import { Burst, CheckBadge } from '../presentation/components/art';
 import { FlameIcon, GemIcon, StarIcon } from '../presentation/components/Icons';
 import { fill } from '../presentation/format';
+import { Enter, Pop } from '../presentation/motion';
 import { useAppStore } from '../presentation/state/appStore';
 import { Text } from '../presentation/ui';
 import { strings } from '../strings/pt-BR';
@@ -45,7 +46,9 @@ export default function CelebrationScreen() {
       <SafeAreaView className="flex-1 px-6 pb-4">
         <View className="flex-1 items-center justify-center">
           <Animated.View style={animated} className="items-center">
-            <CheckBadge size={150} />
+            <Pop delay={120}>
+              <CheckBadge size={150} />
+            </Pop>
             <Text
               accessibilityRole="header"
               className="mt-2 text-center font-display text-4xl text-tinta"
@@ -64,7 +67,7 @@ export default function CelebrationScreen() {
             </Text>
           </Animated.View>
 
-          <View className="mt-6 w-full rounded-3xl bg-white/55 p-4">
+          <Enter index={4} className="mt-6 w-full rounded-3xl bg-white/55 p-4">
             <View className="flex-row items-center justify-around">
               <View className="flex-row items-center gap-1.5">
                 <StarIcon size={22} />
@@ -84,7 +87,7 @@ export default function CelebrationScreen() {
             <Text className="mt-2 text-center text-base text-tinta/75">
               {fill(strings.celebration.streak, { days: r.newStreak })}
             </Text>
-          </View>
+          </Enter>
 
           {proof.blockerFailed ? (
             <Text className="mt-3 text-center text-sm text-tinta/80">
@@ -92,7 +95,9 @@ export default function CelebrationScreen() {
             </Text>
           ) : null}
         </View>
-        <Button label={strings.celebration.done} onPress={finish} />
+        <Enter index={6}>
+          <Button label={strings.celebration.done} onPress={finish} />
+        </Enter>
       </SafeAreaView>
     </View>
   );
