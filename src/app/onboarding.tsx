@@ -194,6 +194,13 @@ export default function OnboardingScreen() {
                 loading={busy}
               />
             ) : null}
+            {Platform.OS === 'android' && (perms?.missing.length ?? 0) > 0 ? (
+              <Button
+                variant="ghost"
+                label={strings.onboarding.permHelpLink}
+                onPress={() => router.push('/permissions-help')}
+              />
+            ) : null}
             <Button label={strings.onboarding.next} onPress={next} disabled={!permsOk} />
           </StepView>
         ) : null}

@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, ScrollView, View } from 'react-native';
+import { Alert, Platform, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { toMascotSkin } from '../../domain/mascot';
 import { Button } from '../../presentation/components/Button';
@@ -94,6 +94,13 @@ export default function ProfileScreen() {
               <Text className="text-sm text-tinta/70" selectable>
                 {strings.profile.emailLabel}: {email}
               </Text>
+            ) : null}
+            {Platform.OS === 'android' ? (
+              <Button
+                variant="ghost"
+                label={strings.permissionsHelp.title}
+                onPress={() => router.push('/permissions-help')}
+              />
             ) : null}
             <Button variant="secondary" label={strings.auth.signOut} onPress={confirmSignOut} />
           </Enter>

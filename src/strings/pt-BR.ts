@@ -40,6 +40,22 @@ export const strings = {
     errorTitle: 'Não foi possível entrar',
     errorBody: 'Verifique sua conexão e tente novamente.',
   },
+  permissionsHelp: {
+    title: 'Liberar permissões no Android',
+    intro:
+      'Apps instalados fora da Play Store vêm com algumas permissões bloqueadas pelo Android. É uma proteção do sistema, e dá para liberar em menos de um minuto.',
+    steps: [
+      'Toque em "Abrir informações do app" abaixo.',
+      'Toque nos três pontinhos (⋮) no canto superior direito.',
+      'Escolha "Permitir configurações restritas" e confirme com sua senha ou digital.',
+      'Volte ao Unscroll e toque em "Conceder" de novo.',
+    ],
+    noMenuTitle: 'Não achou o menu ⋮?',
+    noMenuBody:
+      'O Android só mostra essa opção depois de uma tentativa. Volte ao Unscroll, toque em "Conceder" uma vez, aceite o aviso e abra as informações do app de novo.',
+    openSettings: 'Abrir informações do app',
+    back: 'Voltar',
+  },
   auth: {
     titleSignUp: 'Crie sua conta',
     titleSignIn: 'Entre na sua conta',
@@ -286,6 +302,7 @@ export const strings = {
       notifications: 'Notificações',
       batteryOptimization: 'Ignorar economia de bateria (recomendado)',
     },
+    permHelpLink: 'A permissão está bloqueada? Veja como liberar',
     permGranted: 'Concedida',
     permMissing: 'Pendente',
     grant: 'Conceder',
