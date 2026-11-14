@@ -70,29 +70,31 @@ export function AuthScreen({ onDone }: { onDone: () => void }) {
 
   if (mode === 'confirm') {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-3 bg-nevoa px-8">
-        <Enter index={0}>
-          <Float amplitude={5}>
-            <Mascot skin="default" mood="happy" size={130} />
-          </Float>
-        </Enter>
-        <Enter index={1} className="items-center gap-2">
-          <Text accessibilityRole="header" className="font-display text-2xl text-tinta">
-            {t.confirmTitle}
-          </Text>
-          <Text className="text-center text-tinta/70">
-            {fill(t.confirmBody, { email: email.trim() })}
-          </Text>
-        </Enter>
-        <Enter index={2} className="mt-2 w-full">
-          <Button
-            label={t.confirmDone}
-            onPress={() => {
-              setMode('signIn');
-              setMessage(null);
-            }}
-          />
-        </Enter>
+      <SafeAreaView className="flex-1 bg-nevoa">
+        <View className="flex-1 items-center justify-center gap-3 px-8">
+          <Enter index={0}>
+            <Float amplitude={5}>
+              <Mascot skin="default" mood="happy" size={130} />
+            </Float>
+          </Enter>
+          <Enter index={1} className="items-center gap-2">
+            <Text accessibilityRole="header" className="font-display text-2xl text-tinta">
+              {t.confirmTitle}
+            </Text>
+            <Text className="text-center text-tinta/70">
+              {fill(t.confirmBody, { email: email.trim() })}
+            </Text>
+          </Enter>
+          <Enter index={2} className="mt-2 w-full">
+            <Button
+              label={t.confirmDone}
+              onPress={() => {
+                setMode('signIn');
+                setMessage(null);
+              }}
+            />
+          </Enter>
+        </View>
       </SafeAreaView>
     );
   }
