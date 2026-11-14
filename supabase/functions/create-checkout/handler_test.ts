@@ -86,5 +86,5 @@ Deno.test('provider failure becomes 500 without leaking details', async () => {
 Deno.test('logic helpers', () => {
   assertEquals(listPlans(FOUNDER_LIMIT + 5)[2].available, false);
   assertEquals(buildReference(UID, 'lifetime', 'z'), `${UID}:lifetime:7900:z`);
-  assertEquals('payer' in buildPreference({ userId: UID, email: null, plan: 'monthly', nonce: 'a', notificationUrl: 'u' }), false);
+  assertEquals('payer' in buildPreference({ userId: UID, plan: 'monthly', nonce: 'a', notificationUrl: 'u' }), false);
 });

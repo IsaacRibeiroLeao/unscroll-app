@@ -45,7 +45,6 @@ export async function handle(req: Request, deps: Deps): Promise<Response> {
     const url = await deps.createPreference(
       buildPreference({
         userId: user.id,
-        email: user.email,
         plan: body.plan,
         nonce: deps.nonce(),
         notificationUrl: deps.notificationUrl,

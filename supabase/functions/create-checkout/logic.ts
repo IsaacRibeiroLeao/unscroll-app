@@ -45,7 +45,6 @@ export function buildReference(userId: string, plan: PlanId, nonce: string): str
 
 export function buildPreference(args: {
   userId: string;
-  email: string | null;
   plan: PlanId;
   nonce: string;
   notificationUrl: string;
@@ -68,6 +67,7 @@ export function buildPreference(args: {
     binary_mode: true,
     // Boleto takes days to clear; keep Pix and cards.
     payment_methods: { excluded_payment_types: [{ id: 'ticket' }] },
-    ...(args.email ? { payer: { email: args.email } } : {}),
+    // No payer e-mail on purpose: the buyer types their own, so the field stays editable
+    // and a buyer can never be locked to the e-mail of the seller account.
   };
 }
