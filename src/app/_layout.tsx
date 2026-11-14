@@ -9,17 +9,20 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useCallback, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import ScreenBlockerHost from '../infra/native/ScreenBlockerHost';
 import { Button } from '../presentation/components/Button';
 import { AuthScreen } from '../presentation/screens/AuthScreen';
-import { queryClient } from '../presentation/state/container';
+import { NewPasswordScreen } from '../presentation/screens/NewPasswordScreen';
+import { auth, queryClient } from '../presentation/state/container';
 import {
   useBlockScreenInfoSync,
   useBootstrap,
   useForegroundSync,
   useNotificationRouting,
+  useRecoveryLink,
 } from '../presentation/state/useAppRuntime';
 import { strings } from '../strings/pt-BR';
 import { Text, colors } from '../presentation/ui';
@@ -32,7 +35,15 @@ function Shell() {
     Nunito_800ExtraBold,
     Nunito_900Black,
   });
-  const ready = state === 'ready';
+  const [recovery, setRecovery] = useState<'form' | 'invalid' | null>(null);
+  const onRecoveryLink = useCallback((url: string) => {
+    auth
+      .completeRecovery(url)
+      .then(() => setRecovery('form'))
+      .catch(() => setRecovery('invalid'));
+  }, []);
+  useRecoveryLink(onRecoveryLink);
+  const ready = state === 'ready' && recovery === null;
   useForegroundSync(ready);
   useBlockScreenInfoSync(ready);
   useNotificationRouting(ready);
@@ -44,7 +55,27 @@ function Shell() {
       </View>
     );
   }
-  if (state === 'signedOut') return <AuthScreen onDone={retry} />;
+  if (recovery === 'form') {
+    return (
+      <NewPasswordScreen
+        onDone={() => {
+          setRecovery(null);
+          retry();
+        }}
+      />
+    );
+  }
+  if (state === 'signedOut' || recovery === 'invalid') {
+    return (
+      <AuthScreen
+        notice={recovery === 'invalid' ? strings.auth.linkInvalid : null}
+        onDone={() => {
+          setRecovery(null);
+          retry();
+        }}
+      />
+    );
+  }
   if (state === 'error') {
     return (
       <View className="flex-1 items-center justify-center gap-3 bg-nevoa px-8">

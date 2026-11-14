@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { AuthError } from '../../application/ports/IAuthService.ts';
 import type { AuthErrorCode, IAuthService } from '../../application/ports/IAuthService.ts';
-import { normalizeEmail } from '../../application/auth.ts';
+import { normalizeEmail, parseRecoveryUrl, RESET_REDIRECT } from '../../application/auth.ts';
 
 interface RawAuthError {
   code?: string;
@@ -31,6 +31,8 @@ export function toAuthError(error: RawAuthError): AuthError {
     mapped = 'EMAIL_NOT_CONFIRMED';
   } else if (code.startsWith('over_') || error.status === 429) {
     mapped = 'RATE_LIMITED';
+  } else if (code === 'same_password' || text.includes('different from the old')) {
+    mapped = 'SAME_PASSWORD';
   } else if (code === 'signup_disabled') {
     mapped = 'SIGNUP_DISABLED';
   } else if (
@@ -71,6 +73,38 @@ export function createAuthService(client: SupabaseClient): IAuthService {
     async signOut() {
       const { error } = await client.auth.signOut();
       if (error) throw toAuthError(error);
+    },
+
+    async requestPasswordReset(email) {
+      const { error } = await client.auth.resetPasswordForEmail(normalizeEmail(email), {
+        redirectTo: RESET_REDIRECT,
+      });
+      if (error) throw toAuthError(error);
+    },
+
+    async completeRecovery(url) {
+      const link = parseRecoveryUrl(url);
+      if (!link || link.kind === 'error') throw new AuthError('RECOVERY_LINK_INVALID');
+      const { error } =
+        link.kind === 'tokens'
+          ? await client.auth.setSession({
+              access_token: link.accessToken,
+              refresh_token: link.refreshToken,
+            })
+          : await client.auth.exchangeCodeForSession(link.code);
+      if (error) throw new AuthError('RECOVERY_LINK_INVALID', error.message);
+    },
+
+    async updatePassword(newPassword) {
+      const { error } = await client.auth.updateUser({ password: newPassword });
+      if (error) throw toAuthError(error);
+    },
+
+    async deleteAccount() {
+      const res = await client.functions.invoke('delete-account', { body: {} });
+      if (res.error) throw toAuthError({ message: String(res.error.message ?? res.error) });
+      // The user no longer exists server side; drop the local session without a network call.
+      await client.auth.signOut({ scope: 'local' });
     },
 
     async currentEmail() {

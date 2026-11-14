@@ -107,3 +107,51 @@ test('signOut and currentEmail', async () => {
   const failing = createAuthService(client({ signOut: async () => ({ error: { message: 'x' } }) }));
   await assert.rejects(failing.signOut(), AuthError);
 });
+
+test('password reset: request, complete from link, update', async () => {
+  const calls: unknown[][] = [];
+  const svc = createAuthService(
+    client(
+      {
+        resetPasswordForEmail: async () => ({ error: null }),
+        setSession: async () => ({ error: null }),
+        exchangeCodeForSession: async () => ({ error: null }),
+        updateUser: async () => ({ error: null }),
+      },
+      calls,
+    ),
+  );
+  await svc.requestPasswordReset(' Ana@Mail.com ');
+  assert.deepEqual(calls[0], [
+    'resetPasswordForEmail',
+    'ana@mail.com',
+    { redirectTo: 'unscroll://reset' },
+  ]);
+  await svc.completeRecovery('unscroll://reset#access_token=A&refresh_token=B');
+  assert.deepEqual(calls[1], ['setSession', { access_token: 'A', refresh_token: 'B' }]);
+  await svc.completeRecovery('unscroll://reset?code=zzz');
+  assert.deepEqual(calls[2], ['exchangeCodeForSession', 'zzz']);
+  await svc.updatePassword('novaSenha123');
+  assert.deepEqual(calls[3], ['updateUser', { password: 'novaSenha123' }]);
+
+  for (const bad of ['unscroll://reset#error=access_denied', 'https://x/y', 'unscroll://reset']) {
+    await assert.rejects(
+      svc.completeRecovery(bad),
+      (e: unknown) => e instanceof AuthError && e.code === 'RECOVERY_LINK_INVALID',
+    );
+  }
+  const expired = createAuthService(
+    client({ setSession: async () => ({ error: { message: 'expired' } }) }),
+  );
+  await assert.rejects(
+    expired.completeRecovery('unscroll://reset#access_token=A&refresh_token=B'),
+    (e: unknown) => e instanceof AuthError && e.code === 'RECOVERY_LINK_INVALID',
+  );
+  const same = createAuthService(
+    client({ updateUser: async () => ({ error: { code: 'same_password' } }) }),
+  );
+  await assert.rejects(
+    same.updatePassword('x'),
+    (e: unknown) => e instanceof AuthError && e.code === 'SAME_PASSWORD',
+  );
+});

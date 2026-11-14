@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { AppState } from 'react-native';
+import { AppState, Linking } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import { syncScreenTime } from '../../application/syncScreenTime';
 import { buildBlockScreenInfo } from '../../application/blockScreenInfo';
+import { parseRecoveryUrl } from '../../application/auth';
 import { currentUserId } from '../../infra/supabase/session';
 import { getOnboarded } from '../../infra/storage/onboardingFlag';
 import { strings } from '../../strings/pt-BR';
@@ -144,4 +145,16 @@ export function useNotificationRouting(enabled: boolean): void {
     );
     return () => sub.remove();
   }, [enabled, router]);
+}
+
+/** Calls `onLink` for a password-reset deep link, whether it launched the app or arrived while open. */
+export function useRecoveryLink(onLink: (url: string) => void): void {
+  useEffect(() => {
+    const handle = (url: string | null | undefined) => {
+      if (url && parseRecoveryUrl(url) !== null) onLink(url);
+    };
+    void Linking.getInitialURL().then(handle);
+    const sub = Linking.addEventListener('url', (e) => handle(e.url));
+    return () => sub.remove();
+  }, [onLink]);
 }

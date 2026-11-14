@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { validateCredentials } from '../../application/auth';
+import { PASSWORD_MIN_LENGTH, validateCredentials } from '../../application/auth';
 import { AuthError } from '../../application/ports/IAuthService';
 import { strings } from '../../strings/pt-BR';
 import { fill } from '../format';
@@ -20,7 +20,7 @@ import { Enter, Float } from '../motion';
 import { auth } from '../state/container';
 import { Text } from '../ui';
 
-type Mode = 'signUp' | 'signIn' | 'confirm';
+type Mode = 'signUp' | 'signIn' | 'confirm' | 'forgot' | 'forgotSent';
 
 const inputClass = 'min-h-14 rounded-2xl border border-fio bg-folha px-4 py-3 text-base text-tinta';
 
@@ -30,19 +30,37 @@ function messageFor(error: unknown): string {
 }
 
 /** Email + password account screen shown while nobody is signed in. */
-export function AuthScreen({ onDone }: { onDone: () => void }) {
+export function AuthScreen({ onDone, notice }: { onDone: () => void; notice?: string | null }) {
   const t = strings.auth;
   const [mode, setMode] = useState<Mode>('signUp');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [reveal, setReveal] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(notice ?? null);
   const passwordRef = useRef<ComponentRef<typeof TextInput>>(null);
   const signUp = mode === 'signUp';
+  const forgot = mode === 'forgot';
 
   async function submit() {
     if (busy) return;
+    if (forgot) {
+      if (validateCredentials(email, 'x'.repeat(PASSWORD_MIN_LENGTH)) === 'EMAIL_INVALID') {
+        setMessage(t.issues.EMAIL_INVALID);
+        return;
+      }
+      setBusy(true);
+      setMessage(null);
+      try {
+        await auth.requestPasswordReset(email);
+        setMode('forgotSent');
+      } catch (error) {
+        setMessage(messageFor(error));
+      } finally {
+        setBusy(false);
+      }
+      return;
+    }
     const issue = validateCredentials(email, password);
     if (issue) {
       setMessage(t.issues[issue]);
@@ -68,7 +86,8 @@ export function AuthScreen({ onDone }: { onDone: () => void }) {
     }
   }
 
-  if (mode === 'confirm') {
+  if (mode === 'confirm' || mode === 'forgotSent') {
+    const sent = mode === 'forgotSent';
     return (
       <SafeAreaView className="flex-1 bg-nevoa">
         <View className="flex-1 items-center justify-center gap-3 px-8">
@@ -79,15 +98,15 @@ export function AuthScreen({ onDone }: { onDone: () => void }) {
           </Enter>
           <Enter index={1} className="items-center gap-2">
             <Text accessibilityRole="header" className="font-display text-2xl text-tinta">
-              {t.confirmTitle}
+              {sent ? t.forgotSentTitle : t.confirmTitle}
             </Text>
             <Text className="text-center text-tinta/70">
-              {fill(t.confirmBody, { email: email.trim() })}
+              {fill(sent ? t.forgotSentBody : t.confirmBody, { email: email.trim() })}
             </Text>
           </Enter>
           <Enter index={2} className="mt-2 w-full">
             <Button
-              label={t.confirmDone}
+              label={sent ? t.backToSignIn : t.confirmDone}
               onPress={() => {
                 setMode('signIn');
                 setMessage(null);
@@ -119,10 +138,10 @@ export function AuthScreen({ onDone }: { onDone: () => void }) {
               accessibilityRole="header"
               className="text-center font-display text-3xl text-tinta"
             >
-              {signUp ? t.titleSignUp : t.titleSignIn}
+              {forgot ? t.forgotTitle : signUp ? t.titleSignUp : t.titleSignIn}
             </Text>
             <Text className="text-center text-tinta/70">
-              {signUp ? t.subtitleSignUp : t.subtitleSignIn}
+              {forgot ? t.forgotSubtitle : signUp ? t.subtitleSignUp : t.subtitleSignIn}
             </Text>
           </Enter>
 
@@ -145,38 +164,40 @@ export function AuthScreen({ onDone }: { onDone: () => void }) {
             />
           </Enter>
 
-          <Enter index={3} className="gap-2">
-            <Text className="font-display-bold text-base text-tinta">{t.passwordLabel}</Text>
-            <View className="justify-center">
-              <TextInput
-                ref={passwordRef}
-                value={password}
-                onChangeText={setPassword}
-                editable={!busy}
-                secureTextEntry={!reveal}
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoComplete={signUp ? 'new-password' : 'current-password'}
-                textContentType={signUp ? 'newPassword' : 'password'}
-                returnKeyType="go"
-                onSubmitEditing={() => void submit()}
-                placeholder={t.passwordPlaceholder}
-                placeholderTextColor="#8A978E"
-                className={`${inputClass} pr-24`}
-              />
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={reveal ? t.hidePassword : t.showPassword}
-                onPress={() => setReveal((v) => !v)}
-                hitSlop={8}
-                className="absolute right-4"
-              >
-                <Text className="font-display-bold text-sm text-tinta underline">
-                  {reveal ? t.hidePassword.split(' ')[0] : t.showPassword.split(' ')[0]}
-                </Text>
-              </Pressable>
-            </View>
-          </Enter>
+          {forgot ? null : (
+            <Enter index={3} className="gap-2">
+              <Text className="font-display-bold text-base text-tinta">{t.passwordLabel}</Text>
+              <View className="justify-center">
+                <TextInput
+                  ref={passwordRef}
+                  value={password}
+                  onChangeText={setPassword}
+                  editable={!busy}
+                  secureTextEntry={!reveal}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  autoComplete={signUp ? 'new-password' : 'current-password'}
+                  textContentType={signUp ? 'newPassword' : 'password'}
+                  returnKeyType="go"
+                  onSubmitEditing={() => void submit()}
+                  placeholder={t.passwordPlaceholder}
+                  placeholderTextColor="#8A978E"
+                  className={`${inputClass} pr-24`}
+                />
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={reveal ? t.hidePassword : t.showPassword}
+                  onPress={() => setReveal((v) => !v)}
+                  hitSlop={8}
+                  className="absolute right-4"
+                >
+                  <Text className="font-display-bold text-sm text-tinta underline">
+                    {reveal ? t.hidePassword.split(' ')[0] : t.showPassword.split(' ')[0]}
+                  </Text>
+                </Pressable>
+              </View>
+            </Enter>
+          )}
 
           {message ? (
             <Text accessibilityLiveRegion="polite" className="text-center text-sm text-red-700">
@@ -191,16 +212,27 @@ export function AuthScreen({ onDone }: { onDone: () => void }) {
               </View>
             ) : (
               <Button
-                label={signUp ? t.submitSignUp : t.submitSignIn}
+                label={forgot ? t.forgotSubmit : signUp ? t.submitSignUp : t.submitSignIn}
                 onPress={() => void submit()}
               />
             )}
+            {mode === 'signIn' ? (
+              <Button
+                variant="ghost"
+                label={t.forgotLink}
+                disabled={busy}
+                onPress={() => {
+                  setMode('forgot');
+                  setMessage(null);
+                }}
+              />
+            ) : null}
             <Button
               variant="ghost"
-              label={signUp ? t.switchToSignIn : t.switchToSignUp}
+              label={forgot ? t.backToSignIn : signUp ? t.switchToSignIn : t.switchToSignUp}
               disabled={busy}
               onPress={() => {
-                setMode(signUp ? 'signIn' : 'signUp');
+                setMode(forgot || !signUp ? (forgot ? 'signIn' : 'signUp') : 'signIn');
                 setMessage(null);
               }}
             />
