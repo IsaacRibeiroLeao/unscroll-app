@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unscroll — ganhe tempo de tela fazendo o que importa</title>
+<meta name="description" content="Apps que distraem só abrem depois que você faz algo de verdade. Baixe o Unscroll para Android.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <nav><a href="privacidade.html">Privacidade</a><a href="termos.html">Termos de uso</a></nav>
+  <h1>Unscroll</h1>
+  <p>Seus apps de distração só abrem depois que você faz algo de verdade: lavar a louça, caminhar, ler. Você comprova, ganha minutos e usa o celular sem culpa.</p>
+  <p><a class="btn" id="download" href="https://github.com/IsaacRibeiroLeao/unscroll-app/releases/latest/download/Unscroll.apk">Baixar para Android</a></p>
+  <p class="muted" id="version">Versão mais recente: carregando…</p>
+
+  <h2>Como instalar</h2>
+  <div class="card">
+    <p>O Unscroll ainda não está na Play Store, então o Android vai mostrar alguns avisos. É normal para apps instalados fora da loja.</p>
+    <ol>
+      <li>Baixe o arquivo e toque nele. Se o Android pedir, permita que o navegador instale apps desconhecidos e volte.</li>
+      <li>Se o Play Protect avisar sobre um app não verificado, toque em <strong>Mais detalhes</strong> e depois em <strong>Instalar mesmo assim</strong>.</li>
+      <li>Abra o Unscroll e crie sua conta.</li>
+      <li>No Android 13 ou mais novo, as permissões de acesso ao uso de apps e de exibição sobre outros apps podem vir bloqueadas. O próprio app mostra o passo a passo para liberar: em <em>Informações do app</em>, toque nos três pontinhos e em <strong>Permitir configurações restritas</strong>.</li>
+    </ol>
+  </div>
+
+  <h2>Atualizar</h2>
+  <p>Quando houver versão nova, o app avisa. Basta baixar o arquivo de novo por esta página e instalar por cima; seus dados continuam na conta.</p>
+
+  <h2>Dúvidas</h2>
+  <p>Fale com a gente em <span class="todo">[e-mail de contato]</span>.</p>
+</main>
+<script>
+fetch('version.json',{cache:'no-store'}).then(r=>r.json()).then(v=>{
+  document.getElementById('version').textContent='Versão mais recente: '+v.version;
+}).catch(()=>{document.getElementById('version').textContent='';});
+</script>
+</body>
+</html>
