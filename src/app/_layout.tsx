@@ -115,6 +115,10 @@ function Shell() {
         name="permissions-help"
         options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
       />
+      <Stack.Screen
+        name="delete-account"
+        options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+      />
       <Stack.Screen name="blocked" options={{ animation: 'fade' }} />
       <Stack.Screen name="onboarding" options={{ animation: 'fade' }} />
     </Stack>

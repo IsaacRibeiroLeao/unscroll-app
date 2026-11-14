@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, AppState, Linking, View } from 'react-native';
+import { PRIVACY_URL, TERMS_URL } from '../../config/site';
 import { awaitPro } from '../../application/awaitPro';
 import { errorMessage } from '../../application/errorMessages';
 import type { WebPlan, WebPlanId } from '../../application/ports/IBackendApi';
@@ -144,6 +145,22 @@ export function WebCheckout({ onActivated }: { onActivated: () => void }) {
       />
       {waiting ? <Button variant="ghost" label={t.iPaid} onPress={() => void checkPaid()} /> : null}
       <Text className="text-xs text-tinta/65">{t.terms}</Text>
+      <Text className="text-xs text-tinta/65">
+        {strings.legal.checkoutNotice}{' '}
+        <Text
+          className="text-xs text-tinta underline"
+          onPress={() => void Linking.openURL(TERMS_URL)}
+        >
+          {strings.legal.terms}
+        </Text>
+        {' · '}
+        <Text
+          className="text-xs text-tinta underline"
+          onPress={() => void Linking.openURL(PRIVACY_URL)}
+        >
+          {strings.legal.privacy}
+        </Text>
+      </Text>
     </View>
   );
 }

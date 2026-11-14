@@ -155,3 +155,32 @@ test('password reset: request, complete from link, update', async () => {
     (e: unknown) => e instanceof AuthError && e.code === 'SAME_PASSWORD',
   );
 });
+
+test('deleteAccount calls the function then clears the local session', async () => {
+  const calls: unknown[][] = [];
+  const fake = {
+    auth: {
+      signOut: async (o: unknown) => {
+        calls.push(['signOut', o]);
+        return { error: null };
+      },
+    },
+    functions: {
+      invoke: async (name: string) => {
+        calls.push(['invoke', name]);
+        return { error: null };
+      },
+    },
+  } as unknown as SupabaseClient;
+  await createAuthService(fake).deleteAccount();
+  assert.deepEqual(calls, [
+    ['invoke', 'delete-account'],
+    ['signOut', { scope: 'local' }],
+  ]);
+
+  const failing = {
+    auth: { signOut: async () => assert.fail('must not sign out when deletion failed') },
+    functions: { invoke: async () => ({ error: { message: 'boom' } }) },
+  } as unknown as SupabaseClient;
+  await assert.rejects(createAuthService(failing).deleteAccount(), AuthError);
+});

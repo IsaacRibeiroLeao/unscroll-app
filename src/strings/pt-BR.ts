@@ -56,6 +56,25 @@ export const strings = {
     openSettings: 'Abrir informações do app',
     back: 'Voltar',
   },
+  legal: {
+    privacy: 'Política de privacidade',
+    terms: 'Termos de uso',
+    acceptNotice:
+      'Ao criar a conta você concorda com os Termos de uso e a Política de privacidade.',
+    checkoutNotice:
+      'Ao pagar você concorda com os Termos de uso. Pagamento único; reembolso em até 7 dias.',
+  },
+  deleteAccount: {
+    link: 'Excluir minha conta',
+    title: 'Excluir conta',
+    warning:
+      'Isso apaga para sempre sua conta, tarefas, sequência, gemas, fotos de comprovação e plano Pro. Não dá para desfazer.',
+    keep: 'Registros de pagamento são mantidos sem ligação com você, como exige a lei fiscal.',
+    confirmLabel: 'Digite EXCLUIR para confirmar',
+    confirmWord: 'EXCLUIR',
+    submit: 'Excluir tudo',
+    failed: 'Não foi possível excluir agora. Tente de novo.',
+  },
   auth: {
     titleSignUp: 'Crie sua conta',
     titleSignIn: 'Entre na sua conta',

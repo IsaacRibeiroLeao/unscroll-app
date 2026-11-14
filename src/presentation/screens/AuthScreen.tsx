@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import type { ComponentRef } from 'react';
 import {
   ActivityIndicator,
+  Linking,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -13,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { PASSWORD_MIN_LENGTH, validateCredentials } from '../../application/auth';
 import { AuthError } from '../../application/ports/IAuthService';
 import { strings } from '../../strings/pt-BR';
+import { PRIVACY_URL, TERMS_URL } from '../../config/site';
 import { fill } from '../format';
 import { Button } from '../components/Button';
 import { Mascot } from '../components/Mascot';
@@ -216,6 +218,24 @@ export function AuthScreen({ onDone, notice }: { onDone: () => void; notice?: st
                 onPress={() => void submit()}
               />
             )}
+            {signUp ? (
+              <Text className="text-center text-xs text-tinta/65">
+                {strings.legal.acceptNotice}{' '}
+                <Text
+                  className="text-xs text-tinta underline"
+                  onPress={() => void Linking.openURL(TERMS_URL)}
+                >
+                  {strings.legal.terms}
+                </Text>
+                {' · '}
+                <Text
+                  className="text-xs text-tinta underline"
+                  onPress={() => void Linking.openURL(PRIVACY_URL)}
+                >
+                  {strings.legal.privacy}
+                </Text>
+              </Text>
+            ) : null}
             {mode === 'signIn' ? (
               <Button
                 variant="ghost"

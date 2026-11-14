@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Platform, ScrollView, View } from 'react-native';
+import { Alert, Linking, Platform, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { toMascotSkin } from '../../domain/mascot';
 import { Button } from '../../presentation/components/Button';
@@ -11,6 +11,7 @@ import { Enter, Float } from '../../presentation/motion';
 import { auth } from '../../presentation/state/container';
 import { useProfile } from '../../presentation/state/queries';
 import { Text } from '../../presentation/ui';
+import { PRIVACY_URL, TERMS_URL } from '../../config/site';
 import { strings } from '../../strings/pt-BR';
 
 export default function ProfileScreen() {
@@ -103,6 +104,21 @@ export default function ProfileScreen() {
               />
             ) : null}
             <Button variant="secondary" label={strings.auth.signOut} onPress={confirmSignOut} />
+            <Button
+              variant="ghost"
+              label={strings.legal.privacy}
+              onPress={() => void Linking.openURL(PRIVACY_URL)}
+            />
+            <Button
+              variant="ghost"
+              label={strings.legal.terms}
+              onPress={() => void Linking.openURL(TERMS_URL)}
+            />
+            <Button
+              variant="ghost"
+              label={strings.deleteAccount.link}
+              onPress={() => router.push('/delete-account')}
+            />
           </Enter>
         </>
       ) : null}
