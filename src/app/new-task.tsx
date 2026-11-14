@@ -1,7 +1,8 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, TextInput, View } from 'react-native';
+import { Text } from '../presentation/ui';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { errorMessage } from '../application/errorMessages';
 import type { TaskRecurrence } from '../application/ports/IBackendApi';
@@ -36,23 +37,25 @@ export default function NewTaskScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-50">
+    <SafeAreaView className="flex-1 bg-nevoa">
       <View className="gap-4 p-4">
-        <Text accessibilityRole="header" className="text-2xl font-bold text-neutral-900">
+        <Text accessibilityRole="header" className="text-2xl font-display-bold text-tinta">
           {strings.newTask.title}
         </Text>
 
-        <Text className="text-sm font-semibold text-neutral-700">{strings.newTask.titleLabel}</Text>
+        <Text className="text-sm font-body-semibold text-tinta/80">
+          {strings.newTask.titleLabel}
+        </Text>
         <TextInput
           value={title}
           onChangeText={setTitle}
           maxLength={80}
           placeholder={strings.newTask.titlePlaceholder}
           accessibilityLabel={strings.newTask.titleLabel}
-          className="min-h-12 rounded-2xl bg-white px-4 text-base text-neutral-900"
+          className="min-h-12 rounded-xl border border-fio bg-folha px-4 text-base text-tinta"
         />
 
-        <Text className="text-sm font-semibold text-neutral-700">
+        <Text className="text-sm font-body-semibold text-tinta/80">
           {strings.newTask.descriptionLabel}
         </Text>
         <TextInput
@@ -62,10 +65,10 @@ export default function NewTaskScreen() {
           multiline
           placeholder={strings.newTask.descriptionPlaceholder}
           accessibilityLabel={strings.newTask.descriptionLabel}
-          className="min-h-24 rounded-2xl bg-white px-4 py-3 text-base text-neutral-900"
+          className="min-h-24 rounded-xl border border-fio bg-folha px-4 py-3 text-base text-tinta"
         />
 
-        <Text className="text-sm font-semibold text-neutral-700">
+        <Text className="text-sm font-body-semibold text-tinta/80">
           {strings.newTask.recurrenceLabel}
         </Text>
         <View className="flex-row gap-3">
@@ -77,9 +80,13 @@ export default function NewTaskScreen() {
                 accessibilityRole="radio"
                 accessibilityState={{ selected }}
                 onPress={() => setRecurrence(value)}
-                className={`min-h-12 flex-1 items-center justify-center rounded-2xl ${selected ? 'bg-brand' : 'bg-white'}`}
+                className={`min-h-12 flex-1 items-center justify-center rounded-full ${selected ? 'bg-tinta' : 'border-2 border-tinta'}`}
               >
-                <Text className={selected ? 'font-semibold text-white' : 'text-neutral-800'}>
+                <Text
+                  className={
+                    selected ? 'font-display-bold text-nevoa' : 'font-display-bold text-tinta'
+                  }
+                >
                   {strings.newTask[value]}
                 </Text>
               </Pressable>
@@ -88,7 +95,7 @@ export default function NewTaskScreen() {
         </View>
 
         {error ? (
-          <Text accessibilityRole="alert" className="text-sm text-red-600">
+          <Text accessibilityRole="alert" className="text-sm text-pimenta">
             {error}
           </Text>
         ) : null}

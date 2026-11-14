@@ -1,7 +1,8 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, View } from 'react-native';
+import { Text, colors } from '../presentation/ui';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { awaitPro } from '../application/awaitPro';
 import type { PaywallPlan } from '../application/ports/IPurchasesService';
@@ -71,34 +72,34 @@ export default function PaywallScreen() {
 
   if (profile.data?.isPro) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-neutral-50 px-8">
-        <Text className="text-xl font-bold text-neutral-900">{strings.paywall.alreadyPro}</Text>
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-nevoa px-8">
+        <Text className="text-xl font-display-bold text-tinta">{strings.paywall.alreadyPro}</Text>
         <Button label={strings.common.close} onPress={() => router.back()} />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-50">
+    <SafeAreaView className="flex-1 bg-nevoa">
       <View className="gap-4 p-4">
-        <Text accessibilityRole="header" className="text-3xl font-extrabold text-neutral-900">
+        <Text accessibilityRole="header" className="text-3xl font-display text-tinta">
           {strings.paywall.title}
         </Text>
-        <Text className="text-base text-neutral-700">{strings.paywall.subtitle}</Text>
+        <Text className="text-base text-tinta/80">{strings.paywall.subtitle}</Text>
         <View className="gap-2">
           {strings.paywall.benefits.map((b) => (
-            <Text key={b} className="text-base text-neutral-800">
+            <Text key={b} className="text-base text-tinta">
               ✓ {b}
             </Text>
           ))}
         </View>
 
         {unavailable ? (
-          <Text accessibilityRole="alert" className="text-neutral-700">
+          <Text accessibilityRole="alert" className="text-tinta/80">
             {strings.paywall.unavailable}
           </Text>
         ) : null}
-        {!plans && !unavailable ? <ActivityIndicator color="#208AEF" /> : null}
+        {!plans && !unavailable ? <ActivityIndicator color={colors.musgo} /> : null}
 
         {plans?.map((plan) => {
           const on = plan.id === selected;
@@ -108,24 +109,25 @@ export default function PaywallScreen() {
               accessibilityRole="radio"
               accessibilityState={{ selected: on }}
               onPress={() => setSelected(plan.id)}
-              className={`min-h-14 flex-row items-center justify-between rounded-2xl border-2 bg-white px-4 ${on ? 'border-brand' : 'border-transparent'}`}
+              className={`min-h-14 flex-row items-center justify-between rounded-2xl border-2 bg-folha px-4 ${on ? 'border-tinta' : 'border-transparent'}`}
             >
-              <Text className="text-base font-semibold text-neutral-900">
+              <Text className="text-base font-body-semibold text-tinta">
                 {plan.period === 'annual' ? strings.paywall.annual : strings.paywall.monthly}
               </Text>
-              <Text className="text-base text-neutral-800">{plan.priceLabel}</Text>
+              <Text className="text-base text-tinta">{plan.priceLabel}</Text>
             </Pressable>
           );
         })}
 
         {message ? (
-          <Text accessibilityRole="alert" className="text-center text-sm text-neutral-700">
+          <Text accessibilityRole="alert" className="text-center text-sm text-tinta/80">
             {message}
           </Text>
         ) : null}
 
         <Button
           label={strings.paywall.cta}
+          variant="sun"
           onPress={() => void buy()}
           disabled={!selected}
           loading={busy}
@@ -136,7 +138,7 @@ export default function PaywallScreen() {
           onPress={() => void restore()}
           disabled={busy}
         />
-        <Text className="text-center text-xs text-neutral-500">{strings.paywall.terms}</Text>
+        <Text className="text-center text-xs text-tinta/55">{strings.paywall.terms}</Text>
         <Button label={strings.common.close} variant="ghost" onPress={() => router.back()} />
       </View>
     </SafeAreaView>

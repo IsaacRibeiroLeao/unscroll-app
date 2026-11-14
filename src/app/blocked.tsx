@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
+import { Text } from '../presentation/ui';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { toMascotSkin } from '../domain/mascot';
 import { Button } from '../presentation/components/Button';
@@ -15,21 +16,21 @@ export default function BlockedScreen() {
   const pending = (tasks.data ?? []).filter((t) => t.status === 'pending');
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-50">
+    <SafeAreaView className="flex-1 bg-nevoa">
       <ScrollView contentContainerClassName="items-center gap-4 p-6">
         <Mascot
           skin={toMascotSkin(profile.data?.activeMascotSkin ?? 'default')}
           mood="sleepy"
           size={140}
         />
-        <Text accessibilityRole="header" className="text-2xl font-bold text-neutral-900">
+        <Text accessibilityRole="header" className="text-2xl font-display-bold text-tinta">
           {strings.blocked.title}
         </Text>
-        <Text className="text-center text-neutral-600">{strings.blocked.body}</Text>
+        <Text className="text-center text-tinta/70">{strings.blocked.body}</Text>
         <View className="w-full gap-3">
           {pending.length === 0 ? (
             <>
-              <Text className="text-center text-neutral-600">{strings.blocked.noTasks}</Text>
+              <Text className="text-center text-tinta/70">{strings.blocked.noTasks}</Text>
               <Button
                 label={strings.blocked.createTask}
                 onPress={() => router.replace('/new-task')}
@@ -40,6 +41,7 @@ export default function BlockedScreen() {
               <Button
                 key={t.id}
                 label={t.title}
+                variant="sun"
                 onPress={() =>
                   router.replace({ pathname: '/proof/[taskId]', params: { taskId: t.id } })
                 }

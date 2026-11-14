@@ -1,7 +1,8 @@
 import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { AppState, Platform, ScrollView, Text, View } from 'react-native';
+import { AppState, Platform, ScrollView, View } from 'react-native';
+import { Text } from '../presentation/ui';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { PermissionKey, PermissionStatus } from '../application/ports/IScreenBlockerService';
 import { Button } from '../presentation/components/Button';
@@ -96,7 +97,7 @@ export default function OnboardingScreen() {
   const permsOk = perms?.granted ?? false;
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-50">
+    <SafeAreaView className="flex-1 bg-nevoa">
       <ScrollView contentContainerClassName="gap-4 p-6">
         <View className="items-center">
           <Mascot skin="default" mood="happy" size={120} />
@@ -104,21 +105,21 @@ export default function OnboardingScreen() {
 
         {step === 'welcome' ? (
           <>
-            <Text accessibilityRole="header" className="text-3xl font-extrabold text-neutral-900">
+            <Text accessibilityRole="header" className="text-3xl font-display text-tinta">
               {strings.onboarding.welcomeTitle}
             </Text>
-            <Text className="text-base text-neutral-700">{strings.onboarding.welcomeBody}</Text>
+            <Text className="text-base text-tinta/80">{strings.onboarding.welcomeBody}</Text>
             <Button label={strings.onboarding.next} onPress={next} />
           </>
         ) : null}
 
         {step === 'how' ? (
           <>
-            <Text accessibilityRole="header" className="text-2xl font-bold text-neutral-900">
+            <Text accessibilityRole="header" className="text-2xl font-display-bold text-tinta">
               {strings.onboarding.howTitle}
             </Text>
             {strings.onboarding.howSteps.map((s, i) => (
-              <Text key={s} className="text-base text-neutral-800">
+              <Text key={s} className="text-base text-tinta">
                 {i + 1}. {s}
               </Text>
             ))}
@@ -128,10 +129,10 @@ export default function OnboardingScreen() {
 
         {step === 'permissions' ? (
           <>
-            <Text accessibilityRole="header" className="text-2xl font-bold text-neutral-900">
+            <Text accessibilityRole="header" className="text-2xl font-display-bold text-tinta">
               {strings.onboarding.permissionsTitle}
             </Text>
-            <Text className="text-base text-neutral-700">
+            <Text className="text-base text-tinta/80">
               {Platform.OS === 'ios'
                 ? strings.onboarding.permissionsBodyIos
                 : strings.onboarding.permissionsBodyAndroid}
@@ -143,12 +144,12 @@ export default function OnboardingScreen() {
                   key={key}
                   accessible
                   accessibilityLabel={`${strings.onboarding.perm[key]}: ${missing ? strings.onboarding.permMissing : strings.onboarding.permGranted}`}
-                  className="flex-row items-center justify-between rounded-2xl bg-white p-4"
+                  className="flex-row items-center justify-between border-b border-fio py-3"
                 >
-                  <Text className="flex-1 pr-2 text-base text-neutral-900">
+                  <Text className="flex-1 pr-2 text-base text-tinta">
                     {strings.onboarding.perm[key]}
                   </Text>
-                  <Text className={missing ? 'text-amber-600' : 'text-emerald-600'}>
+                  <Text className={missing ? 'text-pimenta' : 'text-musgo'}>
                     {missing
                       ? strings.onboarding.permMissing
                       : `✓ ${strings.onboarding.permGranted}`}
@@ -156,7 +157,7 @@ export default function OnboardingScreen() {
                 </View>
               );
             })}
-            {error ? <Text className="text-sm text-red-600">{error}</Text> : null}
+            {error ? <Text className="text-sm text-pimenta">{error}</Text> : null}
             {!permsOk || (perms?.missing.length ?? 0) > 0 ? (
               <Button
                 label={strings.onboarding.grant}
@@ -170,14 +171,14 @@ export default function OnboardingScreen() {
 
         {step === 'pick' ? (
           <>
-            <Text accessibilityRole="header" className="text-2xl font-bold text-neutral-900">
+            <Text accessibilityRole="header" className="text-2xl font-display-bold text-tinta">
               {strings.onboarding.pickTitle}
             </Text>
-            <Text className="text-base text-neutral-700">{strings.onboarding.pickBody}</Text>
-            <Text className="text-sm text-neutral-600">
+            <Text className="text-base text-tinta/80">{strings.onboarding.pickBody}</Text>
+            <Text className="text-sm text-tinta/70">
               {fill(strings.onboarding.pickedCount, { count: pickedCount })}
             </Text>
-            {error ? <Text className="text-sm text-red-600">{error}</Text> : null}
+            {error ? <Text className="text-sm text-pimenta">{error}</Text> : null}
             <Button
               label={strings.onboarding.pickAction}
               variant="secondary"
@@ -190,12 +191,10 @@ export default function OnboardingScreen() {
 
         {step === 'notifications' ? (
           <>
-            <Text accessibilityRole="header" className="text-2xl font-bold text-neutral-900">
+            <Text accessibilityRole="header" className="text-2xl font-display-bold text-tinta">
               {strings.onboarding.notificationsTitle}
             </Text>
-            <Text className="text-base text-neutral-700">
-              {strings.onboarding.notificationsBody}
-            </Text>
+            <Text className="text-base text-tinta/80">{strings.onboarding.notificationsBody}</Text>
             <Button
               label={strings.onboarding.notificationsAction}
               onPress={() => void finish(true)}

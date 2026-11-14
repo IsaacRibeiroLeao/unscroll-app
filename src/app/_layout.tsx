@@ -1,8 +1,17 @@
 import '../global.css';
+import {
+  BricolageGrotesque_700Bold,
+  BricolageGrotesque_800ExtraBold,
+} from '@expo-google-fonts/bricolage-grotesque';
+import {
+  InstrumentSans_400Regular,
+  InstrumentSans_600SemiBold,
+} from '@expo-google-fonts/instrument-sans';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import ScreenBlockerHost from '../infra/native/ScreenBlockerHost';
 import { Button } from '../presentation/components/Button';
@@ -14,26 +23,33 @@ import {
   useNotificationRouting,
 } from '../presentation/state/useAppRuntime';
 import { strings } from '../strings/pt-BR';
+import { Text, colors } from '../presentation/ui';
 
 function Shell() {
   const { state, retry } = useBootstrap();
+  const [fontsLoaded, fontError] = useFonts({
+    BricolageGrotesque_700Bold,
+    BricolageGrotesque_800ExtraBold,
+    InstrumentSans_400Regular,
+    InstrumentSans_600SemiBold,
+  });
   const ready = state === 'ready';
   useForegroundSync(ready);
   useBlockScreenInfoSync(ready);
   useNotificationRouting(ready);
 
-  if (state === 'loading') {
+  if (state === 'loading' || (!fontsLoaded && !fontError)) {
     return (
-      <View className="flex-1 items-center justify-center bg-neutral-50">
-        <ActivityIndicator accessibilityLabel={strings.common.loading} color="#208AEF" />
+      <View className="flex-1 items-center justify-center bg-nevoa">
+        <ActivityIndicator accessibilityLabel={strings.common.loading} color={colors.musgo} />
       </View>
     );
   }
   if (state === 'error') {
     return (
-      <View className="flex-1 items-center justify-center gap-3 bg-neutral-50 px-8">
-        <Text className="text-xl font-bold text-neutral-900">{strings.bootstrap.errorTitle}</Text>
-        <Text className="mb-2 text-center text-neutral-600">{strings.bootstrap.errorBody}</Text>
+      <View className="flex-1 items-center justify-center gap-3 bg-nevoa px-8">
+        <Text className="text-xl font-display-bold text-tinta">{strings.bootstrap.errorTitle}</Text>
+        <Text className="mb-2 text-center text-tinta/70">{strings.bootstrap.errorBody}</Text>
         <Button label={strings.common.retry} onPress={retry} />
       </View>
     );

@@ -103,7 +103,7 @@ export default function ScreenBlockerHost() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#0F172A', paddingTop: 48, paddingHorizontal: 16 },
+  screen: { flex: 1, backgroundColor: '#16241C', paddingTop: 48, paddingHorizontal: 16 },
   title: { color: '#F8FAFC', fontSize: 22, fontWeight: '700' },
   hint: { color: '#CBD5E1', fontSize: 14, marginTop: 4, marginBottom: 12 },
   list: { flex: 1 },
@@ -119,8 +119,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  primary: { backgroundColor: '#FBBF24' },
-  secondary: { backgroundColor: '#1E293B' },
-  primaryText: { color: '#0F172A', fontWeight: '700', fontSize: 16 },
+  primary: { backgroundColor: '#FFBE1F' },
+  secondary: { backgroundColor: '#24362C' },
+  primaryText: { color: '#16241C', fontWeight: '700', fontSize: 16 },
   secondaryText: { color: '#E2E8F0', fontWeight: '600', fontSize: 16 },
 });

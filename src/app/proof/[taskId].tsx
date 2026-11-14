@@ -2,7 +2,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
+import { Text } from '../../presentation/ui';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { errorMessage, proofMessage } from '../../application/errorMessages';
 import { submitTaskProof } from '../../application/submitTaskProof';
@@ -65,9 +66,11 @@ export default function ProofScreen() {
 
   if (!permission.granted) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-3 bg-neutral-50 px-8">
-        <Text className="text-xl font-bold text-neutral-900">{strings.proof.permissionTitle}</Text>
-        <Text className="mb-2 text-center text-neutral-600">{strings.proof.permissionBody}</Text>
+      <SafeAreaView className="flex-1 items-center justify-center gap-3 bg-nevoa px-8">
+        <Text className="text-xl font-display-bold text-tinta">
+          {strings.proof.permissionTitle}
+        </Text>
+        <Text className="mb-2 text-center text-tinta/70">{strings.proof.permissionBody}</Text>
         <Button label={strings.proof.grant} onPress={() => void requestPermission()} />
         <Button label={strings.common.close} variant="ghost" onPress={() => router.back()} />
       </SafeAreaView>
@@ -85,7 +88,7 @@ export default function ProofScreen() {
           {message ? (
             <Text
               accessibilityRole="alert"
-              className="rounded-2xl bg-white p-3 text-center text-sm text-neutral-900"
+              className="rounded-2xl bg-folha p-3 text-center text-sm text-tinta"
             >
               {message}
             </Text>

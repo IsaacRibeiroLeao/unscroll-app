@@ -1,25 +1,29 @@
-import { ActivityIndicator, Pressable, Text } from 'react-native';
+import { ActivityIndicator, Pressable } from 'react-native';
+import { Text, colors } from '../ui';
 
 interface Props {
   label: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'ghost';
+  /** primary: ink · sun: earn/reward actions · secondary: outline · ghost: text link */
+  variant?: 'primary' | 'sun' | 'secondary' | 'ghost';
   disabled?: boolean;
   loading?: boolean;
 }
 
-const BG = {
-  primary: 'bg-brand',
-  secondary: 'bg-neutral-200',
-  ghost: 'bg-transparent',
+const BOX = {
+  primary: 'bg-tinta',
+  sun: 'bg-sol',
+  secondary: 'border-2 border-tinta',
+  ghost: '',
 } as const;
-const FG = {
-  primary: 'text-white',
-  secondary: 'text-neutral-900',
-  ghost: 'text-brand',
+const TEXT = {
+  primary: 'text-nevoa',
+  sun: 'text-tinta',
+  secondary: 'text-tinta',
+  ghost: 'text-tinta underline',
 } as const;
 
-/** 48dp minimum touch target. */
+/** 52dp tall (above the 48dp minimum touch target), fully round. */
 export function Button({ label, onPress, variant = 'primary', disabled, loading }: Props) {
   const off = disabled || loading;
   return (
@@ -29,12 +33,12 @@ export function Button({ label, onPress, variant = 'primary', disabled, loading 
       accessibilityState={{ disabled: !!off, busy: !!loading }}
       disabled={off}
       onPress={onPress}
-      className={`min-h-12 items-center justify-center rounded-2xl px-5 ${BG[variant]} ${off ? 'opacity-50' : ''}`}
+      className={`min-h-[52px] items-center justify-center rounded-full px-6 active:opacity-80 ${BOX[variant]} ${off ? 'opacity-40' : ''}`}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'primary' ? '#fff' : '#208AEF'} />
+        <ActivityIndicator color={variant === 'primary' ? colors.nevoa : colors.tinta} />
       ) : (
-        <Text className={`text-base font-semibold ${FG[variant]}`}>{label}</Text>
+        <Text className={`font-display-bold text-base ${TEXT[variant]}`}>{label}</Text>
       )}
     </Pressable>
   );
