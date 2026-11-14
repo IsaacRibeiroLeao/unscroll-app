@@ -176,7 +176,7 @@ export default function PaywallScreen() {
           <Mascot
             skin={toMascotSkin(profile.data?.activeMascotSkin ?? 'default')}
             mood="royal"
-            size={170}
+            size={230}
           />
         </View>
       </ScrollView>

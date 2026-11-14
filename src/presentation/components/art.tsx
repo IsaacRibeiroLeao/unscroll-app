@@ -393,3 +393,42 @@ export function ProfileTabIcon({ size = 26, color }: TabIconProps) {
     </Svg>
   );
 }
+
+/** Translucent generic "distracting app" bubbles (no real brand marks) for the dark screens. */
+export function FloatingApps() {
+  const bubble = (left: string, top: number, size: number, glyph: ReactNode) => (
+    <View
+      key={left}
+      className="absolute items-center justify-center rounded-full bg-white/10"
+      style={{ left: left as `${number}%`, top, width: size, height: size }}
+    >
+      <Svg width={size * 0.5} height={size * 0.5} viewBox="0 0 24 24" {...hidden}>
+        {glyph}
+      </Svg>
+    </View>
+  );
+  return (
+    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+      {bubble(
+        '8%',
+        70,
+        64,
+        <G stroke="#FFFFFF" strokeOpacity={0.45} strokeWidth={2} fill="none">
+          <Rect x={4} y={4} width={16} height={16} rx={5} />
+          <Circle cx={12} cy={12} r={3.6} />
+        </G>,
+      )}
+      {bubble('74%', 110, 58, <Path d="M8 5 L19 12 L8 19 Z" fill="#FFFFFF" fillOpacity={0.4} />)}
+      {bubble(
+        '2%',
+        190,
+        50,
+        <Path
+          d="M10 4 V15.5 a3 3 0 1 1 -2 -2.8 V4 Z M10 4 L17 6"
+          fill="#FFFFFF"
+          fillOpacity={0.4}
+        />,
+      )}
+    </View>
+  );
+}

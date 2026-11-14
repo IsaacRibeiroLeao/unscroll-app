@@ -46,15 +46,20 @@ export default function NewTaskScreen() {
         </Text>
 
         <Text className="text-lg font-display-bold text-tinta">{strings.newTask.titleLabel}</Text>
-        <TextInput
-          value={title}
-          onChangeText={setTitle}
-          maxLength={80}
-          placeholder={strings.newTask.titlePlaceholder}
-          accessibilityLabel={strings.newTask.titleLabel}
-          className="min-h-14 rounded-2xl border border-fio bg-folha px-4 text-base text-tinta"
-          placeholderTextColor="#8A978E"
-        />
+        <View className="justify-center">
+          <TextInput
+            value={title}
+            onChangeText={setTitle}
+            maxLength={80}
+            placeholder={strings.newTask.titlePlaceholder}
+            accessibilityLabel={strings.newTask.titleLabel}
+            className="min-h-14 rounded-2xl border border-fio bg-folha pl-12 pr-4 text-base text-tinta"
+            placeholderTextColor="#8A978E"
+          />
+          <View className="absolute left-4" pointerEvents="none">
+            <SparkleIcon size={20} />
+          </View>
+        </View>
 
         <Text className="text-base font-display-bold text-tinta">
           {strings.newTask.descriptionLabel}

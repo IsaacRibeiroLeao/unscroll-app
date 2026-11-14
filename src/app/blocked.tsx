@@ -4,7 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { toMascotSkin } from '../domain/mascot';
 import { Button } from '../presentation/components/Button';
 import { CameraIcon } from '../presentation/components/Icons';
-import { GradientView, Sparkles } from '../presentation/components/art';
+import {
+  FloatingApps,
+  GradientView,
+  HourglassArt,
+  Hills,
+  Sparkles,
+} from '../presentation/components/art';
 import { Mascot } from '../presentation/components/Mascot';
 import { useProfile, useTasks } from '../presentation/state/queries';
 import { Text } from '../presentation/ui';
@@ -19,9 +25,11 @@ export default function BlockedScreen() {
 
   return (
     <GradientView id="blocked" stops={['#1F6B43', '#0C3322']} className="flex-1">
-      <Sparkles />
+      <FloatingApps />
+      <Hills tone="dark" height={160} />
       <SafeAreaView className="flex-1">
         <ScrollView contentContainerClassName="items-center gap-3 px-6 pb-6 pt-4">
+          <HourglassArt size={34} />
           <Mascot
             skin={toMascotSkin(profile.data?.activeMascotSkin ?? 'default')}
             mood="proud"

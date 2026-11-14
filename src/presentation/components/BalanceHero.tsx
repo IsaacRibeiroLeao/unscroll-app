@@ -58,14 +58,17 @@ export function BalanceHero({ profile, onShop, onPro }: Props) {
               accessibilityLabel={fill(strings.home.level, { level: lvl.level })}
               className="min-h-9 justify-center rounded-full border border-sol px-3"
             >
-              <Text className="font-display-bold text-sm text-sol">
-                {fill(strings.home.level, { level: lvl.level })}
-              </Text>
+              <View className="flex-row items-center gap-1">
+                <CrownIcon size={16} />
+                <Text className="font-display-bold text-sm text-sol">
+                  {fill(strings.home.level, { level: lvl.level })}
+                </Text>
+              </View>
             </View>
           </View>
         </View>
 
-        <View className="mt-4 flex-row items-end justify-between">
+        <View className="-mb-2 mt-2 flex-row items-end justify-between">
           <View
             accessible
             accessibilityLabel={`${strings.home.balanceLabel}: ${time}`}
@@ -73,7 +76,7 @@ export function BalanceHero({ profile, onShop, onPro }: Props) {
           >
             <Text
               className="font-display text-white"
-              style={{ fontSize: 68, lineHeight: 74, letterSpacing: -1 }}
+              style={{ fontSize: 80, lineHeight: 84, letterSpacing: -2 }}
               numberOfLines={1}
               adjustsFontSizeToFit
             >
@@ -90,7 +93,7 @@ export function BalanceHero({ profile, onShop, onPro }: Props) {
           />
         </View>
 
-        <View className="mt-3">
+        <View className="mt-1">
           <View
             accessibilityRole="progressbar"
             accessibilityLabel={fill(strings.home.xpProgress, {
@@ -98,15 +101,12 @@ export function BalanceHero({ profile, onShop, onPro }: Props) {
               total: lvl.xpForNext,
             })}
             accessibilityValue={{ min: 0, max: lvl.xpForNext, now: lvl.xpIntoLevel }}
-            className="h-3.5 overflow-hidden rounded-full bg-black/25"
+            className="h-4 overflow-hidden rounded-full bg-black/25"
           >
-            <View
-              className="h-3.5 rounded-full bg-sol"
-              style={{ width: `${lvl.progress * 100}%` }}
-            />
+            <View className="h-4 rounded-full bg-sol" style={{ width: `${lvl.progress * 100}%` }} />
           </View>
           <View className="mt-2 flex-row items-center justify-between">
-            <Text className="font-display-bold text-base text-sol">
+            <Text className="font-display text-lg text-sol">
               {fill(strings.home.xpLabel, { current: lvl.xpIntoLevel, total: lvl.xpForNext })}
             </Text>
             <Pressable

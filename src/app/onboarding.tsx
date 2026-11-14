@@ -6,7 +6,13 @@ import { Text } from '../presentation/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { PermissionKey, PermissionStatus } from '../application/ports/IScreenBlockerService';
 import { Button } from '../presentation/components/Button';
-import { GradientView, HourglassArt, Sparkles } from '../presentation/components/art';
+import {
+  FloatingApps,
+  GradientView,
+  Hills,
+  HourglassArt,
+  Sparkles,
+} from '../presentation/components/art';
 import { Mascot } from '../presentation/components/Mascot';
 import { fill } from '../presentation/format';
 import { useAppStore } from '../presentation/state/appStore';
@@ -101,6 +107,7 @@ export default function OnboardingScreen() {
   return (
     <GradientView id="onb" stops={['#1F6B43', '#0F3F29']} className="flex-1">
       <Sparkles />
+      <FloatingApps />
       <View className="items-center justify-end" style={{ height: 250, paddingTop: insets.top }}>
         <View className="absolute left-8 top-16 opacity-90" style={{ top: insets.top + 24 }}>
           <HourglassArt size={34} />
@@ -224,6 +231,7 @@ export default function OnboardingScreen() {
           </>
         ) : null}
       </ScrollView>
+      <Hills tone="dark" height={90} />
     </GradientView>
   );
 }

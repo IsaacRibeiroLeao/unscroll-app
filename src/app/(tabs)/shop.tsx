@@ -7,7 +7,7 @@ import type { ShopItem } from '../../application/ports/IBackendApi';
 import { purchaseShopItem } from '../../application/purchaseShopItem';
 import { toMascotSkin } from '../../domain/mascot';
 import { Button } from '../../presentation/components/Button';
-import { ClockArt, GradientView, ShieldArt } from '../../presentation/components/art';
+import { ClockArt, CrownIcon, GradientView, ShieldArt } from '../../presentation/components/art';
 import { GemIcon } from '../../presentation/components/Icons';
 import { Mascot } from '../../presentation/components/Mascot';
 import { fill } from '../../presentation/format';
@@ -114,6 +114,10 @@ export default function ShopScreen() {
         <GradientView id="shopBanner" stops={['#1F6B43', '#0F3F29']} style={{ borderRadius: 28 }}>
           <View className="flex-row items-center gap-3 p-5">
             <View className="flex-1 gap-1">
+              <View className="flex-row items-center gap-1">
+                <CrownIcon size={20} />
+                <Text className="font-display-bold text-sm text-sol">{strings.shop.title}</Text>
+              </View>
               <Text className="font-display text-2xl leading-7 text-white">
                 {strings.shop.bannerTitle}
               </Text>
@@ -122,7 +126,7 @@ export default function ShopScreen() {
                 {fill(strings.shop.freezeCount, { count: profile.data?.streakFreezeCount ?? 0 })}
               </Text>
             </View>
-            <ShieldArt size={92} />
+            <ShieldArt size={112} />
           </View>
           <View className="px-5 pb-5">
             <Button
