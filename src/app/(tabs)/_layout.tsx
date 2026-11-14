@@ -1,0 +1,63 @@
+import { Tabs } from 'expo-router';
+import { Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  HomeTabIcon,
+  ProfileTabIcon,
+  ShopTabIcon,
+  StatsTabIcon,
+} from '../../presentation/components/art';
+import { colors } from '../../presentation/ui';
+import { strings } from '../../strings/pt-BR';
+
+const INACTIVE = '#7C8B80';
+
+export default function TabsLayout() {
+  const insets = useSafeAreaInsets();
+  return (
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: colors.tinta,
+        tabBarInactiveTintColor: INACTIVE,
+        tabBarLabelStyle: { fontFamily: 'Nunito_700Bold', fontSize: 12 },
+        tabBarStyle: {
+          backgroundColor: colors.folha,
+          borderTopColor: colors.fio,
+          height: 68 + insets.bottom,
+          paddingTop: 8,
+          paddingBottom: Platform.OS === 'ios' ? insets.bottom : insets.bottom + 10,
+        },
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: strings.tabs.home,
+          tabBarIcon: ({ color }) => <HomeTabIcon color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="shop"
+        options={{
+          title: strings.tabs.shop,
+          tabBarIcon: ({ color }) => <ShopTabIcon color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="stats"
+        options={{
+          title: strings.tabs.stats,
+          tabBarIcon: ({ color }) => <StatsTabIcon color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: strings.tabs.profile,
+          tabBarIcon: ({ color }) => <ProfileTabIcon color={color} />,
+        }}
+      />
+    </Tabs>
+  );
+}

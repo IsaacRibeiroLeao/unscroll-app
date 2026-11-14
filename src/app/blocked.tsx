@@ -1,11 +1,13 @@
 import { useRouter } from 'expo-router';
 import { ScrollView, View } from 'react-native';
-import { Text } from '../presentation/ui';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { toMascotSkin } from '../domain/mascot';
 import { Button } from '../presentation/components/Button';
+import { CameraIcon } from '../presentation/components/Icons';
+import { GradientView, Sparkles } from '../presentation/components/art';
 import { Mascot } from '../presentation/components/Mascot';
 import { useProfile, useTasks } from '../presentation/state/queries';
+import { Text } from '../presentation/ui';
 import { strings } from '../strings/pt-BR';
 
 /** Target of `unscroll://blocked` (Android block screen button, iOS notification tap). */
@@ -16,45 +18,50 @@ export default function BlockedScreen() {
   const pending = (tasks.data ?? []).filter((t) => t.status === 'pending');
 
   return (
-    <SafeAreaView className="flex-1 bg-nevoa">
-      <ScrollView contentContainerClassName="items-center gap-4 p-6">
-        <Mascot
-          skin={toMascotSkin(profile.data?.activeMascotSkin ?? 'default')}
-          mood="sleepy"
-          size={140}
-        />
-        <Text accessibilityRole="header" className="text-2xl font-display-bold text-tinta">
-          {strings.blocked.title}
-        </Text>
-        <Text className="text-center text-tinta/70">{strings.blocked.body}</Text>
-        <View className="w-full gap-3">
-          {pending.length === 0 ? (
-            <>
-              <Text className="text-center text-tinta/70">{strings.blocked.noTasks}</Text>
-              <Button
-                label={strings.blocked.createTask}
-                onPress={() => router.replace('/new-task')}
-              />
-            </>
-          ) : (
-            pending.map((t) => (
-              <Button
-                key={t.id}
-                label={t.title}
-                variant="sun"
-                onPress={() =>
-                  router.replace({ pathname: '/proof/[taskId]', params: { taskId: t.id } })
-                }
-              />
-            ))
-          )}
-          <Button
-            label={strings.common.close}
-            variant="ghost"
-            onPress={() => router.replace('/')}
+    <GradientView id="blocked" stops={['#1F6B43', '#0C3322']} className="flex-1">
+      <Sparkles />
+      <SafeAreaView className="flex-1">
+        <ScrollView contentContainerClassName="items-center gap-3 px-6 pb-6 pt-4">
+          <Mascot
+            skin={toMascotSkin(profile.data?.activeMascotSkin ?? 'default')}
+            mood="proud"
+            size={230}
           />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+          <Text accessibilityRole="header" className="text-center font-display text-4xl text-white">
+            {strings.blocked.title}
+          </Text>
+          <Text className="mb-3 text-center text-base text-white/85">{strings.blocked.body}</Text>
+          <View className="w-full gap-3">
+            {pending.length === 0 ? (
+              <>
+                <Text className="text-center text-white/80">{strings.blocked.noTasks}</Text>
+                <Button
+                  label={strings.blocked.createTask}
+                  variant="sun"
+                  onPress={() => router.replace('/new-task')}
+                />
+              </>
+            ) : (
+              pending.map((t, i) => (
+                <Button
+                  key={t.id}
+                  label={t.title}
+                  variant={i === 0 ? 'sun' : 'outlineSun'}
+                  icon={i === 0 ? <CameraIcon size={20} /> : undefined}
+                  onPress={() =>
+                    router.replace({ pathname: '/proof/[taskId]', params: { taskId: t.id } })
+                  }
+                />
+              ))
+            )}
+            <Button
+              label={strings.common.close}
+              variant="ghostLight"
+              onPress={() => router.replace('/')}
+            />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </GradientView>
   );
 }

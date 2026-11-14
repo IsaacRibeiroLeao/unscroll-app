@@ -1,12 +1,16 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
 import { Text, colors } from '../presentation/ui';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { awaitPro } from '../application/awaitPro';
 import type { PaywallPlan } from '../application/ports/IPurchasesService';
 import { Button } from '../presentation/components/Button';
+import { CrownIcon, LockIcon, Hills } from '../presentation/components/art';
+import { CheckIcon } from '../presentation/components/Icons';
+import { Mascot } from '../presentation/components/Mascot';
+import { toMascotSkin } from '../domain/mascot';
 import { backend, purchases } from '../presentation/state/container';
 import { keys, useProfile } from '../presentation/state/queries';
 import { strings } from '../strings/pt-BR';
@@ -81,16 +85,23 @@ export default function PaywallScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-nevoa">
-      <View className="gap-4 p-4">
-        <Text accessibilityRole="header" className="text-3xl font-display text-tinta">
-          {strings.paywall.title}
-        </Text>
+      <Hills height={190} />
+      <ScrollView contentContainerClassName="gap-4 px-5 pb-6 pt-3">
+        <View className="flex-row items-center gap-2">
+          <CrownIcon size={44} />
+          <Text accessibilityRole="header" className="font-display text-4xl text-tinta">
+            {strings.paywall.title}
+          </Text>
+        </View>
         <Text className="text-base text-tinta/80">{strings.paywall.subtitle}</Text>
-        <View className="gap-2">
+        <View className="gap-3">
           {strings.paywall.benefits.map((b) => (
-            <Text key={b} className="text-base text-tinta">
-              ✓ {b}
-            </Text>
+            <View key={b} className="flex-row items-center gap-3">
+              <View className="h-7 w-7 items-center justify-center rounded-full bg-floresta">
+                <CheckIcon size={16} color="#FFFFFF" />
+              </View>
+              <Text className="flex-1 text-base text-tinta">{b}</Text>
+            </View>
           ))}
         </View>
 
@@ -103,18 +114,35 @@ export default function PaywallScreen() {
 
         {plans?.map((plan) => {
           const on = plan.id === selected;
+          const annual = plan.period === 'annual';
           return (
             <Pressable
               key={plan.id}
               accessibilityRole="radio"
               accessibilityState={{ selected: on }}
               onPress={() => setSelected(plan.id)}
-              className={`min-h-14 flex-row items-center justify-between rounded-2xl border-2 bg-folha px-4 ${on ? 'border-tinta' : 'border-transparent'}`}
+              className={`min-h-16 flex-row items-center justify-between rounded-2xl border-2 px-4 ${on ? 'border-floresta bg-folha' : 'border-transparent bg-[#EDEAD9]'}`}
             >
-              <Text className="text-base font-body-semibold text-tinta">
-                {plan.period === 'annual' ? strings.paywall.annual : strings.paywall.monthly}
-              </Text>
-              <Text className="text-base text-tinta">{plan.priceLabel}</Text>
+              <View className="flex-row items-center gap-2">
+                <Text className="font-display-bold text-lg text-tinta">
+                  {annual ? strings.paywall.annual : strings.paywall.monthly}
+                </Text>
+                {annual ? (
+                  <View className="rounded-full bg-floresta px-2.5 py-1">
+                    <Text className="font-display-bold text-xs text-white">
+                      {strings.paywall.bestOffer}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+              <View className="flex-row items-center gap-2">
+                <Text className="font-display-bold text-lg text-tinta">{plan.priceLabel}</Text>
+                {on ? (
+                  <View className="h-6 w-6 items-center justify-center rounded-full bg-floresta">
+                    <CheckIcon size={14} color="#FFFFFF" />
+                  </View>
+                ) : null}
+              </View>
             </Pressable>
           );
         })}
@@ -128,6 +156,7 @@ export default function PaywallScreen() {
         <Button
           label={strings.paywall.cta}
           variant="sun"
+          icon={<CrownIcon size={22} />}
           onPress={() => void buy()}
           disabled={!selected}
           loading={busy}
@@ -138,9 +167,19 @@ export default function PaywallScreen() {
           onPress={() => void restore()}
           disabled={busy}
         />
-        <Text className="text-center text-xs text-tinta/55">{strings.paywall.terms}</Text>
+        <View className="flex-row items-center gap-3 rounded-2xl bg-[#E6EDE0] p-3">
+          <LockIcon />
+          <Text className="flex-1 text-xs text-tinta/70">{strings.paywall.terms}</Text>
+        </View>
         <Button label={strings.common.close} variant="ghost" onPress={() => router.back()} />
-      </View>
+        <View className="items-center">
+          <Mascot
+            skin={toMascotSkin(profile.data?.activeMascotSkin ?? 'default')}
+            mood="royal"
+            size={170}
+          />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

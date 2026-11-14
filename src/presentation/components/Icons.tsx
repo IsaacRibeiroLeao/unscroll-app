@@ -78,3 +78,11 @@ export function StarIcon({ size = 16, color = '#FFBE1F' }: IconProps) {
     </Svg>
   );
 }
+
+export function PlusIcon({ size = 20, color = '#F7F4E9' }: IconProps) {
+  return (
+    <Svg width={size} height={size} {...base} accessibilityElementsHidden>
+      <Path d="M12 5v14M5 12h14" stroke={color} strokeWidth={3} strokeLinecap="round" />
+    </Svg>
+  );
+}

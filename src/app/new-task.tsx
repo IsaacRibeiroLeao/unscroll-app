@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { errorMessage } from '../application/errorMessages';
 import type { TaskRecurrence } from '../application/ports/IBackendApi';
 import { Button } from '../presentation/components/Button';
+import { Hills, SparkleIcon } from '../presentation/components/art';
 import { backend, errorTexts } from '../presentation/state/container';
 import { keys } from '../presentation/state/queries';
 import { strings } from '../strings/pt-BR';
@@ -38,24 +39,24 @@ export default function NewTaskScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-nevoa">
-      <View className="gap-4 p-4">
+      <Hills height={170} />
+      <View className="gap-3 p-5">
         <Text accessibilityRole="header" className="text-2xl font-display-bold text-tinta">
           {strings.newTask.title}
         </Text>
 
-        <Text className="text-sm font-body-semibold text-tinta/80">
-          {strings.newTask.titleLabel}
-        </Text>
+        <Text className="text-lg font-display-bold text-tinta">{strings.newTask.titleLabel}</Text>
         <TextInput
           value={title}
           onChangeText={setTitle}
           maxLength={80}
           placeholder={strings.newTask.titlePlaceholder}
           accessibilityLabel={strings.newTask.titleLabel}
-          className="min-h-12 rounded-xl border border-fio bg-folha px-4 text-base text-tinta"
+          className="min-h-14 rounded-2xl border border-fio bg-folha px-4 text-base text-tinta"
+          placeholderTextColor="#8A978E"
         />
 
-        <Text className="text-sm font-body-semibold text-tinta/80">
+        <Text className="text-base font-display-bold text-tinta">
           {strings.newTask.descriptionLabel}
         </Text>
         <TextInput
@@ -65,10 +66,12 @@ export default function NewTaskScreen() {
           multiline
           placeholder={strings.newTask.descriptionPlaceholder}
           accessibilityLabel={strings.newTask.descriptionLabel}
-          className="min-h-24 rounded-xl border border-fio bg-folha px-4 py-3 text-base text-tinta"
+          className="min-h-28 rounded-2xl border border-fio bg-folha px-4 py-3 text-base text-tinta"
+          placeholderTextColor="#8A978E"
+          textAlignVertical="top"
         />
 
-        <Text className="text-sm font-body-semibold text-tinta/80">
+        <Text className="text-base font-display-bold text-tinta">
           {strings.newTask.recurrenceLabel}
         </Text>
         <View className="flex-row gap-3">
@@ -102,6 +105,7 @@ export default function NewTaskScreen() {
 
         <Button
           label={strings.newTask.create}
+          icon={<SparkleIcon size={20} />}
           onPress={() => void create()}
           disabled={!valid}
           loading={busy}

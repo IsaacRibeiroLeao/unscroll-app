@@ -9,13 +9,11 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { toMascotSkin } from '../domain/mascot';
 import { Button } from '../presentation/components/Button';
-import { FlameIcon, GemIcon } from '../presentation/components/Icons';
-import { Mascot } from '../presentation/components/Mascot';
+import { Burst, CheckBadge } from '../presentation/components/art';
+import { FlameIcon, GemIcon, StarIcon } from '../presentation/components/Icons';
 import { fill } from '../presentation/format';
 import { useAppStore } from '../presentation/state/appStore';
-import { useProfile } from '../presentation/state/queries';
 import { Text } from '../presentation/ui';
 import { strings } from '../strings/pt-BR';
 
@@ -24,7 +22,6 @@ export default function CelebrationScreen() {
   const router = useRouter();
   const proof = useAppStore((s) => s.lastProof);
   const setLastProof = useAppStore((s) => s.setLastProof);
-  const profile = useProfile();
   const scale = useSharedValue(0.4);
 
   useEffect(() => {
@@ -43,56 +40,60 @@ export default function CelebrationScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-sol" style={{ paddingHorizontal: 24, paddingBottom: 16 }}>
-      <View className="flex-1 justify-center">
-        <Animated.View
-          style={[animated, { transformOrigin: 'left center' }]}
-          className="items-start"
-        >
-          <View className="h-36 w-36 items-center justify-center rounded-full bg-musgo">
-            <Mascot
-              skin={toMascotSkin(profile.data?.activeMascotSkin ?? 'default')}
-              mood="proud"
-              size={112}
-            />
-          </View>
-          <Text accessibilityRole="header" className="mt-4 font-display-bold text-2xl text-tinta">
-            {strings.celebration.title}
-          </Text>
-          <Text
-            className="font-display text-tinta"
-            style={{ fontSize: 132, lineHeight: 128, letterSpacing: -5 }}
-            accessibilityLabel={`${fill(strings.celebration.minutesBig, { minutes: r.minutes })} ${strings.celebration.minutesUnit}`}
-          >
-            {fill(strings.celebration.minutesBig, { minutes: r.minutes })}
-          </Text>
-          <Text className="font-display-bold text-2xl text-tinta">
-            {strings.celebration.minutesUnit}
-          </Text>
-        </Animated.View>
+    <View className="flex-1">
+      <Burst />
+      <SafeAreaView className="flex-1 px-6 pb-4">
+        <View className="flex-1 items-center justify-center">
+          <Animated.View style={animated} className="items-center">
+            <CheckBadge size={150} />
+            <Text
+              accessibilityRole="header"
+              className="mt-2 text-center font-display text-4xl text-tinta"
+            >
+              {strings.celebration.title}
+            </Text>
+            <Text
+              className="font-display text-tinta"
+              style={{ fontSize: 112, lineHeight: 116, letterSpacing: -3 }}
+              accessibilityLabel={`${fill(strings.celebration.minutesBig, { minutes: r.minutes })} ${strings.celebration.minutesUnit}`}
+            >
+              {fill(strings.celebration.minutesBig, { minutes: r.minutes })}
+            </Text>
+            <Text className="font-display-bold text-2xl text-tinta">
+              {strings.celebration.minutesUnit}
+            </Text>
+          </Animated.View>
 
-        <View className="mt-8 flex-row items-center gap-6">
-          <Text className="font-display-bold text-lg text-tinta">
-            {fill(strings.celebration.xp, { xp: r.xp })}
-          </Text>
-          <View className="flex-row items-center gap-1.5">
-            <GemIcon size={18} color="#16241C" />
-            <Text className="font-display-bold text-lg text-tinta">+{r.gems}</Text>
+          <View className="mt-6 w-full rounded-3xl bg-white/55 p-4">
+            <View className="flex-row items-center justify-around">
+              <View className="flex-row items-center gap-1.5">
+                <StarIcon size={22} />
+                <Text className="font-display text-xl text-tinta">
+                  {fill(strings.celebration.xp, { xp: r.xp })}
+                </Text>
+              </View>
+              <View className="flex-row items-center gap-1.5">
+                <GemIcon size={22} color="#3FA8E8" />
+                <Text className="font-display text-xl text-tinta">+{r.gems}</Text>
+              </View>
+              <View className="flex-row items-center gap-1.5">
+                <FlameIcon size={24} color="#FF8A1F" />
+                <Text className="font-display text-xl text-tinta">{r.newStreak}</Text>
+              </View>
+            </View>
+            <Text className="mt-2 text-center text-base text-tinta/75">
+              {fill(strings.celebration.streak, { days: r.newStreak })}
+            </Text>
           </View>
-          <View className="flex-row items-center gap-1.5">
-            <FlameIcon size={20} color="#16241C" />
-            <Text className="font-display-bold text-lg text-tinta">{r.newStreak}</Text>
-          </View>
+
+          {proof.blockerFailed ? (
+            <Text className="mt-3 text-center text-sm text-tinta/80">
+              {strings.celebration.blockerWarning}
+            </Text>
+          ) : null}
         </View>
-        <Text className="mt-2 text-base text-tinta/75">
-          {fill(strings.celebration.streak, { days: r.newStreak })}
-        </Text>
-
-        {proof.blockerFailed ? (
-          <Text className="mt-4 text-sm text-tinta/80">{strings.celebration.blockerWarning}</Text>
-        ) : null}
-      </View>
-      <Button label={strings.celebration.done} onPress={finish} />
-    </SafeAreaView>
+        <Button label={strings.celebration.done} onPress={finish} />
+      </SafeAreaView>
+    </View>
   );
 }

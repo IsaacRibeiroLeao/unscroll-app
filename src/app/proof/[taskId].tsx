@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { errorMessage, proofMessage } from '../../application/errorMessages';
 import { submitTaskProof } from '../../application/submitTaskProof';
 import { Button } from '../../presentation/components/Button';
+import { PhoneArt } from '../../presentation/components/art';
 import { useAppStore } from '../../presentation/state/appStore';
 import { backend, blocker, discardPhoto, errorTexts } from '../../presentation/state/container';
 import { keys } from '../../presentation/state/queries';
@@ -66,13 +67,20 @@ export default function ProofScreen() {
 
   if (!permission.granted) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-3 bg-nevoa px-8">
-        <Text className="text-xl font-display-bold text-tinta">
-          {strings.proof.permissionTitle}
-        </Text>
-        <Text className="mb-2 text-center text-tinta/70">{strings.proof.permissionBody}</Text>
-        <Button label={strings.proof.grant} onPress={() => void requestPermission()} />
-        <Button label={strings.common.close} variant="ghost" onPress={() => router.back()} />
+      <SafeAreaView className="flex-1 bg-nevoa">
+        <View className="flex-1 items-center justify-center gap-3 px-8">
+          <PhoneArt size={210} />
+          <Text accessibilityRole="header" className="font-display text-3xl text-tinta">
+            {strings.proof.permissionTitle}
+          </Text>
+          <Text className="mb-3 text-center text-base text-tinta/70">
+            {strings.proof.permissionBody}
+          </Text>
+          <View className="w-full">
+            <Button label={strings.proof.grant} onPress={() => void requestPermission()} />
+          </View>
+          <Button label={strings.common.close} variant="ghost" onPress={() => router.back()} />
+        </View>
       </SafeAreaView>
     );
   }

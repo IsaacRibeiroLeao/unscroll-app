@@ -1,5 +1,6 @@
 export type MascotSkin = 'default' | 'mascot_skin_fire' | 'mascot_skin_zen';
-export type MascotMood = 'sleepy' | 'happy' | 'proud';
+/** happy: thumbs up · proud: arms up with medal · sleepy: out of time · peek: onboarding · royal: Pro */
+export type MascotMood = 'sleepy' | 'happy' | 'proud' | 'peek' | 'royal';
 
 const SKINS: readonly MascotSkin[] = ['default', 'mascot_skin_fire', 'mascot_skin_zen'];
 

@@ -1,0 +1,84 @@
+import { ScrollView, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { levelFromXp, xpToReachLevel } from '../../domain/progression';
+import { FlameIcon, GemIcon, StarIcon } from '../../presentation/components/Icons';
+import { fill } from '../../presentation/format';
+import { useProfile, useTasks } from '../../presentation/state/queries';
+import { Text } from '../../presentation/ui';
+import { strings } from '../../strings/pt-BR';
+
+function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+  return (
+    <View
+      accessible
+      accessibilityLabel={`${label}: ${value}`}
+      className="min-w-[46%] flex-1 gap-1 rounded-3xl bg-folha p-4"
+    >
+      {icon}
+      <Text className="mt-1 font-display text-3xl text-tinta">{value}</Text>
+      <Text className="text-sm text-tinta/65">{label}</Text>
+    </View>
+  );
+}
+
+/** Read-only numbers straight from the server profile; no invented metrics. */
+export default function StatsScreen() {
+  const insets = useSafeAreaInsets();
+  const profile = useProfile();
+  const tasks = useTasks();
+  const p = profile.data;
+  const lvl = p ? levelFromXp(p.xp) : null;
+  const done = (tasks.data ?? []).filter((t) => t.status === 'completed').length;
+
+  return (
+    <ScrollView
+      className="flex-1 bg-nevoa"
+      contentContainerClassName="gap-4 px-4 pb-8"
+      contentContainerStyle={{ paddingTop: insets.top + 12 }}
+    >
+      <Text accessibilityRole="header" className="font-display text-3xl text-tinta">
+        {strings.stats.title}
+      </Text>
+      {p && lvl ? (
+        <>
+          <View className="gap-2 rounded-3xl bg-musgo p-5">
+            <Text className="text-sm text-white/75">{strings.stats.level}</Text>
+            <Text className="font-display text-white" style={{ fontSize: 56, lineHeight: 60 }}>
+              {lvl.level}
+            </Text>
+            <View className="h-3 overflow-hidden rounded-full bg-black/25">
+              <View
+                className="h-3 rounded-full bg-sol"
+                style={{ width: `${lvl.progress * 100}%` }}
+              />
+            </View>
+            <Text className="text-sm text-white/80">
+              {fill(strings.stats.nextLevel, {
+                xp: xpToReachLevel(lvl.level + 1) - p.xp,
+                level: lvl.level + 1,
+              })}
+            </Text>
+          </View>
+          <View className="flex-row flex-wrap gap-3">
+            <Stat
+              icon={<StarIcon size={26} />}
+              label={strings.stats.totalXp}
+              value={String(p.xp)}
+            />
+            <Stat
+              icon={<FlameIcon size={26} color="#FF8A1F" />}
+              label={strings.stats.streak}
+              value={fill(strings.stats.streakValue, { days: p.streakDays })}
+            />
+            <Stat
+              icon={<GemIcon size={26} color="#3FA8E8" />}
+              label={strings.stats.gems}
+              value={String(p.gems)}
+            />
+            <Stat icon={null} label={strings.stats.tasksDone} value={String(done)} />
+          </View>
+        </>
+      ) : null}
+    </ScrollView>
+  );
+}

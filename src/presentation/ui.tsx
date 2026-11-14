@@ -2,13 +2,14 @@ import { Text as RNText } from 'react-native';
 import type { TextProps } from 'react-native';
 
 export const colors = {
-  nevoa: '#EAEFE8',
-  folha: '#F6F8F4',
-  tinta: '#16241C',
-  musgo: '#255A41',
-  sol: '#FFBE1F',
+  nevoa: '#F7F4E9',
+  folha: '#FFFFFF',
+  tinta: '#16372A',
+  musgo: '#12452E',
+  floresta: '#1F6B43',
+  sol: '#FFC72C',
   pimenta: '#D6392B',
-  fio: '#C5D0C6',
+  fio: '#E5E0CC',
 } as const;
 
 /** Text with the body font by default (custom fonts need an explicit family per weight). */

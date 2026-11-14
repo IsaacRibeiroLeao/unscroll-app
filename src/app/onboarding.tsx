@@ -3,9 +3,10 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { AppState, Platform, ScrollView, View } from 'react-native';
 import { Text } from '../presentation/ui';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { PermissionKey, PermissionStatus } from '../application/ports/IScreenBlockerService';
 import { Button } from '../presentation/components/Button';
+import { GradientView, HourglassArt, Sparkles } from '../presentation/components/art';
 import { Mascot } from '../presentation/components/Mascot';
 import { fill } from '../presentation/format';
 import { useAppStore } from '../presentation/state/appStore';
@@ -23,6 +24,7 @@ const PERMISSION_KEYS: PermissionKey[] =
 
 export default function OnboardingScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const setOnboardedState = useAppStore((s) => s.setOnboarded);
   const [index, setIndex] = useState(0);
   const [perms, setPerms] = useState<PermissionStatus | null>(null);
@@ -97,19 +99,32 @@ export default function OnboardingScreen() {
   const permsOk = perms?.granted ?? false;
 
   return (
-    <SafeAreaView className="flex-1 bg-nevoa">
-      <ScrollView contentContainerClassName="gap-4 p-6">
-        <View className="items-center">
-          <Mascot skin="default" mood="happy" size={120} />
+    <GradientView id="onb" stops={['#1F6B43', '#0F3F29']} className="flex-1">
+      <Sparkles />
+      <View className="items-center justify-end" style={{ height: 250, paddingTop: insets.top }}>
+        <View className="absolute left-8 top-16 opacity-90" style={{ top: insets.top + 24 }}>
+          <HourglassArt size={34} />
         </View>
-
+        <Mascot skin="default" mood="peek" size={190} />
+      </View>
+      <ScrollView
+        className="flex-1 bg-nevoa"
+        style={{ borderTopLeftRadius: 36, borderTopRightRadius: 36 }}
+        contentContainerClassName="gap-4 p-6"
+        contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
+      >
         {step === 'welcome' ? (
           <>
-            <Text accessibilityRole="header" className="text-3xl font-display text-tinta">
+            <Text
+              accessibilityRole="header"
+              className="text-center font-display text-3xl text-tinta"
+            >
               {strings.onboarding.welcomeTitle}
             </Text>
-            <Text className="text-base text-tinta/80">{strings.onboarding.welcomeBody}</Text>
-            <Button label={strings.onboarding.next} onPress={next} />
+            <Text className="text-center text-base text-tinta/70">
+              {strings.onboarding.welcomeBody}
+            </Text>
+            <Button label={`${strings.onboarding.next} →`} onPress={next} />
           </>
         ) : null}
 
@@ -209,6 +224,6 @@ export default function OnboardingScreen() {
           </>
         ) : null}
       </ScrollView>
-    </SafeAreaView>
+    </GradientView>
   );
 }

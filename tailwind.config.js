@@ -5,19 +5,20 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        nevoa: '#EAEFE8', // page background
-        folha: '#F6F8F4', // inputs / raised surfaces
-        tinta: '#16241C', // text and primary button
-        musgo: '#255A41', // balance band
-        sol: '#FFBE1F', // reward, mascot, "earn" actions
+        nevoa: '#F7F4E9', // page background (warm cream)
+        folha: '#FFFFFF', // cards / inputs
+        tinta: '#16372A', // text and primary button (deep green)
+        musgo: '#12452E', // hero green
+        floresta: '#1F6B43', // lighter green for gradients
+        sol: '#FFC72C', // reward / "earn" actions
         pimenta: '#D6392B', // blocked / errors
-        fio: '#C5D0C6', // hairlines
+        fio: '#E5E0CC', // hairlines
       },
       fontFamily: {
-        display: ['BricolageGrotesque_800ExtraBold'],
-        'display-bold': ['BricolageGrotesque_700Bold'],
-        body: ['InstrumentSans_400Regular'],
-        'body-semibold': ['InstrumentSans_600SemiBold'],
+        display: ['Nunito_900Black'],
+        'display-bold': ['Nunito_800ExtraBold'],
+        body: ['Nunito_400Regular'],
+        'body-semibold': ['Nunito_700Bold'],
       },
     },
   },
