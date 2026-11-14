@@ -1,4 +1,4 @@
-import type { ResultCode, VerifyResponse } from './types.ts';
+import type { ResultCode, TaskCategory, TextProof, VerifyResponse } from './types.ts';
 
 export const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
 export const MAX_FAILED_ATTEMPTS_PER_TASK_DAY = 5;
@@ -21,13 +21,22 @@ export interface ParsedRequest {
 export function parseRequest(
   body: unknown,
   uid: string,
-): { ok: true; value: ParsedRequest } | { ok: false; code: 'INVALID_REQUEST' | 'FORBIDDEN_PATH' } {
-  if (typeof body !== 'object' || body === null) return { ok: false, code: 'INVALID_REQUEST' };
+):
+  | { ok: true; value: ParsedRequest }
+  | {
+      ok: false;
+      code: 'INVALID_REQUEST' | 'FORBIDDEN_PATH';
+    } {
+  if (typeof body !== 'object' || body === null) {
+    return { ok: false, code: 'INVALID_REQUEST' };
+  }
   const { taskId, imagePath } = body as Record<string, unknown>;
-  if (typeof taskId !== 'string' || !UUID_RE.test(taskId))
+  if (typeof taskId !== 'string' || !UUID_RE.test(taskId)) {
     return { ok: false, code: 'INVALID_REQUEST' };
-  if (typeof imagePath !== 'string' || imagePath.length > 200)
+  }
+  if (typeof imagePath !== 'string' || imagePath.length > 200) {
     return { ok: false, code: 'INVALID_REQUEST' };
+  }
 
   const stripped = imagePath.startsWith('proofs/') ? imagePath.slice('proofs/'.length) : imagePath;
   const parts = stripped.split('/');
@@ -41,7 +50,10 @@ export function parseRequest(
   ) {
     return { ok: false, code: 'FORBIDDEN_PATH' };
   }
-  return { ok: true, value: { taskId: taskId.toLowerCase(), imagePath: `${folder}/${file}` } };
+  return {
+    ok: true,
+    value: { taskId: taskId.toLowerCase(), imagePath: `${folder}/${file}` },
+  };
 }
 
 /** YYYY-MM-DD of `now` in the user's timezone (never UTC unless that is the user's zone). */
@@ -120,6 +132,63 @@ export function corsHeaders(origin: string): Record<string, string> {
 export function json(body: unknown, status: number, origin: string): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders(origin), 'Content-Type': 'application/json; charset=utf-8' },
+    headers: {
+      ...corsHeaders(origin),
+      'Content-Type': 'application/json; charset=utf-8',
+    },
   });
+}
+
+export const TEXT_LIMITS = {
+  book: { min: 2, max: 120 },
+  chapter: { max: 80 },
+  summary: { min: 200, max: 1500 },
+  insight: { min: 20, max: 400 },
+} as const;
+
+export function proofKindFor(category: TaskCategory): 'photo' | 'text' {
+  return category === 'reading' || category === 'study' ? 'text' : 'photo';
+}
+
+const clean = (v: unknown): string => (typeof v === 'string' ? v.replace(/\s+/g, ' ').trim() : '');
+
+/** Text proof request: `{ taskId, text: { book, chapter?, summary, insight } }`. */
+export function parseTextRequest(body: unknown):
+  | { ok: true; value: { taskId: string; text: TextProof } }
+  | {
+      ok: false;
+      code: 'INVALID_REQUEST';
+    } {
+  const bad = { ok: false, code: 'INVALID_REQUEST' } as const;
+  if (typeof body !== 'object' || body === null) return bad;
+  const { taskId, text } = body as Record<string, unknown>;
+  if (typeof taskId !== 'string' || !UUID_RE.test(taskId)) return bad;
+  if (typeof text !== 'object' || text === null) return bad;
+  const t = text as Record<string, unknown>;
+  const book = clean(t.book);
+  const chapter = clean(t.chapter);
+  const summary = clean(t.summary);
+  const insight = clean(t.insight);
+  const L = TEXT_LIMITS;
+  if (book.length < L.book.min || book.length > L.book.max) return bad;
+  if (chapter.length > L.chapter.max) return bad;
+  if (summary.length < L.summary.min || summary.length > L.summary.max) {
+    return bad;
+  }
+  if (insight.length < L.insight.min || insight.length > L.insight.max) {
+    return bad;
+  }
+  return {
+    ok: true,
+    value: {
+      taskId: taskId.toLowerCase(),
+      text: { book, chapter: chapter || null, summary, insight },
+    },
+  };
+}
+
+/** Same book + chapter can only ever be rewarded once per user. */
+export async function textProofHash(proof: TextProof): Promise<string> {
+  const key = `${proof.book}|${proof.chapter ?? ''}`.toLowerCase().normalize('NFKD');
+  return sha256Hex(new TextEncoder().encode(`text:${key}`));
 }

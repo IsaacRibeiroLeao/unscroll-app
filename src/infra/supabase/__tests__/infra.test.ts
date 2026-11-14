@@ -98,3 +98,12 @@ test('toBackendError recognises raised codes and Edge Function codes', () => {
   assert.equal(toBackendError({ message: 'P0001: BALANCE_CAP' }).code, 'BALANCE_CAP');
   assert.equal(toBackendError('boom').code, 'UNKNOWN');
 });
+
+test('proofKindFor maps categories to proof kinds and WRONG_PROOF_KIND is a known error', async () => {
+  const { proofKindFor } = await import('../../../application/ports/IBackendApi.ts');
+  assert.equal(proofKindFor('home'), 'photo');
+  assert.equal(proofKindFor('exercise'), 'photo');
+  assert.equal(proofKindFor('reading'), 'text');
+  assert.equal(proofKindFor('study'), 'text');
+  assert.equal(toBackendError({ code: 'WRONG_PROOF_KIND' }).code, 'WRONG_PROOF_KIND');
+});

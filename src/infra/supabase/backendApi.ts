@@ -34,6 +34,23 @@ export function createBackendApi(client: SupabaseClient, deps: BackendDeps): IBa
     throw toBackendError(error?.message ?? 'unknown');
   }
 
+  async function invokeVerify(body: Record<string, unknown>) {
+    const res = await client.functions.invoke('verify-task-proof', { body });
+    if (res.error) {
+      if (res.error instanceof FunctionsHttpError) {
+        const errBody: unknown = await res.error.context.json().catch(() => null);
+        throw toBackendError(
+          errBody && typeof errBody === 'object' ? (errBody as { code?: unknown }) : 'unknown',
+        );
+      }
+      if (res.error instanceof FunctionsFetchError || res.error instanceof FunctionsRelayError) {
+        throw new BackendError('NETWORK');
+      }
+      throw new BackendError('UNKNOWN', String(res.error));
+    }
+    return toProofOutcome(res.data);
+  }
+
   return {
     async getProfile() {
       const id = await uid();
@@ -64,6 +81,7 @@ export function createBackendApi(client: SupabaseClient, deps: BackendDeps): IBa
           title: task.title.trim(),
           description: task.description?.trim() || null,
           recurrence: task.recurrence,
+          category: task.category,
         })
         .select(TASK_COLUMNS)
         .single();
@@ -86,22 +104,20 @@ export function createBackendApi(client: SupabaseClient, deps: BackendDeps): IBa
         .upload(imagePath, bytes, { contentType: 'image/jpeg', upsert: false });
       if (up.error) fail(up.error);
 
-      const res = await client.functions.invoke('verify-task-proof', {
-        body: { taskId, imagePath },
+      return invokeVerify({ taskId, imagePath });
+    },
+
+    async verifyTextProof(taskId, text) {
+      await uid();
+      return invokeVerify({
+        taskId,
+        text: {
+          book: text.book,
+          chapter: text.chapter ?? '',
+          summary: text.summary,
+          insight: text.insight,
+        },
       });
-      if (res.error) {
-        if (res.error instanceof FunctionsHttpError) {
-          const body: unknown = await res.error.context.json().catch(() => null);
-          throw toBackendError(
-            body && typeof body === 'object' ? (body as { code?: unknown }) : 'unknown',
-          );
-        }
-        if (res.error instanceof FunctionsFetchError || res.error instanceof FunctionsRelayError) {
-          throw new BackendError('NETWORK');
-        }
-        throw new BackendError('UNKNOWN', String(res.error));
-      }
-      return toProofOutcome(res.data);
     },
 
     async listShopItems() {

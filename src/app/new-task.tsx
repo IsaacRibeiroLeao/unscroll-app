@@ -5,12 +5,14 @@ import { Pressable, TextInput, View } from 'react-native';
 import { Text } from '../presentation/ui';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { errorMessage } from '../application/errorMessages';
-import type { TaskRecurrence } from '../application/ports/IBackendApi';
+import type { TaskCategory, TaskRecurrence } from '../application/ports/IBackendApi';
 import { Button } from '../presentation/components/Button';
 import { Hills, SparkleIcon } from '../presentation/components/art';
 import { backend, errorTexts } from '../presentation/state/container';
 import { keys } from '../presentation/state/queries';
 import { strings } from '../strings/pt-BR';
+
+const CATEGORIES = ['home', 'exercise', 'reading', 'study'] as const;
 
 export default function NewTaskScreen() {
   const router = useRouter();
@@ -18,6 +20,7 @@ export default function NewTaskScreen() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [recurrence, setRecurrence] = useState<TaskRecurrence>('once');
+  const [category, setCategory] = useState<TaskCategory>('home');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,7 +30,7 @@ export default function NewTaskScreen() {
     setBusy(true);
     setError(null);
     try {
-      await backend.createTask({ title, description, recurrence });
+      await backend.createTask({ title, description, recurrence, category });
       await qc.invalidateQueries({ queryKey: keys.tasks });
       router.back();
     } catch (e) {
@@ -44,6 +47,34 @@ export default function NewTaskScreen() {
         <Text accessibilityRole="header" className="text-2xl font-display-bold text-tinta">
           {strings.newTask.title}
         </Text>
+
+        <Text className="text-base font-display-bold text-tinta">
+          {strings.newTask.categoryLabel}
+        </Text>
+        <View className="flex-row flex-wrap gap-2">
+          {CATEGORIES.map((value) => {
+            const selected = category === value;
+            return (
+              <Pressable
+                key={value}
+                accessibilityRole="radio"
+                accessibilityState={{ selected }}
+                accessibilityLabel={`${strings.categories[value]}. ${strings.categories[`${value}Hint`]}`}
+                onPress={() => setCategory(value)}
+                className={`min-h-12 min-w-[47%] flex-1 justify-center rounded-2xl px-4 py-2 ${selected ? 'bg-tinta' : 'border-2 border-fio bg-folha'}`}
+              >
+                <Text
+                  className={`font-display-bold text-base ${selected ? 'text-nevoa' : 'text-tinta'}`}
+                >
+                  {strings.categories[value]}
+                </Text>
+                <Text className={`text-xs ${selected ? 'text-nevoa/80' : 'text-tinta/60'}`}>
+                  {strings.categories[`${value}Hint`]}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
 
         <Text className="text-lg font-display-bold text-tinta">{strings.newTask.titleLabel}</Text>
         <View className="justify-center">

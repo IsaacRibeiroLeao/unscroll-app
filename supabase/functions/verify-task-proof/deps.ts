@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
-import { callGemini } from './gemini.ts';
-import type { Deps, RpcRewardRow, TaskRow, ProfileRow } from './types.ts';
+import { callGemini, callGeminiText } from './gemini.ts';
+import type { Deps, ProfileRow, RpcRewardRow, TaskRow } from './types.ts';
 
 function requireEnv(name: string): string {
   const v = Deno.env.get(name);
@@ -45,12 +45,13 @@ export function createSupabaseDeps(): Deps {
     },
 
     gemini: (image, task) => callGemini({ apiKey, model, log }, image, task),
+    geminiText: (proof, task) => callGeminiText({ apiKey, model, log }, proof, task),
 
     db: {
       async getTask(taskId) {
         const res = await admin
           .from('tasks')
-          .select('id,user_id,title,description,status')
+          .select('id,user_id,title,description,status,category')
           .eq('id', taskId)
           .maybeSingle();
         return must(res, 'getTask') as TaskRow | null;

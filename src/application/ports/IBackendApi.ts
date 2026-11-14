@@ -16,12 +16,35 @@ export interface Profile {
 
 export type TaskStatus = 'pending' | 'verifying' | 'completed';
 export type TaskRecurrence = 'once' | 'daily';
+export type TaskCategory = 'home' | 'exercise' | 'reading' | 'study';
+export type ProofKind = 'photo' | 'text';
+
+/** Reading/study tasks are proven with text, the others with a photo. Mirrors the Edge Function. */
+export function proofKindFor(category: TaskCategory): ProofKind {
+  return category === 'reading' || category === 'study' ? 'text' : 'photo';
+}
+
+export interface TextProof {
+  book: string;
+  chapter?: string;
+  summary: string;
+  insight: string;
+}
+
+/** Client-side hints only (the server enforces the same limits). */
+export const TEXT_PROOF_LIMITS = {
+  book: { min: 2, max: 120 },
+  chapter: { max: 80 },
+  summary: { min: 200, max: 1500 },
+  insight: { min: 20, max: 400 },
+} as const;
 
 export interface Task {
   id: string;
   title: string;
   description: string | null;
   recurrence: TaskRecurrence;
+  category: TaskCategory;
   status: TaskStatus;
   rewardMinutes: number;
   rewardXp: number;
@@ -32,6 +55,7 @@ export interface NewTask {
   title: string;
   description?: string;
   recurrence: TaskRecurrence;
+  category: TaskCategory;
 }
 
 export type ProofCode =
@@ -83,6 +107,8 @@ export type BackendErrorCode =
   | 'SKIN_NOT_OWNED'
   | 'TASK_CREATE_LIMIT'
   | 'IMAGE_TOO_LARGE'
+  | 'WRONG_PROOF_KIND'
+  | 'INVALID_REQUEST'
   | 'UNKNOWN';
 
 export class BackendError extends Error {
@@ -101,6 +127,8 @@ export interface IBackendApi {
   deleteTask(taskId: string): Promise<void>;
   /** Uploads the photo to the private bucket and asks the Edge Function to verify it. */
   verifyTaskProof(taskId: string, photoUri: string): Promise<ProofOutcome>;
+  /** Sends a reading/study summary for verification (no upload). */
+  verifyTextProof(taskId: string, text: TextProof): Promise<ProofOutcome>;
   listShopItems(): Promise<ShopItem[]>;
   listOwnedSkus(): Promise<string[]>;
   purchaseItem(sku: string): Promise<PurchaseResult>;

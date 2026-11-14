@@ -4,13 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { toMascotSkin } from '../domain/mascot';
 import { Button } from '../presentation/components/Button';
 import { CameraIcon } from '../presentation/components/Icons';
-import {
-  FloatingApps,
-  GradientView,
-  HourglassArt,
-  Hills,
-  Sparkles,
-} from '../presentation/components/art';
+import { FloatingApps, GradientView, HourglassArt, Hills } from '../presentation/components/art';
 import { Mascot } from '../presentation/components/Mascot';
 import { useProfile, useTasks } from '../presentation/state/queries';
 import { Text } from '../presentation/ui';

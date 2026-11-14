@@ -6,12 +6,15 @@ import { ActivityIndicator, View } from 'react-native';
 import { Text } from '../../presentation/ui';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { errorMessage, proofMessage } from '../../application/errorMessages';
+import { proofKindFor } from '../../application/ports/IBackendApi';
+import type { TextProof } from '../../application/ports/IBackendApi';
 import { submitTaskProof } from '../../application/submitTaskProof';
 import { Button } from '../../presentation/components/Button';
 import { PhoneArt } from '../../presentation/components/art';
+import { TextProofForm } from '../../presentation/components/TextProofForm';
 import { useAppStore } from '../../presentation/state/appStore';
 import { backend, blocker, discardPhoto, errorTexts } from '../../presentation/state/container';
-import { keys } from '../../presentation/state/queries';
+import { keys, useTasks } from '../../presentation/state/queries';
 import { strings } from '../../strings/pt-BR';
 
 export default function ProofScreen() {
@@ -19,10 +22,36 @@ export default function ProofScreen() {
   const router = useRouter();
   const qc = useQueryClient();
   const setLastProof = useAppStore((s) => s.setLastProof);
+  const tasks = useTasks();
+  const category = tasks.data?.find((t) => t.id === taskId)?.category;
+  const isText = category ? proofKindFor(category) === 'text' : false;
   const [permission, requestPermission] = useCameraPermissions();
   const camera = useRef<CameraView>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+
+  const sendText = async (text: TextProof) => {
+    if (busy || !taskId) return;
+    setBusy(true);
+    setMessage(null);
+    try {
+      const { outcome, blockerError } = await submitTaskProof({ backend, blocker, taskId, text });
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: keys.profile }),
+        qc.invalidateQueries({ queryKey: keys.tasks }),
+      ]);
+      if (outcome.approved && outcome.rewards) {
+        setLastProof({ outcome, blockerFailed: blockerError !== null });
+        router.replace('/celebration');
+      } else if (outcome.code !== 'APPROVED') {
+        setMessage(proofMessage(outcome.code, outcome.feedback, errorTexts));
+      }
+    } catch (e) {
+      setMessage(errorMessage(e, errorTexts));
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const capture = async () => {
     if (busy || !taskId) return;
@@ -56,6 +85,26 @@ export default function ProofScreen() {
       setBusy(false);
     }
   };
+
+  if (tasks.isLoading || (!tasks.data && !tasks.isError)) {
+    return (
+      <View className="flex-1 items-center justify-center bg-nevoa">
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
+  if (isText && category) {
+    return (
+      <TextProofForm
+        category={category}
+        busy={busy}
+        message={message}
+        onSubmit={(t) => void sendText(t)}
+        onClose={() => router.back()}
+      />
+    );
+  }
 
   if (!permission) {
     return (

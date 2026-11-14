@@ -21,8 +21,18 @@ export interface VerifyResponse {
   rewards: Rewards | null;
 }
 
+export type TaskCategory = 'home' | 'exercise' | 'reading' | 'study';
+
+export interface TextProof {
+  book: string;
+  chapter: string | null;
+  summary: string;
+  insight: string;
+}
+
 export interface TaskRow {
   id: string;
+  category: TaskCategory;
   user_id: string;
   title: string;
   description: string | null;
@@ -45,13 +55,19 @@ export interface RpcRewardRow {
   gems_awarded: number;
 }
 
-export type CompleteResult = { ok: true; row: RpcRewardRow } | { ok: false; error: string };
+export type CompleteResult =
+  | { ok: true; row: RpcRewardRow }
+  | {
+      ok: false;
+      error: string;
+    };
 
 export interface VerificationInsert {
   task_id: string;
   user_id: string;
   image_path: string;
   image_hash: string;
+  proof_kind: 'photo' | 'text';
   approved: boolean;
   confidence: number | null;
   code: ResultCode;
@@ -59,7 +75,13 @@ export interface VerificationInsert {
 }
 
 export type GeminiResult =
-  | { kind: 'ok'; approved: boolean; confidence: number; qualityOk: boolean; feedback: string }
+  | {
+      kind: 'ok';
+      approved: boolean;
+      confidence: number;
+      qualityOk: boolean;
+      feedback: string;
+    }
   | { kind: 'blocked' }
   | { kind: 'unavailable' };
 
@@ -93,6 +115,10 @@ export interface Deps {
   };
   gemini(
     image: Uint8Array,
+    task: { title: string; description: string | null },
+  ): Promise<GeminiResult>;
+  geminiText(
+    proof: TextProof,
     task: { title: string; description: string | null },
   ): Promise<GeminiResult>;
   log(event: Record<string, unknown>): void;

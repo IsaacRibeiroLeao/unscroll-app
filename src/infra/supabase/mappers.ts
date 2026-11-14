@@ -46,13 +46,14 @@ const taskRow = z.object({
   title: z.string(),
   description: z.string().nullable(),
   recurrence: z.enum(['once', 'daily']),
+  category: z.enum(['home', 'exercise', 'reading', 'study']),
   status: z.enum(['pending', 'verifying', 'completed']),
   reward_minutes: z.number().int(),
   reward_xp: z.number().int(),
   reward_gems: z.number().int(),
 });
 export const TASK_COLUMNS =
-  'id, title, description, recurrence, status, reward_minutes, reward_xp, reward_gems';
+  'id, title, description, recurrence, category, status, reward_minutes, reward_xp, reward_gems';
 
 export function toTask(row: unknown): Task {
   const r = taskRow.parse(row);
@@ -61,6 +62,7 @@ export function toTask(row: unknown): Task {
     title: r.title,
     description: r.description,
     recurrence: r.recurrence,
+    category: r.category,
     status: r.status,
     rewardMinutes: r.reward_minutes,
     rewardXp: r.reward_xp,
@@ -156,6 +158,8 @@ const KNOWN: readonly BackendErrorCode[] = [
   'SKIN_NOT_OWNED',
   'TASK_CREATE_LIMIT',
   'IMAGE_TOO_LARGE',
+  'WRONG_PROOF_KIND',
+  'INVALID_REQUEST',
 ];
 
 /** Postgres `raise exception 'CODE'` surfaces as the error message; Edge Function errors carry `code`. */

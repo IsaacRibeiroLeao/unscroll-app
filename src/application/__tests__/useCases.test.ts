@@ -44,7 +44,7 @@ test('submitTaskProof syncs the SERVER balance only when approved', async () => 
   const synced: number[] = [];
   const blocker = { syncBalance: async (s: number) => void synced.push(s) };
   const ok = await submitTaskProof({
-    backend: { verifyTaskProof: async () => approved },
+    backend: { verifyTaskProof: async () => approved, verifyTextProof: async () => approved },
     blocker,
     taskId: 't',
     photoUri: 'file://x',
@@ -54,6 +54,7 @@ test('submitTaskProof syncs the SERVER balance only when approved', async () => 
 
   const rejected = await submitTaskProof({
     backend: {
+      verifyTextProof: async () => approved,
       verifyTaskProof: async () => ({
         ...approved,
         approved: false,
@@ -71,7 +72,7 @@ test('submitTaskProof syncs the SERVER balance only when approved', async () => 
 
 test('submitTaskProof keeps the approval when the blocker fails', async () => {
   const r = await submitTaskProof({
-    backend: { verifyTaskProof: async () => approved },
+    backend: { verifyTaskProof: async () => approved, verifyTextProof: async () => approved },
     blocker: {
       syncBalance: async () => {
         throw new Error('no service');
@@ -160,6 +161,8 @@ const texts: ErrorTexts = {
     SKIN_NOT_OWNED: 'skin',
     TASK_CREATE_LIMIT: 'limit',
     IMAGE_TOO_LARGE: 'big',
+    WRONG_PROOF_KIND: 'kind',
+    INVALID_REQUEST: 'invalid',
     UNKNOWN: 'unknown',
   },
   proof: {
@@ -207,4 +210,25 @@ test('awaitPro polls until the webhook flips is_pro', async () => {
   assert.equal(calls, 3);
   const never = { getProfile: async () => profile({ isPro: false }) };
   assert.equal(await awaitPro({ backend: never, sleep: async () => {}, attempts: 2 }), false);
+});
+
+test('submitTaskProof routes text proofs to verifyTextProof, not the photo upload', async () => {
+  const calls: string[] = [];
+  const r = await submitTaskProof({
+    backend: {
+      verifyTaskProof: async () => {
+        calls.push('photo');
+        return approved;
+      },
+      verifyTextProof: async (_id, text) => {
+        calls.push(`text:${text.book}`);
+        return approved;
+      },
+    },
+    blocker: { syncBalance: async () => {} },
+    taskId: 't',
+    text: { book: 'Hábitos Atômicos', summary: 'x'.repeat(200), insight: 'y'.repeat(20) },
+  });
+  assert.equal(r.outcome.approved, true);
+  assert.deepEqual(calls, ['text:Hábitos Atômicos']);
 });

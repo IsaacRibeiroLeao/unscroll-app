@@ -5,7 +5,8 @@ import { fill } from '../format';
 import { Text } from '../ui';
 import { TaskArt } from './art';
 import { Button } from './Button';
-import { CameraIcon, CheckIcon } from './Icons';
+import { CameraIcon, CheckIcon, PlusIcon } from './Icons';
+import { proofKindFor } from '../../application/ports/IBackendApi';
 
 interface Props {
   task: Task;
@@ -33,6 +34,7 @@ export function TaskRow({ task, primary, onProve, onDelete }: Props) {
     gems: task.rewardGems,
   });
   const fullWidth = primary && !done;
+  const isText = proofKindFor(task.category) === 'text';
 
   return (
     <View
@@ -57,7 +59,7 @@ export function TaskRow({ task, primary, onProve, onDelete }: Props) {
           <Text
             className={`font-body-semibold text-xs ${done ? 'text-tinta/45' : 'text-floresta'}`}
           >
-            {reward}
+            {strings.categories[task.category]} · {reward}
           </Text>
         </View>
 
@@ -88,7 +90,7 @@ export function TaskRow({ task, primary, onProve, onDelete }: Props) {
           <Button
             label={label}
             variant="sun"
-            icon={<CameraIcon size={20} />}
+            icon={isText ? <PlusIcon size={20} /> : <CameraIcon size={20} />}
             disabled={verifying}
             onPress={onProve}
           />

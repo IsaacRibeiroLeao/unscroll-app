@@ -1,6 +1,6 @@
 # Unscroll (nome provisório)
 
-App de produtividade/detox digital: o acesso aos apps de distração é comprado com **tarefas reais comprovadas por foto**, com gamificação estilo Duolingo.
+App de produtividade/detox digital: o acesso aos apps de distração é comprado com **tarefas reais comprovadas** (foto ou texto), com gamificação estilo Duolingo.
 
 - **Stack:** Expo SDK 58 (dev client, New Architecture), expo-router, TypeScript strict, NativeWind v4, Reanimated, TanStack Query + Zustand, zod, Supabase.
 - **Sem Expo Go:** módulos nativos exigem `expo-dev-client` + EAS Build.
@@ -77,3 +77,13 @@ Saída esperada: `ALL DATABASE TESTS PASSED`. Códigos de erro das RPCs são a p
 ## Bloqueio nativo (Fases 4A/4B)
 
 Detalhes do iOS em `docs/fase-4a-ios-bloqueio.md`. Testes unitários (Node, sem simulador): `npm test`.
+
+
+## Categorias de tarefa e tipos de prova
+
+| Categoria | Prova | Recompensa |
+|---|---|---|
+| Casa, Exercício | Foto (verificada pelo Gemini) | 20 min, 50 XP, 25 gemas |
+| Leitura, Estudo | Texto: livro/assunto, capítulo (opcional), resumo (mín. 200 caracteres) e aprendizado | 20 min, 75 XP, 40 gemas |
+
+Pro dobra as gemas. Mesmo livro + capítulo só rende recompensa uma vez por usuário. Todas as regras ficam no servidor (migration `20261114000005_task_categories.sql` e Edge Function `verify-task-proof`); o app só mostra os valores devolvidos.

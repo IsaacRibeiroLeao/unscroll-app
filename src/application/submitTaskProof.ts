@@ -1,4 +1,4 @@
-import type { IBackendApi, ProofOutcome } from './ports/IBackendApi.ts';
+import type { IBackendApi, ProofOutcome, TextProof } from './ports/IBackendApi.ts';
 import type { IScreenBlockerService } from './ports/IScreenBlockerService.ts';
 
 export interface SubmitProofResult {
@@ -7,14 +7,17 @@ export interface SubmitProofResult {
   blockerError: unknown | null;
 }
 
-/** Sends the photo for verification and, on approval, pushes the new server balance to the blocker. */
+/** Sends the proof (photo or text) for verification; on approval pushes the new server balance. */
 export async function submitTaskProof(deps: {
-  backend: Pick<IBackendApi, 'verifyTaskProof'>;
+  backend: Pick<IBackendApi, 'verifyTaskProof' | 'verifyTextProof'>;
   blocker: Pick<IScreenBlockerService, 'syncBalance'>;
   taskId: string;
-  photoUri: string;
+  photoUri?: string;
+  text?: TextProof;
 }): Promise<SubmitProofResult> {
-  const outcome = await deps.backend.verifyTaskProof(deps.taskId, deps.photoUri);
+  const outcome = deps.text
+    ? await deps.backend.verifyTextProof(deps.taskId, deps.text)
+    : await deps.backend.verifyTaskProof(deps.taskId, deps.photoUri ?? '');
   let blockerError: unknown | null = null;
   if (outcome.approved && outcome.rewards) {
     try {

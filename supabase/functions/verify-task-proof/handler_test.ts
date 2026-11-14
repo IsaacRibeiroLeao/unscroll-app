@@ -1,6 +1,13 @@
 import { assert, assertEquals } from '@std/assert';
 import { handle } from './handler.ts';
-import type { CompleteResult, Deps, GeminiResult, TaskRow, VerificationInsert } from './types.ts';
+import type {
+  CompleteResult,
+  Deps,
+  GeminiResult,
+  TaskCategory,
+  TaskRow,
+  VerificationInsert,
+} from './types.ts';
 
 const UID = '11111111-1111-4111-8111-111111111111';
 const TASK = '22222222-2222-4222-8222-222222222222';
@@ -20,11 +27,13 @@ interface Opts {
   complete?: CompleteResult;
   now?: string;
   throwOnComplete?: boolean;
+  category?: TaskCategory;
 }
 
 function make(o: Opts = {}) {
   const calls = {
     gemini: 0,
+    geminiText: 0,
     lock: 0,
     unlock: 0,
     removed: [] as string[],
@@ -33,7 +42,14 @@ function make(o: Opts = {}) {
   };
   const task: TaskRow | null =
     o.task === undefined
-      ? { id: TASK, user_id: UID, title: 'Lavar a louça', description: null, status: 'pending' }
+      ? {
+          id: TASK,
+          user_id: UID,
+          title: 'Lavar a louça',
+          description: null,
+          status: 'pending',
+          category: o.category ?? 'home',
+        }
       : o.task;
   const deps: Deps = {
     now: () => new Date(o.now ?? '2026-03-10T15:00:00Z'),
@@ -50,13 +66,34 @@ function make(o: Opts = {}) {
     gemini: () => {
       calls.gemini++;
       return Promise.resolve(
-        o.ai ?? { kind: 'ok', approved: true, confidence: 0.9, qualityOk: true, feedback: 'Boa!' },
+        o.ai ?? {
+          kind: 'ok',
+          approved: true,
+          confidence: 0.9,
+          qualityOk: true,
+          feedback: 'Boa!',
+        },
+      );
+    },
+    geminiText: () => {
+      calls.geminiText++;
+      return Promise.resolve(
+        o.ai ?? {
+          kind: 'ok',
+          approved: true,
+          confidence: 0.9,
+          qualityOk: true,
+          feedback: 'Boa!',
+        },
       );
     },
     db: {
       getTask: () => Promise.resolve(task),
       getProfile: () =>
-        Promise.resolve({ timezone: 'America/Sao_Paulo', is_pro: o.isPro ?? false }),
+        Promise.resolve({
+          timezone: 'America/Sao_Paulo',
+          is_pro: o.isPro ?? false,
+        }),
       hasCompletion: (_t, d) => {
         calls.dates.push(d);
         return Promise.resolve(o.hasCompletion ?? false);
@@ -125,7 +162,10 @@ Deno.test('validation: bad body 400, foreign path 403, foreign task 404', async 
   const { deps } = make();
   assertEquals((await handle(req({ taskId: 'x', imagePath: PATH }), deps)).status, 400);
   const foreign = await handle(
-    req({ taskId: TASK, imagePath: `99999999-9999-4999-8999-999999999999/p.jpg` }),
+    req({
+      taskId: TASK,
+      imagePath: `99999999-9999-4999-8999-999999999999/p.jpg`,
+    }),
     deps,
   );
   assertEquals(foreign.status, 403);
@@ -137,6 +177,7 @@ Deno.test('validation: bad body 400, foreign path 403, foreign task 404', async 
       title: 't',
       description: null,
       status: 'pending',
+      category: 'home',
     },
   });
   const r = await handle(req(valid), m.deps);
@@ -184,9 +225,24 @@ Deno.test('rejected / low confidence / low quality: unlock, no rewards, counted'
       },
       'REJECTED',
     ],
-    [{ kind: 'ok', approved: true, confidence: 0.5, qualityOk: true, feedback: '' }, 'REJECTED'],
     [
-      { kind: 'ok', approved: true, confidence: 0.95, qualityOk: false, feedback: 'Foto escura.' },
+      {
+        kind: 'ok',
+        approved: true,
+        confidence: 0.5,
+        qualityOk: true,
+        feedback: '',
+      },
+      'REJECTED',
+    ],
+    [
+      {
+        kind: 'ok',
+        approved: true,
+        confidence: 0.95,
+        qualityOk: false,
+        feedback: 'Foto escura.',
+      },
       'LOW_QUALITY',
     ],
   ] as [GeminiResult, string][]) {
@@ -229,7 +285,10 @@ Deno.test(
 );
 
 Deno.test('local date comes from the user timezone', async () => {
-  const { deps, calls } = make({ now: '2026-03-11T02:30:00Z', hasCompletion: true });
+  const { deps, calls } = make({
+    now: '2026-03-11T02:30:00Z',
+    hasCompletion: true,
+  });
   await handle(req(valid), deps);
   assertEquals(calls.dates, ['2026-03-10']);
 });
@@ -279,7 +338,9 @@ Deno.test('duplicate approved hash is rejected without calling the AI', async ()
 });
 
 Deno.test('RPC race (DAILY_LIMIT) maps to a 200 with that code and unlocks', async () => {
-  const { deps, calls } = make({ complete: { ok: false, error: 'DAILY_LIMIT' } });
+  const { deps, calls } = make({
+    complete: { ok: false, error: 'DAILY_LIMIT' },
+  });
   const b = await (await handle(req(valid), deps)).json();
   assertEquals([b.code, b.approved, b.rewards], ['DAILY_LIMIT', false, null]);
   assertEquals(calls.unlock, 1);
@@ -300,3 +361,62 @@ Deno.test(
     assertEquals(bad.calls.unlock, 1);
   },
 );
+
+const textBody = (over: Record<string, unknown> = {}) => ({
+  taskId: TASK,
+  text: {
+    book: 'O Hobbit',
+    chapter: 'Capítulo 2',
+    summary:
+      'Bilbo é surpreendido por treze anões e Gandalf em sua toca. Eles o convencem a participar da jornada até a Montanha Solitária, e Bilbo, hesitante, acaba aceitando depois de ouvir a canção sobre o ouro e o dragão Smaug.',
+    insight: 'Me fez pensar em como a coragem aparece quando a gente menos espera.',
+    ...over,
+  },
+});
+
+Deno.test(
+  'text proof: reading task is approved without storage, with proof_kind text',
+  async () => {
+    const m = make({ category: 'reading' });
+    const r = await handle(req(textBody()), m.deps);
+    assertEquals(r.status, 200);
+    const body = await r.json();
+    assertEquals(body.code, 'APPROVED');
+    assertEquals(m.calls.geminiText, 1);
+    assertEquals(m.calls.gemini, 0);
+    assertEquals(m.calls.removed, [], 'no storage object for text proofs');
+    assertEquals(m.calls.inserts[0]?.proof_kind, 'text');
+    assertEquals(m.calls.inserts[0]?.image_path, 'text');
+  },
+);
+
+Deno.test('text proof: wrong proof kind for the category is a 400 (both directions)', async () => {
+  const photoTask = make({ category: 'home' });
+  const a = await handle(req(textBody()), photoTask.deps);
+  assertEquals(a.status, 400);
+  assertEquals((await a.json()).code, 'WRONG_PROOF_KIND');
+  assertEquals(photoTask.calls.geminiText, 0);
+
+  const textTask = make({ category: 'study' });
+  const b = await handle(req(valid), textTask.deps);
+  assertEquals(b.status, 400);
+  assertEquals((await b.json()).code, 'WRONG_PROOF_KIND');
+  assertEquals(textTask.calls.gemini, 0);
+});
+
+Deno.test('text proof: too-short summary is rejected before any work', async () => {
+  const m = make({ category: 'reading' });
+  const r = await handle(req(textBody({ summary: 'curto demais' })), m.deps);
+  assertEquals(r.status, 400);
+  assertEquals((await r.json()).code, 'INVALID_REQUEST');
+  assertEquals(m.calls.lock, 0);
+});
+
+Deno.test('text proof: same book+chapter already rewarded is rejected without the AI', async () => {
+  const m = make({ category: 'reading', approvedHash: true });
+  const r = await handle(req(textBody()), m.deps);
+  const body = await r.json();
+  assertEquals(body.code, 'REJECTED');
+  assertEquals(m.calls.geminiText, 0);
+  assertEquals(m.calls.unlock, 1);
+});
