@@ -13,6 +13,7 @@ import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import ScreenBlockerHost from '../infra/native/ScreenBlockerHost';
 import { Button } from '../presentation/components/Button';
+import { AuthScreen } from '../presentation/screens/AuthScreen';
 import { queryClient } from '../presentation/state/container';
 import {
   useBlockScreenInfoSync,
@@ -43,6 +44,7 @@ function Shell() {
       </View>
     );
   }
+  if (state === 'signedOut') return <AuthScreen onDone={retry} />;
   if (state === 'error') {
     return (
       <View className="flex-1 items-center justify-center gap-3 bg-nevoa px-8">

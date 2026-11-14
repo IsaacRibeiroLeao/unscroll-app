@@ -8,7 +8,7 @@ import {
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { BackendError } from '../../../application/ports/IBackendApi.ts';
 import { createBackendApi } from '../backendApi.ts';
-import { ensureSession } from '../session.ts';
+import { currentUserId, ensureSession } from '../session.ts';
 import { createScreenTimeApi } from '../screenTimeApi.ts';
 
 type Result = { data?: unknown; error?: { message: string } | null };
@@ -65,7 +65,6 @@ function fakeClient(opts: {
       getSession: async () => ({
         data: { session: opts.session === false ? null : { user: { id: 'u1' } } },
       }),
-      signInAnonymously: async () => ({ data: { user: { id: 'u1' } }, error: null }),
     },
     from: (table: string) => {
       log.push(['from', table]);
@@ -258,17 +257,11 @@ test('rpc errors throw BackendError', async () => {
   await assert.rejects(b.setTimezone('x'));
 });
 
-test('ensureSession reuses a session or signs in anonymously', async () => {
+test('ensureSession returns the session user and never signs in anonymously', async () => {
   assert.equal(await ensureSession(fakeClient({})), 'u1');
-  assert.equal(await ensureSession(fakeClient({ session: false })), 'u1');
-  const failing = {
-    auth: {
-      getSession: async () => ({ data: { session: null } }),
-      signInAnonymously: async () => ({ data: { user: null }, error: { message: 'disabled' } }),
-    },
-  } as unknown as SupabaseClient;
+  assert.equal(await currentUserId(fakeClient({ session: false })), null);
   await assert.rejects(
-    ensureSession(failing),
+    ensureSession(fakeClient({ session: false })),
     (e: unknown) => e instanceof BackendError && e.code === 'UNAUTHORIZED',
   );
 });

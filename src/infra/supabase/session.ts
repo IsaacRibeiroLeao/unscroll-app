@@ -1,14 +1,15 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { BackendError } from '../../application/ports/IBackendApi.ts';
 
-/** Returns the signed-in user id, creating an anonymous session on first launch. */
-export async function ensureSession(client: SupabaseClient): Promise<string> {
+/** Signed-in user id, or null when nobody is signed in (reads the locally persisted session). */
+export async function currentUserId(client: SupabaseClient): Promise<string | null> {
   const { data } = await client.auth.getSession();
-  if (data.session) return data.session.user.id;
-  const res = await client.auth.signInAnonymously();
-  const id = res.data.user?.id;
-  if (res.error || !id) {
-    throw new BackendError('UNAUTHORIZED', res.error?.message);
-  }
+  return data.session?.user.id ?? null;
+}
+
+/** Signed-in user id; throws UNAUTHORIZED when the session is gone (e.g. signed out elsewhere). */
+export async function ensureSession(client: SupabaseClient): Promise<string> {
+  const id = await currentUserId(client);
+  if (!id) throw new BackendError('UNAUTHORIZED');
   return id;
 }

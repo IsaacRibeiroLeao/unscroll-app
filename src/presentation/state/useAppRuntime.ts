@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import { syncScreenTime } from '../../application/syncScreenTime';
 import { buildBlockScreenInfo } from '../../application/blockScreenInfo';
-import { ensureSession } from '../../infra/supabase/session';
+import { currentUserId } from '../../infra/supabase/session';
 import { getOnboarded } from '../../infra/storage/onboardingFlag';
 import { strings } from '../../strings/pt-BR';
 import { useAppStore } from './appStore';
@@ -19,7 +19,7 @@ import {
 } from './container';
 import { keys, useProfile } from './queries';
 
-export type BootState = 'loading' | 'ready' | 'error';
+export type BootState = 'loading' | 'signedOut' | 'ready' | 'error';
 
 /** Session + persisted flags. Runs once; `retry` re-runs it after a failure. */
 export function useBootstrap(): { state: BootState; retry: () => void } {
@@ -32,7 +32,13 @@ export function useBootstrap(): { state: BootState; retry: () => void } {
     let cancelled = false;
     (async () => {
       try {
-        const userId = await ensureSession(supabase);
+        const userId = await currentUserId(supabase);
+        if (cancelled) return;
+        if (!userId) {
+          setUserId(null);
+          setState('signedOut');
+          return;
+        }
         const onboarded = await getOnboarded();
         if (cancelled) return;
         setUserId(userId);
@@ -51,7 +57,24 @@ export function useBootstrap(): { state: BootState; retry: () => void } {
     };
   }, [attempt, setUserId, setOnboarded]);
 
-  return { state, retry: () => setAttempt((n) => n + 1) };
+  // Signing out (profile screen, or the session being revoked) returns to the login screen.
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event !== 'SIGNED_OUT') return;
+      queryClient.clear();
+      setUserId(null);
+      setState('signedOut');
+    });
+    return () => data.subscription.unsubscribe();
+  }, [setUserId]);
+
+  return {
+    state,
+    retry: () => {
+      setState('loading');
+      setAttempt((n) => n + 1);
+    },
+  };
 }
 
 /**

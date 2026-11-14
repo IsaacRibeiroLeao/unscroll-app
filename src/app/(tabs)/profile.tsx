@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router';
-import { ScrollView, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Alert, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { toMascotSkin } from '../../domain/mascot';
 import { Button } from '../../presentation/components/Button';
@@ -7,6 +8,7 @@ import { CrownIcon, LockIcon } from '../../presentation/components/art';
 import { Mascot } from '../../presentation/components/Mascot';
 import { fill } from '../../presentation/format';
 import { Enter, Float } from '../../presentation/motion';
+import { auth } from '../../presentation/state/container';
 import { useProfile } from '../../presentation/state/queries';
 import { Text } from '../../presentation/ui';
 import { strings } from '../../strings/pt-BR';
@@ -15,6 +17,23 @@ export default function ProfileScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const p = useProfile().data;
+  const [email, setEmail] = useState<string | null>(null);
+  useEffect(() => {
+    void auth
+      .currentEmail()
+      .then(setEmail)
+      .catch(() => {});
+  }, []);
+
+  const confirmSignOut = () =>
+    Alert.alert(strings.auth.signOutTitle, strings.auth.signOutBody, [
+      { text: strings.common.cancel, style: 'cancel' },
+      {
+        text: strings.auth.signOut,
+        style: 'destructive',
+        onPress: () => void auth.signOut().catch(() => {}),
+      },
+    ]);
 
   return (
     <ScrollView
@@ -66,6 +85,17 @@ export default function ProfileScreen() {
               </Text>
               <Text className="text-sm text-tinta/70">{strings.profile.privacyBody}</Text>
             </View>
+          </Enter>
+          <Enter index={4} className="gap-2 rounded-3xl bg-folha p-4">
+            <Text className="font-display-bold text-base text-tinta">
+              {strings.auth.accountTitle}
+            </Text>
+            {email ? (
+              <Text className="text-sm text-tinta/70" selectable>
+                {strings.profile.emailLabel}: {email}
+              </Text>
+            ) : null}
+            <Button variant="secondary" label={strings.auth.signOut} onPress={confirmSignOut} />
           </Enter>
         </>
       ) : null}
