@@ -81,6 +81,11 @@ class ScreenBlockerModule : Module() {
       null
     }
 
+    Function("setFocusUntil") { untilMs: Double ->
+      BlockerStore.setFocusUntil(context, untilMs.toLong())
+      null
+    }
+
     Function("startService") {
       BlockerStore.setEnforcementEnabled(context, true)
       BlockerService.start(context)

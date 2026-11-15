@@ -64,6 +64,18 @@ class BlockOverlay(private val appContext: Context) {
     }
   }
 
+  /** If the system dropped our window behind our back, forget it so the next tick shows it again. */
+  fun verify() {
+    if (!isShown) return
+    main.post {
+      val r = root
+      if (r != null && !r.isAttachedToWindow) {
+        isShown = false
+        root = null
+      }
+    }
+  }
+
   fun hide() {
     if (!isShown) return
     isShown = false

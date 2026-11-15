@@ -11,7 +11,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   name: 'Unscroll',
   slug: 'unscroll-app',
   scheme: 'unscroll',
-  version: '0.4.0',
+  version: '0.5.0',
   orientation: 'portrait',
   icon: './assets/images/icon.png',
   userInterfaceStyle: 'automatic',
@@ -32,7 +32,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   android: {
     package: APP_ID,
-    versionCode: 4,
+    versionCode: 6,
     adaptiveIcon: {
       backgroundColor: '#0F3F29',
       foregroundImage: './assets/images/android-icon-foreground.png',

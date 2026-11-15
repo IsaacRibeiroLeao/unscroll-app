@@ -12,6 +12,8 @@ import { Button } from './Button';
 
 interface Props {
   category: TaskCategory;
+  initialBook?: string;
+  initialChapter?: string;
   busy: boolean;
   message: string | null;
   onSubmit: (proof: TextProof) => void;
@@ -20,9 +22,9 @@ interface Props {
 
 const inputClass = 'rounded-2xl border border-fio bg-folha px-4 py-3 text-base text-tinta';
 
-export function TextProofForm({ category, busy, message, onSubmit, onClose }: Props) {
-  const [book, setBook] = useState('');
-  const [chapter, setChapter] = useState('');
+export function TextProofForm({ category, initialBook = '', initialChapter = '', busy, message, onSubmit, onClose }: Props) {
+  const [book, setBook] = useState(initialBook);
+  const [chapter, setChapter] = useState(initialChapter);
   const [summary, setSummary] = useState('');
   const [insight, setInsight] = useState('');
   const L = TEXT_PROOF_LIMITS;

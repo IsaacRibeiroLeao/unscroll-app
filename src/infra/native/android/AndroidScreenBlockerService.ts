@@ -43,6 +43,7 @@ export interface AndroidNativePort {
   getUnreportedUsage(): { eventId: string; seconds: number } | null;
   markUsageReported(eventId: string): void;
   setBlockScreenInfo(info: BlockScreenInfo): void;
+  setFocusUntil(untilMs: number): void;
   startService(): boolean;
   stopService(): void;
   addBalanceListener(listener: (seconds: number) => void): { remove(): void };
@@ -192,6 +193,10 @@ export class AndroidScreenBlockerService implements IScreenBlockerService {
   }
 
   // ------------------------------------------------------------------ block screen + events
+  async setFocusUntil(untilMs: number): Promise<void> {
+    this.deps.native.setFocusUntil(untilMs);
+  }
+
   async setBlockScreenInfo(info: BlockScreenInfo): Promise<void> {
     this.deps.native.setBlockScreenInfo(info);
   }

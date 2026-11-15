@@ -20,6 +20,7 @@ declare class ScreenBlockerModule extends NativeModule<ScreenBlockerEvents> {
   getUnreportedUsage(): NativeUsage | null;
   markUsageReported(eventId: string): void;
   setBlockScreenInfo(info: NativeBlockScreenInfo): void;
+  setFocusUntil(untilMs: number): void;
   startService(): boolean;
   stopService(): void;
   isServiceRunning(): boolean;

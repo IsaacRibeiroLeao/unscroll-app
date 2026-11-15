@@ -46,6 +46,7 @@ export function createPlatformScreenBlocker(): IScreenBlockerService {
     getUnreportedUsage: async () => [],
     markUsageReported: async () => {},
     setBlockScreenInfo: async () => {},
+    setFocusUntil: async () => {},
     onBlockedAppOpened: () => () => {},
     onBalanceChanged: () => () => {},
   };

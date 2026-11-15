@@ -69,6 +69,14 @@ object BlockerStore {
     prefs(ctx).edit().putStringSet("blocked_packages", HashSet(packages)).apply()
   }
 
+  // ----------------------------------------------------------------- focus lock
+  /** Epoch ms until which blocked apps stay locked no matter the balance (reading timer). */
+  fun focusUntil(ctx: Context): Long = synchronized(lock) { prefs(ctx).getLong("focus_until_ms", 0L) }
+
+  fun setFocusUntil(ctx: Context, untilMs: Long) = synchronized(lock) {
+    prefs(ctx).edit().putLong("focus_until_ms", untilMs).apply()
+  }
+
   // ----------------------------------------------------------------- enforcement flag
   fun enforcementEnabled(ctx: Context): Boolean = synchronized(lock) { prefs(ctx).getBoolean("enforcement", false) }
 

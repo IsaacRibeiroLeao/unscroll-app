@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { Text } from '../../presentation/ui';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,11 +12,15 @@ import { submitTaskProof } from '../../application/submitTaskProof';
 import { Button } from '../../presentation/components/Button';
 import { Mascot } from '../../presentation/components/Mascot';
 import { PhoneArt } from '../../presentation/components/art';
+import { FocusFlow } from '../../presentation/components/FocusFlow';
 import { TextProofForm } from '../../presentation/components/TextProofForm';
 import { Enter, Float, Pop } from '../../presentation/motion';
 import { useAppStore } from '../../presentation/state/appStore';
 import { backend, blocker, discardPhoto, errorTexts } from '../../presentation/state/container';
 import { keys, useTasks } from '../../presentation/state/queries';
+import type { FocusSession } from '../../domain/focus';
+import { clearFocus, loadFocus, saveFocus } from '../../infra/storage/focusStorage';
+import { endsAt } from '../../domain/focus';
 import { strings } from '../../strings/pt-BR';
 
 export default function ProofScreen() {
@@ -32,6 +36,29 @@ export default function ProofScreen() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
+  // Reading/study: optional focus timer first, then the summary form.
+  const [focus, setFocus] = useState<FocusSession | null>(null);
+  const [focusReady, setFocusReady] = useState(false);
+  const [writing, setWriting] = useState(false);
+  useEffect(() => {
+    if (!taskId) return;
+    void loadFocus(taskId).then((s) => {
+      setFocus(s);
+      setFocusReady(true);
+    });
+  }, [taskId]);
+
+  const startFocus = (s: FocusSession) => {
+    setFocus(s);
+    void saveFocus(s);
+    if (s.lockApps) void blocker.setFocusUntil(endsAt(s)).catch(() => {});
+  };
+  const stopFocus = () => {
+    setFocus(null);
+    void clearFocus();
+    void blocker.setFocusUntil(0).catch(() => {});
+  };
+
   const sendText = async (text: TextProof) => {
     if (busy || !taskId) return;
     setBusy(true);
@@ -43,6 +70,7 @@ export default function ProofScreen() {
         qc.invalidateQueries({ queryKey: keys.tasks }),
       ]);
       if (outcome.approved && outcome.rewards) {
+        stopFocus();
         setLastProof({ outcome, blockerFailed: blockerError !== null });
         router.replace('/celebration');
       } else if (outcome.code !== 'APPROVED') {
@@ -96,10 +124,28 @@ export default function ProofScreen() {
     );
   }
 
+  if (isText && category && !focusReady) return null;
+
+  if (isText && category && taskId && !writing) {
+    return (
+      <FocusFlow
+        taskId={taskId}
+        category={category}
+        session={focus}
+        onStart={startFocus}
+        onCancel={stopFocus}
+        onWrite={() => setWriting(true)}
+        onClose={() => router.back()}
+      />
+    );
+  }
+
   if (isText && category) {
     return (
       <TextProofForm
         category={category}
+        initialBook={focus?.book}
+        initialChapter={focus?.chapter}
         busy={busy}
         message={message}
         onSubmit={(t) => void sendText(t)}

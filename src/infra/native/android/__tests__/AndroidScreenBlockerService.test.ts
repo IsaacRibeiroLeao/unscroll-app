@@ -30,6 +30,7 @@ function setup(opts: { flags?: Partial<AndroidPermissionFlags>; blocked?: string
 
   const native: AndroidNativePort = {
     getPermissionStatus: () => flags,
+    setFocusUntil: () => {},
     openSettings: (t) => {
       log.push(`open:${t}`);
       return true;

@@ -272,6 +272,8 @@ export class IosScreenBlockerService implements IScreenBlockerService {
   }
 
   // ------------------------------------------------------------------ listeners
+  async setFocusUntil(): Promise<void> {}
+
   async setBlockScreenInfo(): Promise<void> {
     // The iOS Shield is configured once through configureShield(); nothing to update.
   }

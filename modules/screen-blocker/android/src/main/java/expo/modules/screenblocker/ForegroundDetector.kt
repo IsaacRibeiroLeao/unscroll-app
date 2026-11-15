@@ -18,7 +18,7 @@ class ForegroundDetector(context: Context) {
     var maxTs = cursor
     while (events.hasNextEvent()) {
       events.getNextEvent(event)
-      tracker.onEvent(event.eventType, event.packageName, event.timeStamp)
+      tracker.onEvent(event.eventType, event.packageName, event.className, event.timeStamp)
       if (event.timeStamp > maxTs) maxTs = event.timeStamp
     }
     cursor = if (maxTs > 0L) maxTs else nowMs

@@ -103,6 +103,8 @@ export interface IScreenBlockerService {
 
   /** Updates the native block screen content. No-op where the OS draws the block UI (iOS). */
   setBlockScreenInfo(info: BlockScreenInfo): Promise<void>;
+  /** Locks every blocked app until this epoch ms (0 clears it), whatever the balance. */
+  setFocusUntil(untilMs: number): Promise<void>;
 
   /** Fires when a blocked app is opened (best effort; not available on iOS). */
   onBlockedAppOpened(listener: () => void): Unsubscribe;

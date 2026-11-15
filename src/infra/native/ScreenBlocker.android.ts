@@ -30,6 +30,7 @@ const native: AndroidNativePort = {
   getUnreportedUsage: () => ScreenBlockerModule.getUnreportedUsage(),
   markUsageReported: (eventId) => ScreenBlockerModule.markUsageReported(eventId),
   setBlockScreenInfo: (info) => ScreenBlockerModule.setBlockScreenInfo(info),
+  setFocusUntil: (untilMs) => ScreenBlockerModule.setFocusUntil(untilMs),
   startService: () => ScreenBlockerModule.startService(),
   stopService: () => ScreenBlockerModule.stopService(),
   addBalanceListener: (listener) =>

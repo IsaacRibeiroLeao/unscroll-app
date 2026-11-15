@@ -31,6 +31,8 @@ class BlockerService : Service() {
   private var started = false
   private var lastTickElapsed = 0L
   private var ticksSinceEmit = 0
+  private var unknownTicks = 0
+  private var fast = false
 
   override fun onCreate() {
     super.onCreate()
@@ -69,7 +71,7 @@ class BlockerService : Service() {
       } catch (t: Throwable) {
         Log.e(TAG, "tick failed", t)
       } finally {
-        handler.postDelayed(this, POLL_MS)
+        handler.postDelayed(this, if (fast || overlay.isShown) POLL_FAST_MS else POLL_MS)
       }
     }
   }
@@ -92,13 +94,25 @@ class BlockerService : Service() {
     val inBlockedApp = fg != null && fg != ctx.packageName && fg in blocked
 
     if (!inBlockedApp) {
-      overlay.hide()
+      // A different app in front: drop the overlay now. Unknown (null) can be the gap between two
+      // screens of the blocked app, so wait a few polls before trusting it.
+      unknownTicks = if (fg == null) unknownTicks + 1 else UNKNOWN_TICKS_TO_HIDE
+      if (unknownTicks >= UNKNOWN_TICKS_TO_HIDE) {
+        overlay.hide()
+        fast = false
+      }
       return
     }
+    unknownTicks = 0
+    fast = true
 
-    val state = BlockerStore.updateLedger(ctx) { Ledger.consume(it, delta) }
-    if (state.balanceSeconds <= 0L) {
-      if (!overlay.isShown) {
+    // Focus timer running: the blocked app stays locked and the balance is not charged.
+    val focusing = BlockerStore.focusUntil(ctx) > System.currentTimeMillis()
+    val state = if (focusing) BlockerStore.readLedger(ctx) else BlockerStore.updateLedger(ctx) { Ledger.consume(it, delta) }
+    if (focusing || state.balanceSeconds <= 0L) {
+      if (overlay.isShown) {
+        overlay.verify()
+      } else {
         overlay.show(BlockerStore.blockScreenInfo(ctx))
         BlockerEvents.emit("onBlockedAppOpened", mapOf("packageName" to fg))
       }
@@ -147,6 +161,9 @@ class BlockerService : Service() {
     private const val CHANNEL_ID = "unscroll_blocker"
     private const val NOTIFICATION_ID = 4101
     private const val POLL_MS = 750L
+    // While a blocked app is in front the overlay has to be back within a blink.
+    private const val POLL_FAST_MS = 250L
+    private const val UNKNOWN_TICKS_TO_HIDE = 4
     private const val MAX_DELTA_MS = 3_000L
     private const val EMIT_EVERY_TICKS = 5
 

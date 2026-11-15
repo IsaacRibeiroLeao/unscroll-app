@@ -1,5 +1,14 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import {
+  DEFAULT_FOCUS_MINUTES,
+  endsAt,
+  isFinished,
+  parseSession,
+  progress,
+  remainingSeconds,
+  type FocusSession,
+} from '../focus.ts';
 import { partitionApps } from '../distractingApps.ts';
 import { moodFor, toMascotSkin } from '../mascot.ts';
 import { levelFromXp, xpToReachLevel } from '../progression.ts';
@@ -81,4 +90,28 @@ test('partitionApps puts known doom-scroll apps first, in catalog order', () => 
     others.map((a) => a.packageName),
     ['com.calc', 'com.maps'],
   );
+});
+
+const session: FocusSession = { taskId: 't', book: 'b', chapter: 'c', startedAt: 1_000_000, minutes: 30, lockApps: true };
+
+test('focus: default is 30 minutes', () => assert.equal(DEFAULT_FOCUS_MINUTES, 30));
+test('focus: counts down and finishes', () => {
+  assert.equal(remainingSeconds(session, session.startedAt), 1800);
+  assert.equal(remainingSeconds(session, session.startedAt + 60_000), 1740);
+  assert.equal(isFinished(session, endsAt(session) - 1000), false);
+  assert.equal(isFinished(session, endsAt(session)), true);
+  assert.equal(remainingSeconds(session, endsAt(session) + 99_999), 0);
+});
+test('focus: a clock set back cannot extend the timer', () => {
+  assert.equal(remainingSeconds(session, session.startedAt - 5_000_000), 1800);
+});
+test('focus: progress is clamped', () => {
+  assert.equal(progress(session, session.startedAt), 0);
+  assert.equal(progress(session, endsAt(session) + 1), 1);
+});
+test('focus: parseSession round-trips and rejects junk', () => {
+  assert.deepEqual(parseSession(JSON.stringify(session)), session);
+  assert.equal(parseSession('nope'), null);
+  assert.equal(parseSession(JSON.stringify({ ...session, minutes: 7 })), null);
+  assert.equal(parseSession(null), null);
 });
