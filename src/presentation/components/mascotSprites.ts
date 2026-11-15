@@ -1,0 +1,62 @@
+// Generated from the bear sprite sheet (assets/mascot). One WebP per pose and skin.
+import type { ImageSourcePropType } from 'react-native';
+import type { MascotSkin } from '../../domain/mascot';
+
+export type Sprite = 'cheer' | 'wink' | 'thumbs' | 'trophy' | 'peek' | 'phone' | 'cry' | 'sleepy' | 'clock' | 'gems' | 'love' | 'think' | 'surprised' | 'laptop' | 'celebrate' | 'cool';
+
+export const SPRITES: Record<MascotSkin, Record<Sprite, ImageSourcePropType>> = {
+  default: {
+    cheer: require('../../../assets/mascot/default/cheer.webp'),
+    wink: require('../../../assets/mascot/default/wink.webp'),
+    thumbs: require('../../../assets/mascot/default/thumbs.webp'),
+    trophy: require('../../../assets/mascot/default/trophy.webp'),
+    peek: require('../../../assets/mascot/default/peek.webp'),
+    phone: require('../../../assets/mascot/default/phone.webp'),
+    cry: require('../../../assets/mascot/default/cry.webp'),
+    sleepy: require('../../../assets/mascot/default/sleepy.webp'),
+    clock: require('../../../assets/mascot/default/clock.webp'),
+    gems: require('../../../assets/mascot/default/gems.webp'),
+    love: require('../../../assets/mascot/default/love.webp'),
+    think: require('../../../assets/mascot/default/think.webp'),
+    surprised: require('../../../assets/mascot/default/surprised.webp'),
+    laptop: require('../../../assets/mascot/default/laptop.webp'),
+    celebrate: require('../../../assets/mascot/default/celebrate.webp'),
+    cool: require('../../../assets/mascot/default/cool.webp'),
+  },
+  mascot_skin_fire: {
+    cheer: require('../../../assets/mascot/fire/cheer.webp'),
+    wink: require('../../../assets/mascot/fire/wink.webp'),
+    thumbs: require('../../../assets/mascot/fire/thumbs.webp'),
+    trophy: require('../../../assets/mascot/fire/trophy.webp'),
+    peek: require('../../../assets/mascot/fire/peek.webp'),
+    phone: require('../../../assets/mascot/fire/phone.webp'),
+    cry: require('../../../assets/mascot/fire/cry.webp'),
+    sleepy: require('../../../assets/mascot/fire/sleepy.webp'),
+    clock: require('../../../assets/mascot/fire/clock.webp'),
+    gems: require('../../../assets/mascot/fire/gems.webp'),
+    love: require('../../../assets/mascot/fire/love.webp'),
+    think: require('../../../assets/mascot/fire/think.webp'),
+    surprised: require('../../../assets/mascot/fire/surprised.webp'),
+    laptop: require('../../../assets/mascot/fire/laptop.webp'),
+    celebrate: require('../../../assets/mascot/fire/celebrate.webp'),
+    cool: require('../../../assets/mascot/fire/cool.webp'),
+  },
+  mascot_skin_zen: {
+    cheer: require('../../../assets/mascot/zen/cheer.webp'),
+    wink: require('../../../assets/mascot/zen/wink.webp'),
+    thumbs: require('../../../assets/mascot/zen/thumbs.webp'),
+    trophy: require('../../../assets/mascot/zen/trophy.webp'),
+    peek: require('../../../assets/mascot/zen/peek.webp'),
+    phone: require('../../../assets/mascot/zen/phone.webp'),
+    cry: require('../../../assets/mascot/zen/cry.webp'),
+    sleepy: require('../../../assets/mascot/zen/sleepy.webp'),
+    clock: require('../../../assets/mascot/zen/clock.webp'),
+    gems: require('../../../assets/mascot/zen/gems.webp'),
+    love: require('../../../assets/mascot/zen/love.webp'),
+    think: require('../../../assets/mascot/zen/think.webp'),
+    surprised: require('../../../assets/mascot/zen/surprised.webp'),
+    laptop: require('../../../assets/mascot/zen/laptop.webp'),
+    celebrate: require('../../../assets/mascot/zen/celebrate.webp'),
+    cool: require('../../../assets/mascot/zen/cool.webp'),
+  },
+};

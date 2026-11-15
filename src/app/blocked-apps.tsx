@@ -13,10 +13,12 @@ import { Enter } from '../presentation/motion';
 import { blocker, errorTexts } from '../presentation/state/container';
 import { keys, useBlockedApps } from '../presentation/state/queries';
 import { Text } from '../presentation/ui';
+import { useColors } from '../presentation/theme';
 import { strings } from '../strings/pt-BR';
 
 /** Apps that stay locked until the player earns screen time, with one switch per app (Android). */
 export default function BlockedAppsScreen() {
+  const colors = useColors();
   const qc = useQueryClient();
   const blocked = useBlockedApps();
   // Apps the player just switched off stay listed (so they can switch them back on) until the list reloads.
@@ -85,7 +87,7 @@ export default function BlockedAppsScreen() {
                       value={on}
                       onValueChange={(v) => void toggle(app.id, v)}
                       accessibilityLabel={fill(strings.blockedApps.toggleA11y, { app: app.label })}
-                      trackColor={{ false: '#D7D3C2', true: '#2E9A5B' }}
+                      trackColor={{ false: colors.fio, true: '#2E9A5B' }}
                       thumbColor="#FFFFFF"
                     />
                   </View>

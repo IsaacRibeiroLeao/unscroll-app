@@ -27,7 +27,7 @@ function PricePill({ gems, enough }: { gems: number; enough: boolean }) {
     <View
       accessible
       accessibilityLabel={fill(strings.shop.price, { price: gems })}
-      className={`min-h-9 flex-row items-center gap-1 rounded-full bg-[#FBEFC4] px-3 ${enough ? '' : 'opacity-60'}`}
+      className={`min-h-9 flex-row items-center gap-1 rounded-full bg-crema px-3 ${enough ? '' : 'opacity-60'}`}
     >
       <GemIcon size={16} color="#3FA46A" />
       <Text className="font-display-bold text-base text-tinta">{gems}</Text>

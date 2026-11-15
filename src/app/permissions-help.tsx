@@ -1,4 +1,3 @@
-import { useRouter } from 'expo-router';
 import { Linking, ScrollView, View } from 'react-native';
 import { Button } from '../presentation/components/Button';
 import { Card } from '../presentation/components/Card';
@@ -9,7 +8,6 @@ import { strings } from '../strings/pt-BR';
 
 /** Walks the user through Android's "Allow restricted settings" for sideloaded installs. */
 export default function PermissionsHelpScreen() {
-  const router = useRouter();
   const t = strings.permissionsHelp;
 
   return (
@@ -31,15 +29,14 @@ export default function PermissionsHelpScreen() {
           </Enter>
         ))}
 
-        <Enter index={t.steps.length + 1} className="gap-1 rounded-2xl bg-[#E6EDE0] p-4">
+        <Enter index={t.steps.length + 1} className="gap-1 rounded-2xl bg-sage p-4">
           <Text className="font-display-bold text-base text-tinta">{t.noMenuTitle}</Text>
           <Text className="text-sm text-tinta/75">{t.noMenuBody}</Text>
         </Enter>
 
         <Enter index={t.steps.length + 2} className="gap-2">
           <Button label={t.openSettings} variant="forest" onPress={() => void Linking.openSettings()} />
-          <Button variant="ghost" label={t.back} onPress={() => router.back()} />
-        </Enter>
+          </Enter>
       </ScrollView>
     </View>
   );

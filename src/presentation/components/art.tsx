@@ -1,11 +1,10 @@
 import { useState } from 'react';
+import { useTheme } from '../theme';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import type { ColorValue, StyleProp, ViewStyle } from 'react-native';
 import Svg, {
   Circle,
-  Ellipse,
-  Text as SvgText,
   Defs,
   G,
   LinearGradient,
@@ -75,8 +74,9 @@ export function Hills({
   height?: number;
   tone?: 'light' | 'dark';
 }) {
+  const dark = useTheme().scheme === 'dark';
   const c =
-    tone === 'light'
+    tone === 'light' && !dark
       ? { a: '#D9E8A8', b: '#A9CF7E', c: '#74B35F' }
       : { a: '#2C7A4F', b: '#1E6440', c: '#17533A' };
   return (
@@ -619,86 +619,6 @@ export function TrophyArt({ size = 230 }: { size?: number }) {
       <Path d="M168 38 L176 30 L184 38 L176 50 Z" fill="url(#tr-blue)" />
       <Path d={star(54, 54, 9)} fill="#FFC72C" />
       <Path d={star(196, 70, 6)} fill="#FFC72C" />
-    </Svg>
-  );
-}
-
-const SLEEPY_FUR: Record<string, [string, string]> = {
-  default: ['#E9A94F', '#F2C98F'],
-  mascot_skin_fire: ['#EE8F5E', '#F6BE9C'],
-  mascot_skin_zen: ['#D9CBA3', '#EFE6C8'],
-};
-
-/**
- * Sleeping bear hugging a clock among leaves ("out of time" art). Same geometry as the native
- * Android block screen (SleepyBearView.kt), on a 240 x 240 grid.
- */
-export function SleepyClockArt({ size = 260, skin = 'default' }: { size?: number; skin?: string }) {
-  const [fur, inner] = SLEEPY_FUR[skin] ?? SLEEPY_FUR.default!;
-  const ink = '#2A1A12';
-  return (
-    <Svg width={size} height={size} viewBox="0 0 240 240" {...hidden}>
-      {/* leaves + mound */}
-      <Path d="M18 150 C30 110 62 100 88 120 C62 120 40 132 30 160 Z" fill="#4FA766" />
-      <Path d="M222 150 C212 112 184 102 158 122 C182 122 200 134 210 160 Z" fill="#3F9A5E" />
-      <Path d="M44 120 C40 84 60 66 82 78 C66 86 56 100 56 124 Z" fill="#6CC27F" />
-      <Path d="M196 118 C200 84 182 66 160 80 C176 88 184 100 184 124 Z" fill="#58B06C" />
-      <Ellipse cx={120} cy={204} rx={104} ry={40} fill="#14492D" />
-      <Ellipse cx={120} cy={186} rx={84} ry={44} fill="#1B6B43" />
-      {/* ears + head */}
-      <Circle cx={80} cy={58} r={19} fill={fur} />
-      <Circle cx={160} cy={58} r={19} fill={fur} />
-      <Circle cx={80} cy={58} r={10} fill={inner} />
-      <Circle cx={160} cy={58} r={10} fill={inner} />
-      <Circle cx={120} cy={100} r={54} fill={fur} />
-      <Ellipse cx={120} cy={120} rx={23} ry={17} fill={inner} />
-      <Ellipse cx={120} cy={110} rx={7.5} ry={5.2} fill={ink} />
-      <Path
-        d="M86 96 Q96 106 106 96 M134 96 Q144 106 154 96"
-        stroke={ink}
-        strokeWidth={4}
-        strokeLinecap="round"
-        fill="none"
-      />
-      <Path
-        d="M112 130 Q120 124 128 130"
-        stroke={ink}
-        strokeWidth={3.4}
-        strokeLinecap="round"
-        fill="none"
-      />
-      {/* clock */}
-      <Circle cx={120} cy={168} r={46} fill="#14522F" />
-      <Circle cx={120} cy={168} r={37} fill="#F8E9C4" />
-      <Path
-        d="M120 136 V143 M120 193 V200 M88 168 H95 M145 168 H152"
-        stroke="#14522F"
-        strokeWidth={3.6}
-        strokeLinecap="round"
-      />
-      <Path
-        d="M104 166 L117 178 L140 154"
-        stroke="#14522F"
-        strokeWidth={6}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-      {/* paws */}
-      <Circle cx={80} cy={150} r={15} fill={fur} />
-      <Circle cx={160} cy={150} r={15} fill={fur} />
-      {/* Zzz + sparkles */}
-      <SvgText x={178} y={72} fontSize={20} fontWeight="bold" fill="#5BBF73">
-        z
-      </SvgText>
-      <SvgText x={196} y={52} fontSize={26} fontWeight="bold" fill="#5BBF73">
-        z
-      </SvgText>
-      <SvgText x={212} y={28} fontSize={32} fontWeight="bold" fill="#5BBF73">
-        z
-      </SvgText>
-      <Path d={star(38, 62, 9)} fill="#FFC72C" />
-      <Path d={star(208, 106, 7)} fill="#FFC72C" />
     </Svg>
   );
 }

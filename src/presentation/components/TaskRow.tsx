@@ -79,10 +79,10 @@ export function TaskRow({ task, onProve, onDelete }: Props) {
           accessibilityRole="button"
           accessibilityLabel={strings.home.deleteTask}
           onPress={onDelete}
-          hitSlop={{ top: 8, bottom: 12, left: 10, right: 30 }}
-          className="mt-2 self-start pl-1"
+          hitSlop={8}
+          className="mt-1 min-h-11 justify-center self-start pr-4"
         >
-          <Text className="text-xs text-tinta/45 underline">{strings.home.deleteTask}</Text>
+          <Text className="text-sm text-tinta/70 underline">{strings.home.deleteTask}</Text>
         </Pressable>
       ) : null}
     </Card>

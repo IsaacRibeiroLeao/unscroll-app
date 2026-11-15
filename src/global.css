@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --c-nevoa: 247 244 233;
+  --c-folha: 255 255 255;
+  --c-tinta: 22 55 42;
+  --c-musgo: 18 69 46;
+  --c-floresta: 31 107 67;
+  --c-sol: 255 199 44;
+  --c-pimenta: 214 57 43;
+  --c-fio: 229 224 204;
+  --c-sage: 230 237 224;
+  --c-crema: 251 239 196;
+  --c-muted: 124 139 128;
+  --c-placeholder: 138 151 142;
+}

@@ -8,13 +8,15 @@ import { strings } from '../../strings/pt-BR';
 import { fill, formatBRL } from '../format';
 import { Enter, Pop, PressableScale } from '../motion';
 import { backend, errorTexts } from '../state/container';
-import { Text, colors } from '../ui';
+import { useColors } from '../theme';
+import { Text } from '../ui';
 import { Button } from './Button';
 import { CrownIcon } from './art';
 import { CheckIcon } from './Icons';
 
 /** Pix / card checkout (Mercado Pago) used when store billing is not configured. */
 export function WebCheckout({ onActivated }: { onActivated: () => void }) {
+  const colors = useColors();
   const t = strings.webCheckout;
   const [plans, setPlans] = useState<WebPlan[] | null>(null);
   const [selected, setSelected] = useState<WebPlanId>('annual');
@@ -99,7 +101,7 @@ export function WebCheckout({ onActivated }: { onActivated: () => void }) {
             >
               <View className="flex-1 pr-2">
                 <Text className="font-display-bold text-lg text-tinta">{t.plans[plan.id]}</Text>
-                <Text className="text-xs text-tinta/65">
+                <Text className="text-sm leading-5 text-tinta/70">
                   {plan.available
                     ? plan.remaining !== null
                       ? `${t.planHint[plan.id]} · ${fill(t.founderLeft, { count: plan.remaining })}`
@@ -144,18 +146,18 @@ export function WebCheckout({ onActivated }: { onActivated: () => void }) {
         disabled={!plans.find((p) => p.id === selected)?.available}
       />
       {waiting ? <Button variant="ghost" label={t.iPaid} onPress={() => void checkPaid()} /> : null}
-      <Text className="text-xs text-tinta/65">{t.terms}</Text>
-      <Text className="text-xs text-tinta/65">
+      <Text className="text-sm leading-5 text-tinta/70">{t.terms}</Text>
+      <Text className="text-sm leading-5 text-tinta/70">
         {strings.legal.checkoutNotice}{' '}
         <Text
-          className="text-xs text-tinta underline"
+          className="text-sm text-tinta underline"
           onPress={() => void Linking.openURL(TERMS_URL)}
         >
           {strings.legal.terms}
         </Text>
         {' · '}
         <Text
-          className="text-xs text-tinta underline"
+          className="text-sm text-tinta underline"
           onPress={() => void Linking.openURL(PRIVACY_URL)}
         >
           {strings.legal.privacy}

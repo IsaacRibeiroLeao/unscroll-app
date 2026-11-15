@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "expo.modules.screenblocker.screen-blocker-release-2:/drawable-nodpi-v4/bear_sleepy_fire.webp",
+        "source": "expo.modules.screenblocker.screen-blocker-main-3:/drawable-nodpi/bear_sleepy_fire.webp"
+    },
+    {
+        "merged": "expo.modules.screenblocker.screen-blocker-release-2:/drawable-nodpi-v4/bear_sleepy_default.webp",
+        "source": "expo.modules.screenblocker.screen-blocker-main-3:/drawable-nodpi/bear_sleepy_default.webp"
+    },
+    {
+        "merged": "expo.modules.screenblocker.screen-blocker-release-2:/drawable-nodpi-v4/bear_sleepy_zen.webp",
+        "source": "expo.modules.screenblocker.screen-blocker-main-3:/drawable-nodpi/bear_sleepy_zen.webp"
+    }
+]

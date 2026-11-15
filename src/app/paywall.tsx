@@ -2,7 +2,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
-import { Text, colors } from '../presentation/ui';
+import { useColors } from '../presentation/theme';
+import { Text } from '../presentation/ui';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { awaitPro } from '../application/awaitPro';
 import type { PaywallPlan } from '../application/ports/IPurchasesService';
@@ -19,6 +20,7 @@ import { Enter, Float, Pop, PressableScale } from '../presentation/motion';
 import { strings } from '../strings/pt-BR';
 
 export default function PaywallScreen() {
+  const colors = useColors();
   const router = useRouter();
   const qc = useQueryClient();
   const profile = useProfile();
@@ -186,7 +188,7 @@ export default function PaywallScreen() {
               onPress={() => void restore()}
               disabled={busy}
             />
-            <View className="flex-row items-center gap-3 rounded-2xl bg-[#E6EDE0] p-3">
+            <View className="flex-row items-center gap-3 rounded-2xl bg-sage p-3">
               <LockIcon />
               <Text className="flex-1 text-xs text-tinta/70">{strings.paywall.terms}</Text>
             </View>

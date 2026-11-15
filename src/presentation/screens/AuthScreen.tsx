@@ -225,7 +225,7 @@ export function AuthScreen({
           hitSlop={10}
           className="ml-4 mt-2 h-11 w-11 items-center justify-center rounded-full active:opacity-60"
         >
-          <ArrowLeftIcon size={26} color="#16372A" />
+          <ArrowLeftIcon size={26} />
         </Pressable>
       ) : null}
       <KeyboardAvoidingView className="flex-1" behavior="padding">
@@ -327,17 +327,17 @@ export function AuthScreen({
               />
             )}
             {signUp ? (
-              <Text className="text-center text-xs text-tinta/65">
+              <Text className="text-center text-sm leading-5 text-tinta/70">
                 {strings.legal.acceptNotice}{' '}
                 <Text
-                  className="text-xs text-tinta underline"
+                  className="text-sm text-tinta underline"
                   onPress={() => void Linking.openURL(TERMS_URL)}
                 >
                   {strings.legal.terms}
                 </Text>
                 {' · '}
                 <Text
-                  className="text-xs text-tinta underline"
+                  className="text-sm text-tinta underline"
                   onPress={() => void Linking.openURL(PRIVACY_URL)}
                 >
                   {strings.legal.privacy}
@@ -345,15 +345,19 @@ export function AuthScreen({
               </Text>
             ) : null}
             {mode === 'signIn' ? (
-              <Button
-                variant="ghost"
-                label={t.forgotLink}
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t.forgotLink}
                 disabled={busy}
                 onPress={() => {
                   setMode('forgot');
                   setMessage(null);
                 }}
-              />
+                hitSlop={8}
+                className="min-h-11 items-center justify-center"
+              >
+                <Text className="font-display-bold text-sm text-tinta underline">{t.forgotLink}</Text>
+              </Pressable>
             ) : null}
             <Button
               variant="ghost"

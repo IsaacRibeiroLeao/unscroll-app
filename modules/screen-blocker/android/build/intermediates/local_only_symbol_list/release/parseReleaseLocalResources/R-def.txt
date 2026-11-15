@@ -1,2 +1,5 @@
 R_DEF: Internal format may change without notice
 local
+drawable bear_sleepy_default
+drawable bear_sleepy_fire
+drawable bear_sleepy_zen

@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { PressableScale } from '../motion';
-import { Text, colors } from '../ui';
+import { useColors } from '../theme';
+import { Text } from '../ui';
 import { GradientView } from './art';
 
 interface Props {
@@ -11,7 +12,8 @@ interface Props {
    * primary: deep green · forest: green gradient (main action on light) · sun: gold, earn/reward actions · secondary: outline on light ·
    * outlineSun: gold outline on dark · ghost / ghostLight: text link on light / dark
    */
-  variant?: 'primary' | 'forest' | 'sun' | 'danger' | 'secondary' | 'outlineSun' | 'ghost' | 'ghostLight';
+  variant?:
+    'primary' | 'forest' | 'sun' | 'danger' | 'secondary' | 'outlineSun' | 'ghost' | 'ghostLight';
   disabled?: boolean;
   loading?: boolean;
   icon?: ReactNode;
@@ -32,12 +34,12 @@ const BOX = {
 const TEXT = {
   primary: 'text-nevoa',
   forest: 'text-white',
-  sun: 'text-tinta',
+  sun: 'text-[#16372A]',
   danger: 'text-white',
   secondary: 'text-tinta',
-  outlineSun: 'text-nevoa',
+  outlineSun: 'text-white',
   ghost: 'text-tinta underline',
-  ghostLight: 'text-nevoa underline',
+  ghostLight: 'text-white underline',
 } as const;
 
 const GRADIENT = {
@@ -55,13 +57,28 @@ export function Button({
   icon,
   trailing,
 }: Props) {
+  const colors = useColors();
   const off = disabled || loading;
   const link = variant === 'ghost' || variant === 'ghostLight';
   const gradient = variant === 'sun' || variant === 'forest' ? GRADIENT[variant] : null;
-  const dark = variant === 'primary' || variant === 'outlineSun' || variant === 'forest' || variant === 'danger';
+  const dark =
+    variant === 'primary' ||
+    variant === 'outlineSun' ||
+    variant === 'forest' ||
+    variant === 'danger';
 
   const content = loading ? (
-    <ActivityIndicator color={dark ? colors.nevoa : colors.tinta} />
+    <ActivityIndicator
+      color={
+        variant === 'primary'
+          ? colors.nevoa
+          : variant === 'sun'
+            ? '#16372A'
+            : dark
+              ? '#FFFFFF'
+              : colors.tinta
+      }
+    />
   ) : (
     <View className="flex-row items-center gap-2">
       {icon}

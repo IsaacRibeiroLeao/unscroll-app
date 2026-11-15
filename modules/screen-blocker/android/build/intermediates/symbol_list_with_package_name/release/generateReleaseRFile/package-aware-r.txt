@@ -1,1 +1,4 @@
 expo.modules.screenblocker
+drawable bear_sleepy_default
+drawable bear_sleepy_fire
+drawable bear_sleepy_zen

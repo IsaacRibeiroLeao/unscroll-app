@@ -26,6 +26,12 @@ export const strings = {
     confirm: 'Salvar',
     cancel: 'Cancelar',
     selectedCount: '{count} selecionados',
+    suggested: 'Sugeridos: apps que prendem sua atenção',
+    selectSuggested: 'Marcar todos',
+    clearSuggested: 'Desmarcar todos',
+    allApps: 'Todos os apps',
+    search: 'Buscar app',
+    noResults: 'Nenhum app encontrado.',
     loadingIcon: 'Ícone do app',
   },
   common: {
@@ -396,6 +402,15 @@ export const strings = {
     body: 'Complete uma tarefa e comprove para ganhar mais minutos.',
     earn: 'Ganhar tempo',
     notNow: 'Agora não',
+  },
+  settings: {
+    appearanceTitle: 'Aparência',
+    themeLabel: 'Tema',
+    themeSystem: 'Sistema',
+    themeLight: 'Claro',
+    themeDark: 'Escuro',
+    languageLabel: 'Idioma',
+    languageAuto: 'Automático',
   },
   welcome: {
     tagline: 'Faça o real. Ganhe o digital.',

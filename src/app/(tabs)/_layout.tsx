@@ -8,20 +8,19 @@ import {
   StatsTabIcon,
 } from '../../presentation/components/art';
 import { TabBounce } from '../../presentation/motion';
-import { colors } from '../../presentation/ui';
+import { useColors } from '../../presentation/theme';
 import { strings } from '../../strings/pt-BR';
-
-const INACTIVE = '#7C8B80';
 
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
+  const colors = useColors();
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         animation: 'fade',
         tabBarActiveTintColor: colors.tinta,
-        tabBarInactiveTintColor: INACTIVE,
+        tabBarInactiveTintColor: colors.muted,
         tabBarLabelStyle: { fontFamily: 'Nunito_700Bold', fontSize: 12 },
         tabBarStyle: {
           backgroundColor: colors.folha,

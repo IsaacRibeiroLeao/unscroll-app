@@ -1,0 +1,3 @@
+int drawable bear_sleepy_default 0x0
+int drawable bear_sleepy_fire 0x0
+int drawable bear_sleepy_zen 0x0

@@ -274,8 +274,17 @@ class BlockOverlay(private val appContext: Context) {
       setPadding(dp(24), dp(32), dp(24), dp(40))
     }
 
-    val mascot = SleepyBearView(appContext, info.mascotSkin)
-    mascot.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+    val skinKey = when (info.mascotSkin) {
+      "mascot_skin_fire" -> "fire"
+      "mascot_skin_zen" -> "zen"
+      else -> "default"
+    }
+    val bearRes = appContext.resources.getIdentifier("bear_sleepy_$skinKey", "drawable", appContext.packageName)
+    val mascot = android.widget.ImageView(appContext).apply {
+      if (bearRes != 0) setImageResource(bearRes)
+      scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
+      importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+    }
     column.addView(mascot, LinearLayout.LayoutParams(dp(280), dp(280)))
 
     val title = accentTitle(info.title)

@@ -2,7 +2,8 @@ import { useRouter } from 'expo-router';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { toMascotSkin } from '../domain/mascot';
-import { GradientView, Hills, HourglassArt, SleepyClockArt, Sparkles } from '../presentation/components/art';
+import { GradientView, Hills, HourglassArt, Sparkles } from '../presentation/components/art';
+import { Mascot } from '../presentation/components/Mascot';
 import { Button } from '../presentation/components/Button';
 import { ChevronRightIcon, CircleXIcon } from '../presentation/components/Icons';
 import { Enter, Float } from '../presentation/motion';
@@ -34,9 +35,10 @@ export default function BlockedScreen() {
       <SafeAreaView className="flex-1">
         <ScrollView contentContainerClassName="grow items-center justify-center gap-3 px-6 pb-8 pt-4">
           <Float amplitude={6}>
-            <SleepyClockArt
-              size={290}
+            <Mascot
               skin={toMascotSkin(profile.data?.activeMascotSkin ?? 'default')}
+              mood="sleepy"
+              size={290}
             />
           </Float>
           <Enter index={1}>

@@ -9,7 +9,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Linking, View } from 'react-native';
 import { APK_URL } from '../config/site';
 import { useUpdate } from '../presentation/state/useUpdate';
@@ -28,9 +28,12 @@ import {
   useRecoveryLink,
 } from '../presentation/state/useAppRuntime';
 import { strings } from '../strings/pt-BR';
-import { Text, colors } from '../presentation/ui';
+import { Text } from '../presentation/ui';
+import { useTheme, usePrefs } from '../presentation/theme';
+import { resolveLocale, setLocale } from '../strings/locale';
 
 function Shell() {
+  const { colors } = useTheme();
   const { state, retry } = useBootstrap();
   const [fontsLoaded, fontError] = useFonts({
     Nunito_400Regular,
@@ -148,12 +151,24 @@ function Shell() {
 }
 
 export default function RootLayout() {
+  const ready = usePrefs((s) => s.ready);
+  const load = usePrefs((s) => s.load);
+  const { scheme, vars, colors } = useTheme();
+  const language = usePrefs((s) => s.language);
+  const locale = resolveLocale(language);
+  setLocale(locale);
+  useEffect(() => {
+    void load();
+  }, [load]);
+  if (!ready) return <View style={{ flex: 1, backgroundColor: colors.nevoa }} />;
   return (
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
-        <StatusBar style="auto" />
-        <Shell />
-        <ScreenBlockerHost />
+        <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
+        <View key={locale} className="flex-1" style={vars}>
+          <Shell />
+          <ScreenBlockerHost />
+        </View>
       </QueryClientProvider>
     </SafeAreaProvider>
   );

@@ -13,13 +13,15 @@ import { backend, errorTexts } from '../../presentation/state/container';
 import { keys, useProfile, useTasks } from '../../presentation/state/queries';
 import { fill } from '../../presentation/format';
 import { Enter, PressableScale } from '../../presentation/motion';
-import { Text, colors } from '../../presentation/ui';
+import { useColors } from '../../presentation/theme';
+import { Text } from '../../presentation/ui';
 import { ChevronRightIcon, FlameIcon, PlusIcon } from '../../presentation/components/Icons';
 import { strings } from '../../strings/pt-BR';
 
 const VISIBLE = 3;
 
 export default function HomeScreen() {
+  const colors = useColors();
   const [showAll, setShowAll] = useState(false);
   const router = useRouter();
   const qc = useQueryClient();
@@ -86,7 +88,7 @@ export default function HomeScreen() {
                   days: profile.data.streakDays,
                 })}
                 onPress={() => router.push('/streak')}
-                className="flex-row items-center gap-3 rounded-3xl bg-[#FBEFCF] px-4 py-3"
+                className="flex-row items-center gap-3 rounded-3xl bg-crema px-4 py-3"
               >
                 <FlameIcon size={40} color="#FF8A1F" />
                 <View className="flex-1">

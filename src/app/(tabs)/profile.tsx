@@ -6,6 +6,7 @@ import { toMascotSkin } from '../../domain/mascot';
 import { Button } from '../../presentation/components/Button';
 import { CrownIcon, LockIcon } from '../../presentation/components/art';
 import { Card } from '../../presentation/components/Card';
+import { usePrefs } from '../../presentation/theme';
 import { ChevronRightIcon } from '../../presentation/components/Icons';
 import { Mascot } from '../../presentation/components/Mascot';
 import { fill } from '../../presentation/format';
@@ -17,6 +18,10 @@ import { PRIVACY_URL, TERMS_URL } from '../../config/site';
 import { strings } from '../../strings/pt-BR';
 
 export default function ProfileScreen() {
+  const theme = usePrefs((st) => st.theme);
+  const language = usePrefs((st) => st.language);
+  const setTheme = usePrefs((st) => st.setTheme);
+  const setLanguage = usePrefs((st) => st.setLanguage);
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const p = useProfile().data;
@@ -52,25 +57,25 @@ export default function ProfileScreen() {
       {p ? (
         <>
           <Enter index={1}>
-          <Card className="items-center p-5">
-            <Float amplitude={5}>
-              <Mascot
-                skin={toMascotSkin(p.activeMascotSkin)}
-                mood={p.isPro ? 'royal' : 'happy'}
-                size={150}
-              />
-            </Float>
-            <View className="mt-2 flex-row items-center gap-2">
-              {p.isPro ? <CrownIcon size={24} /> : null}
-              <Text className="font-display text-2xl text-tinta">
-                {strings.profile.plan}:{' '}
-                {p.isPro ? strings.profile.planPro : strings.profile.planFree}
+            <Card className="items-center p-5">
+              <Float amplitude={5}>
+                <Mascot
+                  skin={toMascotSkin(p.activeMascotSkin)}
+                  mood={p.isPro ? 'royal' : 'happy'}
+                  size={150}
+                />
+              </Float>
+              <View className="mt-2 flex-row items-center gap-2">
+                {p.isPro ? <CrownIcon size={24} /> : null}
+                <Text className="font-display text-2xl text-tinta">
+                  {strings.profile.plan}:{' '}
+                  {p.isPro ? strings.profile.planPro : strings.profile.planFree}
+                </Text>
+              </View>
+              <Text className="mt-1 text-sm text-tinta/65">
+                {fill(strings.shop.freezeCount, { count: p.streakFreezeCount })}
               </Text>
-            </View>
-            <Text className="mt-1 text-sm text-tinta/65">
-              {fill(strings.shop.freezeCount, { count: p.streakFreezeCount })}
-            </Text>
-          </Card>
+            </Card>
           </Enter>
           {!p.isPro ? (
             <Enter index={2}>
@@ -82,7 +87,7 @@ export default function ProfileScreen() {
               />
             </Enter>
           ) : null}
-          <Enter index={3} className="flex-row items-start gap-3 rounded-3xl bg-[#E6EDE0] p-4">
+          <Enter index={3} className="flex-row items-start gap-3 rounded-3xl bg-sage p-4">
             <LockIcon />
             <View className="flex-1">
               <Text className="font-display-bold text-base text-tinta">
@@ -92,26 +97,60 @@ export default function ProfileScreen() {
             </View>
           </Enter>
           <Enter index={4}>
-          <Card className="gap-1 p-4">
-            <Text className="font-display-bold text-base text-tinta">
-              {strings.auth.accountTitle}
-            </Text>
-            {email ? (
-              <Text className="text-sm text-tinta/70" selectable>
-                {strings.profile.emailLabel}: {email}
+            <Card className="gap-3 p-4">
+              <Text className="font-display-bold text-base text-tinta">
+                {strings.settings.appearanceTitle}
               </Text>
-            ) : null}
-            {Platform.OS === 'android' ? (
-              <Row
-                label={strings.permissionsHelp.title}
-                onPress={() => router.push('/permissions-help')}
+              <Segmented
+                label={strings.settings.themeLabel}
+                value={theme}
+                onChange={setTheme}
+                options={[
+                  { value: 'system', label: strings.settings.themeSystem },
+                  { value: 'light', label: strings.settings.themeLight },
+                  { value: 'dark', label: strings.settings.themeDark },
+                ]}
               />
-            ) : null}
-            <Button variant="secondary" label={strings.auth.signOut} onPress={confirmSignOut} />
-            <Row label={strings.legal.privacy} onPress={() => void Linking.openURL(PRIVACY_URL)} />
-            <Row label={strings.legal.terms} onPress={() => void Linking.openURL(TERMS_URL)} />
-            <Row label={strings.deleteAccount.link} onPress={() => router.push('/delete-account')} />
-          </Card>
+              <Segmented
+                label={strings.settings.languageLabel}
+                value={language}
+                onChange={setLanguage}
+                options={[
+                  { value: 'auto', label: strings.settings.languageAuto },
+                  { value: 'pt-BR', label: 'Português' },
+                  { value: 'en', label: 'English' },
+                  { value: 'es', label: 'Español' },
+                ]}
+              />
+            </Card>
+          </Enter>
+          <Enter index={5}>
+            <Card className="gap-1 p-4">
+              <Text className="font-display-bold text-base text-tinta">
+                {strings.auth.accountTitle}
+              </Text>
+              {email ? (
+                <Text className="text-sm text-tinta/70" selectable>
+                  {strings.profile.emailLabel}: {email}
+                </Text>
+              ) : null}
+              {Platform.OS === 'android' ? (
+                <Row
+                  label={strings.permissionsHelp.title}
+                  onPress={() => router.push('/permissions-help')}
+                />
+              ) : null}
+              <Button variant="secondary" label={strings.auth.signOut} onPress={confirmSignOut} />
+              <Row
+                label={strings.legal.privacy}
+                onPress={() => void Linking.openURL(PRIVACY_URL)}
+              />
+              <Row label={strings.legal.terms} onPress={() => void Linking.openURL(TERMS_URL)} />
+              <Row
+                label={strings.deleteAccount.link}
+                onPress={() => router.push('/delete-account')}
+              />
+            </Card>
           </Enter>
         </>
       ) : null}
@@ -128,7 +167,44 @@ function Row({ label, onPress }: { label: string; onPress: () => void }) {
       className="min-h-12 flex-row items-center justify-between border-t border-fio"
     >
       <Text className="flex-1 font-body-semibold text-base text-tinta">{label}</Text>
-      <ChevronRightIcon size={20} color="#16372A" />
+      <ChevronRightIcon size={20} />
     </PressableScale>
+  );
+}
+
+function Segmented<T extends string>({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: T;
+  options: { value: T; label: string }[];
+  onChange: (v: T) => void;
+}) {
+  return (
+    <View className="gap-2">
+      <Text className="text-sm text-tinta/70">{label}</Text>
+      <View className="flex-row flex-wrap gap-2">
+        {options.map((o) => {
+          const on = o.value === value;
+          return (
+            <PressableScale
+              key={o.value}
+              accessibilityRole="radio"
+              accessibilityState={{ selected: on }}
+              accessibilityLabel={o.label}
+              onPress={() => onChange(o.value)}
+              className={`min-h-11 justify-center rounded-full border-2 px-4 ${on ? 'border-floresta bg-floresta' : 'border-fio bg-folha'}`}
+            >
+              <Text className={`font-display-bold text-sm ${on ? 'text-white' : 'text-tinta'}`}>
+                {o.label}
+              </Text>
+            </PressableScale>
+          );
+        })}
+      </View>
+    </View>
   );
 }

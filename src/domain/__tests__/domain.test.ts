@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { partitionApps } from '../distractingApps.ts';
 import { moodFor, toMascotSkin } from '../mascot.ts';
 import { levelFromXp, xpToReachLevel } from '../progression.ts';
 import { dayPart, formatBalance, formatBalanceLong, wholeMinutes } from '../time.ts';
@@ -62,4 +63,22 @@ test('dayPart buckets the local hour', () => {
   assert.equal(dayPart(17), 'afternoon');
   assert.equal(dayPart(18), 'evening');
   assert.equal(dayPart(23), 'evening');
+});
+
+test('partitionApps puts known doom-scroll apps first, in catalog order', () => {
+  const apps = [
+    { packageName: 'com.calc' },
+    { packageName: 'com.zhiliaoapp.musically' },
+    { packageName: 'com.instagram.android' },
+    { packageName: 'com.maps' },
+  ];
+  const { suggested, others } = partitionApps(apps);
+  assert.deepEqual(
+    suggested.map((a) => a.packageName),
+    ['com.instagram.android', 'com.zhiliaoapp.musically'],
+  );
+  assert.deepEqual(
+    others.map((a) => a.packageName),
+    ['com.calc', 'com.maps'],
+  );
 });

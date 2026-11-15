@@ -12,11 +12,13 @@ import { fill } from '../presentation/format';
 import { Enter, Float } from '../presentation/motion';
 import { useProfile } from '../presentation/state/queries';
 import { Text } from '../presentation/ui';
+import { useTheme } from '../presentation/theme';
 import { strings } from '../strings/pt-BR';
 import { toMascotSkin } from '../domain/mascot';
 
 /** Streak details: the current streak and how many protections can save it. */
 export default function StreakScreen() {
+  const dark = useTheme().scheme === 'dark';
   const router = useRouter();
   const profile = useProfile();
   const [details, setDetails] = useState(false);
@@ -31,7 +33,7 @@ export default function StreakScreen() {
       <ScreenHeader title={t.title} />
       <ScrollView contentContainerClassName="gap-4 px-5 pb-12 pt-1">
         <Enter index={1}>
-          <GradientView id="streak-card" stops={['#E3F1D2', '#C9E4B4']} style={{ borderRadius: 28 }}>
+          <GradientView id="streak-card" stops={dark ? ['#1F3A2B', '#183024'] : ['#E3F1D2', '#C9E4B4']} style={{ borderRadius: 28 }}>
             <Sparkles color="#FFC72C" />
             <View className="items-center gap-2 px-6 py-7">
               <Float amplitude={4}>

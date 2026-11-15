@@ -58,22 +58,22 @@ export default function CelebrationScreen() {
           </Pop>
           <Text
             accessibilityRole="header"
-            className="text-center font-display text-4xl leading-[44px] text-tinta"
+            className="text-center font-display text-4xl leading-[44px] text-[#16372A]"
           >
             {strings.celebration.title}
           </Text>
           <Animated.View style={animated} className="items-center pt-1">
-            <Text className="font-display-bold text-xl leading-7 text-tinta">
+            <Text className="font-display-bold text-xl leading-7 text-[#16372A]">
               {strings.celebration.youEarned}
             </Text>
             <Text
-              className="font-display text-floresta"
+              className="font-display text-[#1F6B43]"
               style={{ fontSize: 88, lineHeight: 92, letterSpacing: -2 }}
               accessibilityLabel={`${fill(strings.celebration.minutesBig, { minutes: r.minutes })} ${strings.celebration.minutesUnit}`}
             >
               {fill(strings.celebration.minutesBig, { minutes: r.minutes })}
             </Text>
-            <Text className="font-display-bold text-2xl text-tinta">
+            <Text className="font-display-bold text-2xl text-[#16372A]">
               {strings.celebration.minutesUnit}
             </Text>
           </Animated.View>
@@ -103,7 +103,7 @@ export default function CelebrationScreen() {
           </Enter>
 
           {proof.blockerFailed ? (
-            <Text className="text-center text-sm text-tinta/80">
+            <Text className="text-center text-sm text-[#16372A]">
               {strings.celebration.blockerWarning}
             </Text>
           ) : null}

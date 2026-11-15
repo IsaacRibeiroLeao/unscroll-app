@@ -15,11 +15,13 @@ import { Enter, PressableScale } from '../presentation/motion';
 import { backend, errorTexts } from '../presentation/state/container';
 import { keys, useBlockedApps } from '../presentation/state/queries';
 import { fill } from '../presentation/format';
+import { useColors } from '../presentation/theme';
 import { strings } from '../strings/pt-BR';
 
 const CATEGORIES = ['home', 'exercise', 'reading', 'study'] as const;
 
 export default function NewTaskScreen() {
+  const colors = useColors();
   const router = useRouter();
   const navigation = useNavigation();
   const submitting = useRef(false);
@@ -167,7 +169,7 @@ export default function NewTaskScreen() {
               className="w-14 items-center gap-1 active:opacity-60"
             >
               <View className="h-[52px] w-[52px] items-center justify-center rounded-2xl border border-fio bg-folha">
-                <PlusIcon size={22} color="#16372A" />
+                <PlusIcon size={22} color={colors.tinta} />
               </View>
               <Text className="text-[11px] text-tinta/70" numberOfLines={1}>
                 {strings.newTask.moreApps}

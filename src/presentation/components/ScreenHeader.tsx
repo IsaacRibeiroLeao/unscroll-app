@@ -2,7 +2,8 @@ import { useRouter } from 'expo-router';
 import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { strings } from '../../strings/pt-BR';
-import { Text, colors } from '../ui';
+import { useColors } from '../theme';
+import { Text } from '../ui';
 import { ArrowLeftIcon } from './Icons';
 
 interface Props {
@@ -16,7 +17,8 @@ interface Props {
 export function ScreenHeader({ title, onBack, light }: Props) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const color = light ? '#FFFFFF' : colors.tinta;
+  const palette = useColors();
+  const color = light ? '#FFFFFF' : palette.tinta;
   return (
     <View className="flex-row items-center gap-3 px-5 pb-3" style={{ paddingTop: insets.top + 12 }}>
       <Pressable

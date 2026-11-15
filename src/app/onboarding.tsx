@@ -146,7 +146,7 @@ export default function OnboardingScreen() {
           <View className="w-full gap-1">
             <Button
               label={last ? strings.onboarding.letsGo : strings.onboarding.next}
-              variant={last ? 'sun' : 'primary'}
+              variant="forest"
               onPress={next}
             />
             {last ? null : (
@@ -219,7 +219,7 @@ export default function OnboardingScreen() {
               {!permsOk || (perms?.missing.length ?? 0) > 0 ? (
                 <Button
                   label={strings.onboarding.grant}
-                  variant="sun"
+                  variant="forest"
                   onPress={() => void grant()}
                   loading={busy}
                 />
@@ -233,7 +233,7 @@ export default function OnboardingScreen() {
               ) : null}
               <Button
                 label={strings.onboarding.next}
-                variant="forest"
+                variant={permsOk ? 'forest' : 'secondary'}
                 onPress={next}
                 disabled={!permsOk}
               />
@@ -256,13 +256,13 @@ export default function OnboardingScreen() {
             <View className="mt-4 gap-2">
               <Button
                 label={strings.onboarding.pickAction}
-                variant="sun"
+                variant={pickedCount === 0 ? 'forest' : 'secondary'}
                 onPress={() => void pick()}
                 loading={busy}
               />
               <Button
                 label={strings.onboarding.next}
-                variant="forest"
+                variant={pickedCount === 0 ? 'secondary' : 'forest'}
                 onPress={next}
                 disabled={pickedCount === 0}
               />
